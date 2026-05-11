@@ -1,0 +1,7 @@
+{
+  "markdown.styles": [
+    "styles/preview.css"
+  ],
+  "markdown.preview.breaks": false,
+  "markdown.preview.typographer": true
+}

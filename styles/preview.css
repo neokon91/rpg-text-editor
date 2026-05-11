@@ -1,0 +1,44 @@
+@import "./main.css";
+
+body {
+  background: #1c1510;
+}
+
+.markdown-body {
+  max-width: 210mm;
+  min-height: 297mm;
+  margin: 0 auto;
+  padding: var(--page-padding);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: var(--line-body);
+  background:
+    linear-gradient(rgba(255, 248, 228, 0.86), rgba(255, 248, 228, 0.9)),
+    radial-gradient(circle at 20% 12%, rgba(255, 255, 255, 0.55), transparent 26%),
+    radial-gradient(circle at 88% 20%, rgba(122, 87, 35, 0.14), transparent 28%),
+    linear-gradient(110deg, var(--color-paper-light), var(--color-paper));
+  box-shadow: var(--shadow-page);
+}
+
+.markdown-body > p:first-child:has(+ h1) {
+  display: none;
+}
+
+.markdown-body code {
+  color: inherit;
+}
+
+.markdown-body pre {
+  padding: 1rem;
+  overflow: auto;
+  background: rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(122, 87, 35, 0.25);
+}
+
+.markdown-body .page-break,
+.markdown-body + .page-break {
+  display: block;
+  margin: 2rem 0;
+  border-top: 2px dashed rgba(122, 87, 35, 0.4);
+}

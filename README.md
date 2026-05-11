@@ -19,6 +19,28 @@ npm run preview
 - `npm run check:legal` segnala termini rischiosi o marchi da trattare con cautela nei sorgenti Markdown.
 - `npm run preview` serve la cartella `dist` su `http://127.0.0.1:8081`.
 
+## Authoring in VS Code
+
+La repo include snippet in `.vsc/rpg.code-snippets` per creare rapidamente frontmatter e blocchi TTRPG. I prefissi principali sono:
+
+- `frontttrpg`
+- `monster`
+- `spell`
+- `magicitem`
+- `npc`
+- `location`
+- `hazard`
+- `randomtable`
+- `readaloud`
+- `encounter`
+- `treasure`
+- `note`
+- `quote`
+
+Se usi Markdown Preview, `.vscode/settings.json` aggancia `styles/preview.css` alla preview. La preview serve per scrivere comodo; la resa finale resta quella generata da `npm run build`.
+
+`docs/reference.md` è una pagina kitchen sink con tutti i componenti principali, utile per controllare temi e CSS.
+
 ## Scrivere un documento
 
 Ogni file Markdown in `docs/` può iniziare con metadati:

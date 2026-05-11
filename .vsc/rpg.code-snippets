@@ -1,4 +1,23 @@
 {
+  "TTRPG Frontmatter": {
+    "prefix": "frontttrpg",
+    "body": [
+      "---",
+      "title: ${1:Titolo}",
+      "slug: ${2:slug-documento}",
+      "summary: ${3:Riassunto breve.}",
+      "category: ${4:avventure}",
+      "tags: ${5:dungeon, livello-1}",
+      "compatibility: 5e/5.5e",
+      "license_mode: srd-5.2-cc",
+      "author: ${6:Andrea}",
+      "theme: ${7|classic-parchment,dark-arcane,clean-guild,printer-friendly|}",
+      "paper: ${8|A4,Letter|}",
+      "public: ${9|true,false|}",
+      "---"
+    ],
+    "description": "Frontmatter completo per documenti TTRPG"
+  },
   "Read Aloud Box": {
     "prefix": "readaloud",
     "body": [
@@ -6,7 +25,44 @@
       "${2:Testo narrativo}",
       ":::"
     ],
-    "description": "Box narrativo RPG"
+    "description": "Box narrativo da leggere al tavolo"
+  },
+  "Encounter Box": {
+    "prefix": "encounter",
+    "body": [
+      "::: encounter ${1:Incontro}",
+      "${2:Dettagli tattici o conseguenze.}",
+      ":::"
+    ],
+    "description": "Box incontro"
+  },
+  "Treasure Box": {
+    "prefix": "treasure",
+    "body": [
+      "::: treasure ${1:Tesoro}",
+      "- ${2:Oggetto o ricompensa}",
+      "- ${3:Oggetto o ricompensa}",
+      ":::"
+    ],
+    "description": "Box tesoro"
+  },
+  "Note Box": {
+    "prefix": "note",
+    "body": [
+      "::: note ${1:Nota}",
+      "${2:Promemoria per master o autore.}",
+      ":::"
+    ],
+    "description": "Box nota"
+  },
+  "Quote Box": {
+    "prefix": "quote",
+    "body": [
+      "::: quote ${1:Fonte}",
+      "\"${2:Citazione}\"",
+      ":::"
+    ],
+    "description": "Citazione editoriale"
   },
   "Monster Block": {
     "prefix": "monster",
@@ -24,21 +80,115 @@
       "int: ${11:10}",
       "wis: ${12:10}",
       "cha: ${13:10}",
-      "trait: ${14:Tratto} | ${15:Descrizione.}",
-      "action: ${16:Azione} | ${17:Descrizione.}",
+      "senses: ${14:Percezione passiva 10}",
+      "languages: ${15:-}",
+      "trait: ${16:Tratto} | ${17:Descrizione.}",
+      "action: ${18:Azione} | ${19:Descrizione.}",
+      "reaction: ${20:Reazione} | ${21:Descrizione.}",
       ":::"
     ],
     "description": "Blocco creatura strutturato"
+  },
+  "Spell Block": {
+    "prefix": "spell",
+    "body": [
+      "::: spell ${1:Incantesimo}",
+      "name: ${2:Nome incantesimo}",
+      "level: ${3:1° livello}",
+      "school: ${4:abiurazione}",
+      "casting_time: ${5:1 azione}",
+      "range: ${6:18 m}",
+      "components: ${7:V, S}",
+      "duration: ${8:1 minuto}",
+      "${9:Descrizione dell'effetto.}",
+      ":::"
+    ],
+    "description": "Blocco incantesimo"
+  },
+  "Magic Item Block": {
+    "prefix": "magicitem",
+    "body": [
+      "::: magicitem ${1:Oggetto magico}",
+      "name: ${2:Nome oggetto}",
+      "type: ${3:Anello}",
+      "rarity: ${4:non comune}",
+      "attunement: ${5:richiesta}",
+      "${6:Descrizione dell'oggetto.}",
+      ":::"
+    ],
+    "description": "Blocco oggetto magico"
+  },
+  "NPC Block": {
+    "prefix": "npc",
+    "body": [
+      "::: npc ${1:PNG}",
+      "name: ${2:Nome}",
+      "role: ${3:Ruolo}",
+      "appearance: ${4:Aspetto}",
+      "voice: ${5:Voce}",
+      "motive: ${6:Motivazione}",
+      "secret: ${7:Segreto}",
+      "hook: ${8:Spunto} | ${9:Descrizione.}",
+      ":::"
+    ],
+    "description": "Blocco PNG"
+  },
+  "Location Block": {
+    "prefix": "location",
+    "body": [
+      "::: location ${1:Luogo}",
+      "name: ${2:Nome luogo}",
+      "tags: ${3:buio, antico, pericoloso}",
+      "mood: ${4:Atmosfera}",
+      "danger: ${5:Pericolo}",
+      "treasure: ${6:Tesoro}",
+      "hook: ${7:Dettaglio} | ${8:Descrizione.}",
+      ":::"
+    ],
+    "description": "Blocco luogo"
+  },
+  "Hazard Block": {
+    "prefix": "hazard",
+    "body": [
+      "::: hazard ${1:Trappola}",
+      "name: ${2:Nome pericolo}",
+      "trigger: ${3:Innesco}",
+      "dc: ${4:Destrezza CD 13}",
+      "effect: ${5:Effetto}",
+      "countermeasure: ${6:Contromisura}",
+      ":::"
+    ],
+    "description": "Blocco pericolo o trappola"
   },
   "Random Table": {
     "prefix": "randomtable",
     "body": [
       "::: random-table ${1:Titolo tabella}",
-      "die: ${2:d6}",
+      "die: ${2|d4,d6,d8,d10,d12,d20,d100|}",
       "1 | ${3:Risultato}",
       "2 | ${4:Risultato}",
+      "3 | ${5:Risultato}",
+      "4 | ${6:Risultato}",
       ":::"
     ],
     "description": "Tabella casuale strutturata"
+  },
+  "Columns 2": {
+    "prefix": "columns2",
+    "body": [
+      "<div class=\"columns-2\">",
+      "",
+      "${1:Contenuto}",
+      "",
+      "</div>"
+    ],
+    "description": "Layout a due colonne"
+  },
+  "Page Break": {
+    "prefix": "pagebreak",
+    "body": [
+      "::pagebreak"
+    ],
+    "description": "Interruzione pagina per PDF"
   }
 }
