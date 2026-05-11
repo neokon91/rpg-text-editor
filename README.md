@@ -25,7 +25,7 @@ npm run preview
 
 ## Authoring in VS Code
 
-La repo include snippet in `.vsc/rpg.code-snippets` per creare rapidamente frontmatter e blocchi TTRPG. I prefissi principali sono:
+La repo include snippet in `.vscode/rpg.code-snippets` per creare rapidamente frontmatter e blocchi TTRPG. I prefissi principali sono:
 
 - `frontttrpg`
 - `monster`
@@ -211,6 +211,17 @@ I blocchi liberi restano disponibili: `readaloud`, `encounter`, `treasure`, `not
 - `templates/`: scheletro HTML.
 - `scripts/`: build HTML/PDF e preview locale.
 - `dist/`: output generati.
+- `.vscode/`: impostazioni Markdown Preview e snippet workspace.
+
+## Mini Checklist Migliorie
+
+- [ ] Generare un indice interno automatico per PDF lunghi.
+- [ ] Supportare build multi-capitolo in un PDF unico.
+- [ ] Aggiungere un database locale riusabile per mostri, PNG, luoghi e oggetti.
+- [ ] Creare un export `.zip` di pubblicazione con HTML, PDF, asset e crediti.
+- [ ] Aggiungere controlli di bilanciamento per GS, danni medi, CD e ricompense.
+- [ ] Aggiungere temi specializzati per hexcrawl, investigativo, grimdark e fiabesco.
+- [ ] Aggiungere immagini di copertina e pagine capitolo con manifest asset obbligatorio.
 
 ## Obiettivo editoriale
 
