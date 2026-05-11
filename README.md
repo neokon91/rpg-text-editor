@@ -14,6 +14,7 @@ npm run build:site
 npm run check:legal
 npm run check:assets
 npm run check
+npm run new -- adventure "La Torre Sommersa"
 npm run preview
 ```
 
@@ -25,6 +26,7 @@ npm run preview
 - `npm run check:legal` segnala termini rischiosi o marchi da trattare con cautela nei sorgenti Markdown.
 - `npm run check:assets` valida il registro asset e verifica che i file dichiarati esistano.
 - `npm run check` esegue i controlli legali/editoriali e il controllo asset.
+- `npm run new -- adventure "Titolo"` crea un nuovo documento da template. Tipi disponibili: `adventure`, `bestiary`, `item`, `reference`.
 - `npm run preview` serve la cartella `dist` su `http://127.0.0.1:8081`.
 
 ## Authoring in VS Code
@@ -48,6 +50,19 @@ La repo include snippet in `.vscode/rpg.code-snippets` per creare rapidamente fr
 Se usi Markdown Preview, `.vscode/settings.json` aggancia `styles/preview.css` alla preview. Per vedere i componenti renderizzati direttamente nella preview usa gli snippet HTML di `.vscode/rpg.code-snippets`; la vecchia sintassi `:::` resta supportata dal build finale, ma Markdown Preview la mostra come testo.
 
 `docs/reference.md` è una pagina kitchen sink con tutti i componenti principali, utile per controllare temi e CSS.
+
+## Nuovi Documenti
+
+Usa il generatore per partire da file già coerenti con Markdown Preview e build finale:
+
+```sh
+npm run new -- adventure "La Torre Sommersa"
+npm run new -- bestiary "Bestiario delle Rovine"
+npm run new -- item "Reliquie Minori"
+npm run new -- reference "Appunti Campagna"
+```
+
+I template vivono in `templates/markdown/`. Puoi modificarli per adattarli al tuo stile personale.
 
 ## Asset e crediti
 
@@ -172,6 +187,7 @@ Il renderer conserva il supporto ai blocchi `:::` per file vecchi o bozze rapide
 - `styles/`: sistema tipografico e componenti.
 - `assets/`: manifest per font, immagini e risorse con crediti/licenze.
 - `templates/`: scheletro HTML.
+- `templates/markdown/`: template sorgente per nuovi documenti.
 - `scripts/`: build HTML/PDF e preview locale.
 - `dist/`: output generati.
 - `.vscode/`: impostazioni Markdown Preview e snippet workspace.
@@ -180,6 +196,7 @@ Il renderer conserva il supporto ai blocchi `:::` per file vecchi o bozze rapide
 
 - [x] Generare un indice interno automatico per PDF lunghi.
 - [x] Supportare build multi-capitolo in un PDF unico.
+- [x] Aggiungere template per nuovi documenti.
 - [ ] Aggiungere un database locale riusabile per mostri, PNG, luoghi e oggetti.
 - [ ] Creare un export `.zip` di pubblicazione con HTML, PDF, asset e crediti.
 - [ ] Aggiungere controlli di bilanciamento per GS, danni medi, CD e ricompense.

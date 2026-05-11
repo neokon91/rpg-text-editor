@@ -15,6 +15,7 @@
     "check:legal": "node scripts/check-legal.js",
     "check:assets": "node scripts/check-assets.js",
     "check": "npm run check:legal && npm run check:assets",
+    "new": "node scripts/new.js",
     "preview": "node scripts/serve.js"
   }
 }
