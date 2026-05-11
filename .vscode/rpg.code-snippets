@@ -21,157 +21,175 @@
   "Read Aloud Box": {
     "prefix": "readaloud",
     "body": [
-      "::: readaloud ${1:Da leggere al tavolo}",
-      "${2:Testo narrativo}",
-      ":::"
+      "<aside class=\"readaloud no-break\">",
+      "  <div class=\"readaloud__label\">${1:Da leggere al tavolo}</div>",
+      "  <p>${2:Testo narrativo}</p>",
+      "</aside>"
     ],
-    "description": "Box narrativo da leggere al tavolo"
+    "description": "Box narrativo renderizzato in Markdown Preview"
   },
   "Encounter Box": {
     "prefix": "encounter",
     "body": [
-      "::: encounter ${1:Incontro}",
-      "${2:Dettagli tattici o conseguenze.}",
-      ":::"
+      "<aside class=\"encounter no-break\">",
+      "  <div class=\"encounter__label\">${1:Incontro}</div>",
+      "  <p>${2:Dettagli tattici o conseguenze.}</p>",
+      "</aside>"
     ],
-    "description": "Box incontro"
+    "description": "Box incontro renderizzato in Markdown Preview"
   },
   "Treasure Box": {
     "prefix": "treasure",
     "body": [
-      "::: treasure ${1:Tesoro}",
-      "- ${2:Oggetto o ricompensa}",
-      "- ${3:Oggetto o ricompensa}",
-      ":::"
+      "<aside class=\"treasure no-break\">",
+      "  <div class=\"treasure__label\">${1:Tesoro}</div>",
+      "  <ul>",
+      "    <li>${2:Oggetto o ricompensa}</li>",
+      "    <li>${3:Oggetto o ricompensa}</li>",
+      "  </ul>",
+      "</aside>"
     ],
-    "description": "Box tesoro"
+    "description": "Box tesoro renderizzato in Markdown Preview"
   },
   "Note Box": {
     "prefix": "note",
     "body": [
-      "::: note ${1:Nota}",
-      "${2:Promemoria per master o autore.}",
-      ":::"
+      "<aside class=\"note no-break\">",
+      "  <div class=\"note__label\">${1:Nota}</div>",
+      "  <p>${2:Promemoria per master o autore.}</p>",
+      "</aside>"
     ],
-    "description": "Box nota"
+    "description": "Box nota renderizzato in Markdown Preview"
   },
   "Quote Box": {
     "prefix": "quote",
     "body": [
-      "::: quote ${1:Fonte}",
-      "\"${2:Citazione}\"",
-      ":::"
+      "<aside class=\"quote no-break\">",
+      "  <div class=\"quote__label\">${1:Fonte}</div>",
+      "  <p>\"${2:Citazione}\"</p>",
+      "</aside>"
     ],
-    "description": "Citazione editoriale"
+    "description": "Citazione editoriale renderizzata in Markdown Preview"
   },
   "Monster Block": {
     "prefix": "monster",
     "body": [
-      "::: monster ${1:Creatura}",
-      "name: ${2:Nome}",
-      "meta: ${3:Creatura media, neutrale}",
-      "ac: ${4:13}",
-      "hp: ${5:22}",
-      "speed: ${6:9 m}",
-      "cr: ${7:1}",
-      "str: ${8:10}",
-      "dex: ${9:10}",
-      "con: ${10:10}",
-      "int: ${11:10}",
-      "wis: ${12:10}",
-      "cha: ${13:10}",
-      "senses: ${14:Percezione passiva 10}",
-      "languages: ${15:-}",
-      "trait: ${16:Tratto} | ${17:Descrizione.}",
-      "action: ${18:Azione} | ${19:Descrizione.}",
-      "reaction: ${20:Reazione} | ${21:Descrizione.}",
-      ":::"
+      "<aside class=\"statblock monster no-break\">",
+      "  <div class=\"statblock__label\">${1:Creatura}</div>",
+      "  <h2>${2:Nome}</h2>",
+      "  <p><em>${3:Creatura media, neutrale}</em></p>",
+      "  <div class=\"statline\">",
+      "    <span><strong>CA</strong> ${4:13}</span>",
+      "    <span><strong>PF</strong> ${5:22}</span>",
+      "    <span><strong>Vel</strong> ${6:9 m}</span>",
+      "    <span><strong>GS</strong> ${7:1}</span>",
+      "  </div>",
+      "  <div class=\"stats-grid\">",
+      "    <div><strong>FOR</strong>${8:10}<small>${9:+0}</small></div>",
+      "    <div><strong>DES</strong>${10:10}<small>${11:+0}</small></div>",
+      "    <div><strong>COS</strong>${12:10}<small>${13:+0}</small></div>",
+      "    <div><strong>INT</strong>${14:10}<small>${15:+0}</small></div>",
+      "    <div><strong>SAG</strong>${16:10}<small>${17:+0}</small></div>",
+      "    <div><strong>CAR</strong>${18:10}<small>${19:+0}</small></div>",
+      "  </div>",
+      "  <h3 class=\"feature-heading\">Tratti</h3>",
+      "  <p><strong>${20:Tratto}.</strong> ${21:Descrizione.}</p>",
+      "  <h3 class=\"feature-heading\">Azioni</h3>",
+      "  <p><strong>${22:Azione}.</strong> ${23:Descrizione.}</p>",
+      "</aside>"
     ],
-    "description": "Blocco creatura strutturato"
+    "description": "Blocco creatura renderizzato in Markdown Preview"
   },
   "Spell Block": {
     "prefix": "spell",
     "body": [
-      "::: spell ${1:Incantesimo}",
-      "name: ${2:Nome incantesimo}",
-      "level: ${3:1° livello}",
-      "school: ${4:abiurazione}",
-      "casting_time: ${5:1 azione}",
-      "range: ${6:18 m}",
-      "components: ${7:V, S}",
-      "duration: ${8:1 minuto}",
-      "${9:Descrizione dell'effetto.}",
-      ":::"
+      "<aside class=\"spell rules-card no-break\">",
+      "  <div class=\"spell__label rules-card__label\">${1:Incantesimo}</div>",
+      "  <h3>${2:Nome incantesimo}</h3>",
+      "  <p><em>${3:1° livello}, ${4:abiurazione}</em></p>",
+      "  <p class=\"rules-line\"><strong>Tempo di lancio.</strong> ${5:1 azione}</p>",
+      "  <p class=\"rules-line\"><strong>Gittata.</strong> ${6:18 m}</p>",
+      "  <p class=\"rules-line\"><strong>Componenti.</strong> ${7:V, S}</p>",
+      "  <p class=\"rules-line\"><strong>Durata.</strong> ${8:1 minuto}</p>",
+      "  <p>${9:Descrizione dell'effetto.}</p>",
+      "</aside>"
     ],
-    "description": "Blocco incantesimo"
+    "description": "Blocco incantesimo renderizzato in Markdown Preview"
   },
   "Magic Item Block": {
     "prefix": "magicitem",
     "body": [
-      "::: magicitem ${1:Oggetto magico}",
-      "name: ${2:Nome oggetto}",
-      "type: ${3:Anello}",
-      "rarity: ${4:non comune}",
-      "attunement: ${5:richiesta}",
-      "${6:Descrizione dell'oggetto.}",
-      ":::"
+      "<aside class=\"magicitem rules-card no-break\">",
+      "  <div class=\"magicitem__label rules-card__label\">${1:Oggetto magico}</div>",
+      "  <h3>${2:Nome oggetto}</h3>",
+      "  <p><em>${3:Anello}, ${4:non comune}</em></p>",
+      "  <p class=\"rules-line\"><strong>Sintonia.</strong> ${5:richiesta}</p>",
+      "  <p>${6:Descrizione dell'oggetto.}</p>",
+      "</aside>"
     ],
-    "description": "Blocco oggetto magico"
+    "description": "Blocco oggetto magico renderizzato in Markdown Preview"
   },
   "NPC Block": {
     "prefix": "npc",
     "body": [
-      "::: npc ${1:PNG}",
-      "name: ${2:Nome}",
-      "role: ${3:Ruolo}",
-      "appearance: ${4:Aspetto}",
-      "voice: ${5:Voce}",
-      "motive: ${6:Motivazione}",
-      "secret: ${7:Segreto}",
-      "hook: ${8:Spunto} | ${9:Descrizione.}",
-      ":::"
+      "<aside class=\"npc rules-card no-break\">",
+      "  <div class=\"npc__label rules-card__label\">${1:PNG}</div>",
+      "  <h3>${2:Nome}</h3>",
+      "  <p><em>${3:Ruolo}</em></p>",
+      "  <p class=\"rules-line\"><strong>Aspetto.</strong> ${4:Aspetto}</p>",
+      "  <p class=\"rules-line\"><strong>Voce.</strong> ${5:Voce}</p>",
+      "  <p class=\"rules-line\"><strong>Motivazione.</strong> ${6:Motivazione}</p>",
+      "  <p class=\"rules-line\"><strong>Segreto.</strong> ${7:Segreto}</p>",
+      "</aside>"
     ],
-    "description": "Blocco PNG"
+    "description": "Blocco PNG renderizzato in Markdown Preview"
   },
   "Location Block": {
     "prefix": "location",
     "body": [
-      "::: location ${1:Luogo}",
-      "name: ${2:Nome luogo}",
-      "tags: ${3:buio, antico, pericoloso}",
-      "mood: ${4:Atmosfera}",
-      "danger: ${5:Pericolo}",
-      "treasure: ${6:Tesoro}",
-      "hook: ${7:Dettaglio} | ${8:Descrizione.}",
-      ":::"
+      "<aside class=\"location rules-card no-break\">",
+      "  <div class=\"location__label rules-card__label\">${1:Luogo}</div>",
+      "  <h3>${2:Nome luogo}</h3>",
+      "  <p><em>${3:buio, antico, pericoloso}</em></p>",
+      "  <p class=\"rules-line\"><strong>Atmosfera.</strong> ${4:Atmosfera}</p>",
+      "  <p class=\"rules-line\"><strong>Pericolo.</strong> ${5:Pericolo}</p>",
+      "  <p class=\"rules-line\"><strong>Tesoro.</strong> ${6:Tesoro}</p>",
+      "</aside>"
     ],
-    "description": "Blocco luogo"
+    "description": "Blocco luogo renderizzato in Markdown Preview"
   },
   "Hazard Block": {
     "prefix": "hazard",
     "body": [
-      "::: hazard ${1:Trappola}",
-      "name: ${2:Nome pericolo}",
-      "trigger: ${3:Innesco}",
-      "dc: ${4:Destrezza CD 13}",
-      "effect: ${5:Effetto}",
-      "countermeasure: ${6:Contromisura}",
-      ":::"
+      "<aside class=\"hazard rules-card no-break\">",
+      "  <div class=\"hazard__label rules-card__label\">${1:Trappola}</div>",
+      "  <h3>${2:Nome pericolo}</h3>",
+      "  <p class=\"rules-line\"><strong>Innesco.</strong> ${3:Innesco}</p>",
+      "  <p class=\"rules-line\"><strong>CD.</strong> ${4:Destrezza CD 13}</p>",
+      "  <p class=\"rules-line\"><strong>Effetto.</strong> ${5:Effetto}</p>",
+      "  <p class=\"rules-line\"><strong>Contromisura.</strong> ${6:Contromisura}</p>",
+      "</aside>"
     ],
-    "description": "Blocco pericolo o trappola"
+    "description": "Blocco pericolo o trappola renderizzato in Markdown Preview"
   },
   "Random Table": {
     "prefix": "randomtable",
     "body": [
-      "::: random-table ${1:Titolo tabella}",
-      "die: ${2|d4,d6,d8,d10,d12,d20,d100|}",
-      "1 | ${3:Risultato}",
-      "2 | ${4:Risultato}",
-      "3 | ${5:Risultato}",
-      "4 | ${6:Risultato}",
-      ":::"
+      "<aside class=\"random-table no-break\">",
+      "  <div class=\"random-table__label\">${1|d4,d6,d8,d10,d12,d20,d100|}</div>",
+      "  <h3>${2:Titolo tabella}</h3>",
+      "  <table class=\"table-compact\">",
+      "    <thead><tr><th>${1}</th><th>Risultato</th></tr></thead>",
+      "    <tbody>",
+      "      <tr><td>1</td><td>${3:Risultato}</td></tr>",
+      "      <tr><td>2</td><td>${4:Risultato}</td></tr>",
+      "      <tr><td>3</td><td>${5:Risultato}</td></tr>",
+      "      <tr><td>4</td><td>${6:Risultato}</td></tr>",
+      "    </tbody>",
+      "  </table>",
+      "</aside>"
     ],
-    "description": "Tabella casuale strutturata"
+    "description": "Tabella casuale renderizzata in Markdown Preview"
   },
   "Columns 2": {
     "prefix": "columns2",
@@ -187,7 +205,7 @@
   "Page Break": {
     "prefix": "pagebreak",
     "body": [
-      "::pagebreak"
+      "<div class=\"page-break\"></div>"
     ],
     "description": "Interruzione pagina per PDF"
   }

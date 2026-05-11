@@ -18,103 +18,129 @@ public: false
 
 <p class="dropcap">Questa pagina raccoglie i componenti principali della suite. Usala come banco prova quando cambi CSS, temi o sintassi dei blocchi.</p>
 
-::: readaloud Da leggere al tavolo
-La sala respira lentamente, come se la pietra avesse polmoni nascosti sotto strati di polvere.
-:::
+<aside class="readaloud no-break">
+  <div class="readaloud__label">Da leggere al tavolo</div>
+  <p>La sala respira lentamente, come se la pietra avesse polmoni nascosti sotto strati di polvere.</p>
+</aside>
 
-::: encounter Incontro
-Tre avversari deboli entrano da lati opposti. Uno tenta di spegnere le luci, gli altri cercano copertura.
-:::
+<aside class="encounter no-break">
+  <div class="encounter__label">Incontro</div>
+  <p>Tre avversari deboli entrano da lati opposti. Uno tenta di spegnere le luci, gli altri cercano copertura.</p>
+</aside>
 
-::: treasure Tesoro
-- 25 monete d'argento
-- Una chiave annerita
-- Un frammento di mappa
-:::
+<aside class="treasure no-break">
+  <div class="treasure__label">Tesoro</div>
+  <ul>
+    <li>25 monete d'argento</li>
+    <li>Una chiave annerita</li>
+    <li>Un frammento di mappa</li>
+  </ul>
+</aside>
 
-::: note Nota autore
-Le note possono contenere promemoria di design, appunti per playtest o varianti opzionali.
-:::
+<aside class="note no-break">
+  <div class="note__label">Nota autore</div>
+  <p>Le note possono contenere promemoria di design, appunti per playtest o varianti opzionali.</p>
+</aside>
 
-::: random-table Eventi rapidi
-die: d6
-1 | Si sente un colpo metallico.
-2 | Una porta si apre da sola.
-3 | Un odore acre invade il corridoio.
-4 | Una voce ripete l'ultima frase detta.
-5 | Le ombre puntano nella direzione sbagliata.
-6 | Un indizio appare dove prima non c'era nulla.
-:::
+<aside class="random-table no-break">
+  <div class="random-table__label">d6</div>
+  <h3>Eventi rapidi</h3>
+  <table class="table-compact">
+    <thead><tr><th>d6</th><th>Risultato</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Si sente un colpo metallico.</td></tr>
+      <tr><td>2</td><td>Una porta si apre da sola.</td></tr>
+      <tr><td>3</td><td>Un odore acre invade il corridoio.</td></tr>
+      <tr><td>4</td><td>Una voce ripete l'ultima frase detta.</td></tr>
+      <tr><td>5</td><td>Le ombre puntano nella direzione sbagliata.</td></tr>
+      <tr><td>6</td><td>Un indizio appare dove prima non c'era nulla.</td></tr>
+    </tbody>
+  </table>
+</aside>
 
-::: monster Creatura
-name: Guardiano della Soglia
-meta: Costrutto medio, senza allineamento
-ac: 15
-hp: 38
-speed: 9 m
-cr: 2
-str: 14
-dex: 10
-con: 16
-int: 5
-wis: 12
-cha: 6
-senses: scurovisione 18 m, Percezione passiva 11
-languages: comprende una lingua scelta dal creatore
-trait: Corpo di Pietra | Ha vantaggio ai tiri salvezza contro veleno e malattia.
-action: Pugno Inciso | +4 a colpire, portata 1,5 m, un bersaglio. Colpisce per 1d8 + 2 danni contundenti.
-reaction: Interposizione | Quando una creatura entro 1,5 m viene colpita, il Guardiano può subire metà del danno.
-:::
+<aside class="statblock monster no-break">
+  <div class="statblock__label">Creatura</div>
+  <h2>Guardiano della Soglia</h2>
+  <p><em>Costrutto medio, senza allineamento</em></p>
+  <div class="statline">
+    <span><strong>CA</strong> 15</span>
+    <span><strong>PF</strong> 38</span>
+    <span><strong>Vel</strong> 9 m</span>
+    <span><strong>GS</strong> 2</span>
+  </div>
+  <div class="stats-grid">
+    <div><strong>FOR</strong>14<small>+2</small></div>
+    <div><strong>DES</strong>10<small>+0</small></div>
+    <div><strong>COS</strong>16<small>+3</small></div>
+    <div><strong>INT</strong>5<small>-3</small></div>
+    <div><strong>SAG</strong>12<small>+1</small></div>
+    <div><strong>CAR</strong>6<small>-2</small></div>
+  </div>
+  <p class="rules-line"><strong>Sensi.</strong> scurovisione 18 m, Percezione passiva 11</p>
+  <p class="rules-line"><strong>Linguaggi.</strong> comprende una lingua scelta dal creatore</p>
+  <h3 class="feature-heading">Tratti</h3>
+  <p><strong>Corpo di Pietra.</strong> Ha vantaggio ai tiri salvezza contro veleno e malattia.</p>
+  <h3 class="feature-heading">Azioni</h3>
+  <p><strong>Pugno Inciso.</strong> +4 a colpire, portata 1,5 m, un bersaglio. Colpisce per 1d8 + 2 danni contundenti.</p>
+  <h3 class="feature-heading">Reazioni</h3>
+  <p><strong>Interposizione.</strong> Quando una creatura entro 1,5 m viene colpita, il Guardiano può subire metà del danno.</p>
+</aside>
 
-::: spell Formula rituale
-name: Luce del Cartografo
-level: 1° livello
-school: divinazione
-casting_time: 1 azione
-range: personale
-components: V, S, M
-duration: 10 minuti
-Una linea luminosa indica il percorso più breve verso una destinazione nominata che si trovi entro 300 metri e che l'incantatore abbia già visitato.
-:::
+<aside class="spell rules-card no-break">
+  <div class="spell__label rules-card__label">Formula rituale</div>
+  <h3>Luce del Cartografo</h3>
+  <p><em>1° livello, divinazione</em></p>
+  <p class="rules-line"><strong>Tempo di lancio.</strong> 1 azione</p>
+  <p class="rules-line"><strong>Gittata.</strong> personale</p>
+  <p class="rules-line"><strong>Componenti.</strong> V, S, M</p>
+  <p class="rules-line"><strong>Durata.</strong> 10 minuti</p>
+  <p>Una linea luminosa indica il percorso più breve verso una destinazione nominata che si trovi entro 300 metri e che l'incantatore abbia già visitato.</p>
+</aside>
 
-::: magicitem Oggetto magico
-name: Bussola senza Nord
-type: Oggetto meraviglioso
-rarity: raro
-attunement: richiesta
-La bussola non indica il nord, ma la cosa che chi la impugna teme di trovare. Una volta per riposo lungo, può rivelare la direzione di una creatura o luogo associato a quel timore.
-:::
+<aside class="magicitem rules-card no-break">
+  <div class="magicitem__label rules-card__label">Oggetto magico</div>
+  <h3>Bussola senza Nord</h3>
+  <p><em>Oggetto meraviglioso, raro</em></p>
+  <p class="rules-line"><strong>Sintonia.</strong> richiesta</p>
+  <p>La bussola non indica il nord, ma la cosa che chi la impugna teme di trovare. Una volta per riposo lungo, può rivelare la direzione di una creatura o luogo associato a quel timore.</p>
+</aside>
 
-::: npc PNG
-name: Mira Calden
-role: Mediatrice di gilda con troppi debiti
-appearance: abiti eleganti consumati ai polsini
-voice: precisa, gentile, sempre un mezzo tono troppo calma
-motive: vuole uscire viva da un accordo sbagliato
-secret: ha venduto una mappa falsa a due fazioni diverse
-hook: Offerta | Paga bene per recuperare l'originale prima dell'alba.
-:::
+<aside class="npc rules-card no-break">
+  <div class="npc__label rules-card__label">PNG</div>
+  <h3>Mira Calden</h3>
+  <p><em>Mediatrice di gilda con troppi debiti</em></p>
+  <p class="rules-line"><strong>Aspetto.</strong> abiti eleganti consumati ai polsini</p>
+  <p class="rules-line"><strong>Voce.</strong> precisa, gentile, sempre un mezzo tono troppo calma</p>
+  <p class="rules-line"><strong>Motivazione.</strong> vuole uscire viva da un accordo sbagliato</p>
+  <p class="rules-line"><strong>Segreto.</strong> ha venduto una mappa falsa a due fazioni diverse</p>
+  <h3 class="feature-heading">Spunti</h3>
+  <p><strong>Offerta.</strong> Paga bene per recuperare l'originale prima dell'alba.</p>
+</aside>
 
-::: location Luogo
-name: Ponte delle Campane
-tags: rovina, vento, vertigine
-mood: ogni passo risponde con un tintinnio lontano
-danger: una campana spezzata attira creature ostili se viene toccata
-treasure: una moneta votiva incastrata tra le pietre
-hook: Segno | Le corde delle campane formano un simbolo ricorrente.
-:::
+<aside class="location rules-card no-break">
+  <div class="location__label rules-card__label">Luogo</div>
+  <h3>Ponte delle Campane</h3>
+  <p><em>rovina, vento, vertigine</em></p>
+  <p class="rules-line"><strong>Atmosfera.</strong> ogni passo risponde con un tintinnio lontano</p>
+  <p class="rules-line"><strong>Pericolo.</strong> una campana spezzata attira creature ostili se viene toccata</p>
+  <p class="rules-line"><strong>Tesoro.</strong> una moneta votiva incastrata tra le pietre</p>
+  <h3 class="feature-heading">Dettagli</h3>
+  <p><strong>Segno.</strong> Le corde delle campane formano un simbolo ricorrente.</p>
+</aside>
 
-::: hazard Pericolo
-name: Nebbia di Vetro
-trigger: una creatura corre o cade nella sala
-dc: Costituzione CD 14
-effect: la creatura subisce 2d6 danni taglienti e tossisce sangue cristallino
-countermeasure: muoversi lentamente evita di sollevare la nebbia
-:::
+<aside class="hazard rules-card no-break">
+  <div class="hazard__label rules-card__label">Pericolo</div>
+  <h3>Nebbia di Vetro</h3>
+  <p class="rules-line"><strong>Innesco.</strong> una creatura corre o cade nella sala</p>
+  <p class="rules-line"><strong>CD.</strong> Costituzione CD 14</p>
+  <p class="rules-line"><strong>Effetto.</strong> la creatura subisce 2d6 danni taglienti e tossisce sangue cristallino</p>
+  <p class="rules-line"><strong>Contromisura.</strong> muoversi lentamente evita di sollevare la nebbia</p>
+</aside>
 
-::: quote Diario di un esploratore anonimo
-"Non era il buio a seguirci. Era il corridoio che non voleva restare indietro."
-:::
+<aside class="quote no-break">
+  <div class="quote__label">Diario di un esploratore anonimo</div>
+  <p>"Non era il buio a seguirci. Era il corridoio che non voleva restare indietro."</p>
+</aside>
 
 ## Tabelle Markdown
 

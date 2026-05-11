@@ -41,7 +41,7 @@ La repo include snippet in `.vscode/rpg.code-snippets` per creare rapidamente fr
 - `note`
 - `quote`
 
-Se usi Markdown Preview, `.vscode/settings.json` aggancia `styles/preview.css` alla preview. La preview serve per scrivere comodo; la resa finale resta quella generata da `npm run build`.
+Se usi Markdown Preview, `.vscode/settings.json` aggancia `styles/preview.css` alla preview. Per vedere i componenti renderizzati direttamente nella preview usa gli snippet HTML di `.vscode/rpg.code-snippets`; la vecchia sintassi `:::` resta supportata dal build finale, ma Markdown Preview la mostra come testo.
 
 `docs/reference.md` è una pagina kitchen sink con tutti i componenti principali, utile per controllare temi e CSS.
 
@@ -91,117 +91,53 @@ Temi disponibili:
 - `clean-guild`: supplemento moderno, leggibile e ordinato.
 - `printer-friendly`: alto contrasto, poco inchiostro.
 
-Componenti editoriali:
+Componenti editoriali preview-safe:
 
 ```md
-::: readaloud Da leggere al tavolo
-Testo descrittivo da leggere ai giocatori.
-:::
+<aside class="readaloud no-break">
+  <div class="readaloud__label">Da leggere al tavolo</div>
+  <p>Testo descrittivo da leggere ai giocatori.</p>
+</aside>
 
-::: encounter Incontro
-Dettagli tattici o conseguenze.
-:::
+<aside class="encounter no-break">
+  <div class="encounter__label">Incontro</div>
+  <p>Dettagli tattici o conseguenze.</p>
+</aside>
 
-::: treasure Tesoro
-- Monete
-- Oggetti
-:::
+<aside class="treasure no-break">
+  <div class="treasure__label">Tesoro</div>
+  <ul>
+    <li>Monete</li>
+    <li>Oggetti</li>
+  </ul>
+</aside>
 
-::: note Nota
-Promemoria per il master o nota editoriale.
-:::
-
-::: quote Fonte
-"Citazione in stile manuale."
-:::
-
-::: statblock Creatura
-## Nome Creatura
-
-*Tipo, allineamento*
-
-**Azione.** Descrizione.
-:::
+<aside class="quote no-break">
+  <div class="quote__label">Fonte</div>
+  <p>"Citazione in stile manuale."</p>
+</aside>
 ```
 
 Puoi continuare a usare HTML inline quando serve controllo tipografico preciso, per esempio `<p class="dropcap">`.
 
 ## Componenti TTRPG strutturati
 
-Per avere layout coerenti senza scrivere HTML, usa blocchi strutturati:
+Per avere layout coerenti e visibili nella Markdown Preview, usa gli snippet HTML. Esempio:
 
 ```md
-::: monster Creatura
-name: Custode d'Ossa
-meta: Non morto medio, neutrale malvagio
-ac: 14
-hp: 45
-speed: 9 m
-cr: 2
-str: 16
-dex: 12
-con: 15
-int: 6
-wis: 10
-cha: 8
-senses: scurovisione 18 m, Percezione passiva 10
-languages: comprende le lingue che conosceva in vita
-trait: Resistenza Necrotica | Dimezza i danni necrotici ricevuti.
-action: Lama Arrugginita | +5 a colpire, 1d8 + 3 danni taglienti.
-reaction: Scatto d'Ossa | Si muove di 3 m senza provocare attacchi di opportunità.
-:::
-
-::: spell Formula rituale
-name: Sigillo della Porta Muta
-level: Trucchetto rituale
-school: abiurazione
-casting_time: 1 azione
-range: contatto
-components: V, S, M
-duration: 1 ora
-Descrizione dell'effetto.
-:::
-
-::: magicitem Reliquia
-name: Anello del Voto Spezzato
-type: Anello
-rarity: non comune
-attunement: richiesta
-Descrizione dell'oggetto.
-:::
-
-::: npc PNG
-name: Elira Voss
-role: Cartografa inquieta
-motive: vuole recuperare un sigillo antico
-secret: conosce una seconda entrata
-hook: Patto di sangue | Offre una mappa incompleta.
-:::
-
-::: location Luogo
-name: Sala delle Candele Nere
-tags: buio, silenzio, presagio
-mood: l'aria è calda anche se la pietra è umida
-danger: chi spegne una candela sente il proprio nome
-treasure: una chiave nascosta sotto cera fusa
-:::
-
-::: hazard Trappola
-name: Pavimento Cedevole
-trigger: una creatura termina il turno sulla piattaforma
-dc: Destrezza CD 13
-effect: cade per 6 m e subisce 2d6 danni contundenti
-countermeasure: Intelligenza CD 14 individua i cardini nascosti
-:::
-
-::: random-table Eventi nel santuario
-die: d6
-1 | Una torcia si spegne senza vento.
-2 | Un frammento d'osso rotola fuori da una fessura.
-:::
+<aside class="spell rules-card no-break">
+  <div class="spell__label rules-card__label">Formula rituale</div>
+  <h3>Sigillo della Porta Muta</h3>
+  <p><em>Trucchetto rituale, abiurazione</em></p>
+  <p class="rules-line"><strong>Tempo di lancio.</strong> 1 azione</p>
+  <p class="rules-line"><strong>Gittata.</strong> contatto</p>
+  <p class="rules-line"><strong>Componenti.</strong> V, S, M</p>
+  <p class="rules-line"><strong>Durata.</strong> 1 ora</p>
+  <p>Descrizione dell'effetto.</p>
+</aside>
 ```
 
-I blocchi liberi restano disponibili: `readaloud`, `encounter`, `treasure`, `note`, `quote` e `statblock`.
+Il renderer conserva il supporto ai blocchi `:::` per file vecchi o bozze rapide, ma per il lavoro quotidiano con Markdown Preview conviene usare gli snippet HTML.
 
 ## Struttura
 
