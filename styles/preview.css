@@ -5,6 +5,7 @@ body {
 }
 
 .markdown-body {
+  position: relative;
   max-width: 210mm;
   min-height: 297mm;
   margin: 0 auto;
@@ -19,6 +20,32 @@ body {
     radial-gradient(circle at 88% 20%, rgba(122, 87, 35, 0.14), transparent 28%),
     linear-gradient(110deg, var(--color-paper-light), var(--color-paper));
   box-shadow: var(--shadow-page);
+}
+
+.markdown-body::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(80, 48, 18, 0.07) 1px, transparent 1px),
+    linear-gradient(rgba(80, 48, 18, 0.05) 1px, transparent 1px);
+  background-size: 19px 19px;
+  mix-blend-mode: multiply;
+  opacity: 0.25;
+}
+
+.markdown-body::after {
+  content: "";
+  position: absolute;
+  inset: 9mm;
+  pointer-events: none;
+  border: 1px solid rgba(122, 87, 35, 0.28);
+}
+
+.markdown-body > * {
+  position: relative;
+  z-index: 1;
 }
 
 .markdown-body > p:first-child:has(+ h1) {

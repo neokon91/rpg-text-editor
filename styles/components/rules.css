@@ -1,13 +1,26 @@
 .rules-card {
+  position: relative;
   margin: 1.4rem 0;
-  padding: 0.95rem 1.1rem;
+  padding: 1rem 1.1rem;
   border: 1px solid rgba(122, 87, 35, 0.35);
   border-top: 5px solid var(--color-border);
   border-radius: 3px;
   background:
-    linear-gradient(rgba(255, 255, 255, 0.52), rgba(255, 255, 255, 0.52)),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.62), rgba(255, 255, 255, 0.4)),
+    radial-gradient(circle at 100% 0, rgba(176, 138, 60, 0.13), transparent 22%),
     linear-gradient(135deg, var(--color-paper-light), var(--color-paper));
-  box-shadow: var(--shadow-box);
+  box-shadow:
+    var(--shadow-box),
+    inset 0 1px 0 rgba(255, 255, 255, 0.28);
+}
+
+.rules-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16);
 }
 
 .rules-card h3,
@@ -18,7 +31,12 @@
 
 .rules-card__label,
 .random-table__label {
-  margin-bottom: 0.35rem;
+  display: inline-block;
+  margin-bottom: 0.42rem;
+  padding: 0.08rem 0.42rem;
+  background: rgba(255, 255, 255, 0.35);
+  border: 1px solid rgba(122, 87, 35, 0.18);
+  border-radius: 3px;
   color: var(--color-border);
   font-family: var(--font-heading);
   font-size: 0.74rem;
@@ -48,7 +66,9 @@
 }
 
 .rules-line {
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.28rem;
+  padding-left: 0.6rem;
+  border-left: 2px solid rgba(122, 87, 35, 0.22);
 }
 
 .feature-heading {
@@ -60,14 +80,17 @@
 }
 
 .random-table {
+  position: relative;
   margin: 1.5rem 0;
   padding: 0.9rem 1rem 1rem;
   border: 1px solid rgba(122, 87, 35, 0.35);
   border-left: 6px solid var(--color-green);
   border-radius: 3px;
   background:
-    linear-gradient(rgba(255, 255, 255, 0.48), rgba(255, 255, 255, 0.48)),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.42)),
+    radial-gradient(circle at 95% 8%, rgba(38, 79, 61, 0.14), transparent 24%),
     linear-gradient(135deg, var(--color-paper-light), var(--color-paper));
+  box-shadow: var(--shadow-box);
 }
 
 .table-compact {
