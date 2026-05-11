@@ -9,6 +9,7 @@ const sourceDir = join(root, "docs");
 const outDir = join(root, "dist");
 const templatePath = join(root, "templates", "document.html");
 const cssPath = join(root, "styles", "main.css");
+const assetManifestPath = join(root, "assets", "manifest.json");
 
 const args = new Set(process.argv.slice(2));
 const buildSite = args.has("--site");
@@ -23,11 +24,12 @@ async function main() {
     : [{ path: sourcePath, markdown: await readFile(sourcePath, "utf8") }];
   const css = await loadCss(cssPath);
   const template = await readFile(templatePath, "utf8");
+  const assetManifest = await loadAssetManifest();
 
   const siteEntries = [];
 
   for (const document of documents) {
-    const output = renderDocument(document, css, template);
+    const output = renderDocument(document, css, template, assetManifest);
     siteEntries.push(output.entry);
 
     await mkdir(outDir, { recursive: true });
@@ -58,9 +60,9 @@ async function main() {
   }
 }
 
-function renderDocument(document, css, template) {
+function renderDocument(document, css, template, assetManifest) {
   const { metadata, body } = parseFrontmatter(document.markdown);
-  const html = renderMarkdown(body) + renderLegalAppendix(metadata);
+  const html = renderMarkdown(body) + renderLegalAppendix(metadata, assetManifest);
   const title = metadata.title || firstHeading(body) || "Homebrew";
   const slug = metadata.slug || basenameWithoutExt(document.path);
   const documentClass = [
@@ -422,7 +424,7 @@ function labelFor(key) {
   }[key] || key;
 }
 
-function renderLegalAppendix(metadata) {
+function renderLegalAppendix(metadata, assetManifest = { assets: [] }) {
   if (!metadata.license_mode) return "";
 
   const compatibility = metadata.compatibility || "5e/5.5e";
@@ -432,6 +434,10 @@ function renderLegalAppendix(metadata) {
 
   if (!mode.startsWith("srd-")) return "";
 
+  const assetCredits = (assetManifest.assets || [])
+    .map((asset) => `<li><strong>${escapeHtml(asset.title)}</strong> di ${escapeHtml(asset.author)} (${escapeHtml(asset.license)}). Uso: ${escapeHtml(asset.usage)}.</li>`)
+    .join("");
+
   return [
     '<section class="legal page-break">',
     "<h2>Legal & Attribution</h2>",
@@ -440,6 +446,8 @@ function renderLegalAppendix(metadata) {
     `<p>Questo documento usa contenuto di regole tratto dal ${escapeHtml(srdVersion)} pubblicato da Wizards of the Coast LLC sotto licenza Creative Commons Attribution 4.0 International (CC-BY-4.0).</p>`,
     "<p>Questo documento è una pubblicazione indipendente. Non è approvato, sponsorizzato o affiliato a Wizards of the Coast LLC.</p>",
     "<p>I nomi, i marchi, i loghi, le ambientazioni, i personaggi e le opere non inclusi nello SRD restano proprietà dei rispettivi titolari.</p>",
+    assetCredits ? "<h3>Crediti asset</h3>" : "",
+    assetCredits ? `<ul>${assetCredits}</ul>` : "",
     "</section>"
   ].join("\n");
 }
@@ -539,6 +547,14 @@ async function loadDocuments() {
     path: join(sourceDir, file),
     markdown: await readFile(join(sourceDir, file), "utf8")
   })));
+}
+
+async function loadAssetManifest() {
+  if (!existsSync(assetManifestPath)) {
+    return { assets: [] };
+  }
+
+  return JSON.parse(await readFile(assetManifestPath, "utf8"));
 }
 
 function escapeHtml(value) {

@@ -1,0 +1,52 @@
+{
+  "assets": [
+    {
+      "path": "fonts/Alegreya-Regular.ttf",
+      "title": "Alegreya Regular",
+      "author": "Huerta Tipográfica",
+      "license": "OFL-1.1",
+      "source": "Bundled local font file",
+      "usage": "Body typography"
+    },
+    {
+      "path": "fonts/Alegreya-Italic.ttf",
+      "title": "Alegreya Italic",
+      "author": "Huerta Tipográfica",
+      "license": "OFL-1.1",
+      "source": "Bundled local font file",
+      "usage": "Body typography"
+    },
+    {
+      "path": "fonts/Alegreya-Bold.ttf",
+      "title": "Alegreya Bold",
+      "author": "Huerta Tipográfica",
+      "license": "OFL-1.1",
+      "source": "Bundled local font file",
+      "usage": "Body typography"
+    },
+    {
+      "path": "fonts/Alegreya-BoldItalic.ttf",
+      "title": "Alegreya Bold Italic",
+      "author": "Huerta Tipográfica",
+      "license": "OFL-1.1",
+      "source": "Bundled local font file",
+      "usage": "Body typography"
+    },
+    {
+      "path": "fonts/Cinzel-Regular.ttf",
+      "title": "Cinzel Regular",
+      "author": "Natanael Gama",
+      "license": "OFL-1.1",
+      "source": "Bundled local font file",
+      "usage": "Headings"
+    },
+    {
+      "path": "fonts/Cinzel-Bold.ttf",
+      "title": "Cinzel Bold",
+      "author": "Natanael Gama",
+      "license": "OFL-1.1",
+      "source": "Bundled local font file",
+      "usage": "Headings"
+    }
+  ]
+}

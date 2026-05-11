@@ -11,6 +11,8 @@
     "build:all": "node scripts/build.js --html --pdf",
     "build:site": "node scripts/build.js --site",
     "check:legal": "node scripts/check-legal.js",
+    "check:assets": "node scripts/check-assets.js",
+    "check": "npm run check:legal && npm run check:assets",
     "preview": "node scripts/serve.js"
   }
 }

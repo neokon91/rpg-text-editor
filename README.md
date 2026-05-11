@@ -10,6 +10,8 @@ npm run build:pdf
 npm run build:all
 npm run build:site
 npm run check:legal
+npm run check:assets
+npm run check
 npm run preview
 ```
 
@@ -17,6 +19,8 @@ npm run preview
 - `npm run build:pdf` genera anche il PDF usando Brave/Chrome in modalità headless, se disponibile.
 - `npm run build:site` genera `dist/site/`, pronta per una repo GitHub Pages.
 - `npm run check:legal` segnala termini rischiosi o marchi da trattare con cautela nei sorgenti Markdown.
+- `npm run check:assets` valida il registro asset e verifica che i file dichiarati esistano.
+- `npm run check` esegue i controlli legali/editoriali e il controllo asset.
 - `npm run preview` serve la cartella `dist` su `http://127.0.0.1:8081`.
 
 ## Authoring in VS Code
@@ -40,6 +44,23 @@ La repo include snippet in `.vsc/rpg.code-snippets` per creare rapidamente front
 Se usi Markdown Preview, `.vscode/settings.json` aggancia `styles/preview.css` alla preview. La preview serve per scrivere comodo; la resa finale resta quella generata da `npm run build`.
 
 `docs/reference.md` è una pagina kitchen sink con tutti i componenti principali, utile per controllare temi e CSS.
+
+## Asset e crediti
+
+Ogni asset usato stabilmente dalla suite dovrebbe essere dichiarato in `assets/manifest.json`:
+
+```json
+{
+  "path": "fonts/Cinzel-Regular.ttf",
+  "title": "Cinzel Regular",
+  "author": "Natanael Gama",
+  "license": "OFL-1.1",
+  "source": "Bundled local font file",
+  "usage": "Headings"
+}
+```
+
+La build include questi crediti nella sezione finale “Legal & Attribution”. Prima di pubblicare, usa `npm run check`.
 
 ## Scrivere un documento
 
@@ -186,6 +207,7 @@ I blocchi liberi restano disponibili: `readaloud`, `encounter`, `treasure`, `not
 
 - `docs/`: sorgenti Markdown.
 - `styles/`: sistema tipografico e componenti.
+- `assets/`: manifest per font, immagini e risorse con crediti/licenze.
 - `templates/`: scheletro HTML.
 - `scripts/`: build HTML/PDF e preview locale.
 - `dist/`: output generati.
