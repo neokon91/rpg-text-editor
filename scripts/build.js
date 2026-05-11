@@ -51,7 +51,7 @@ async function main() {
   const siteEntries = [];
 
   for (const document of documents) {
-    const output = renderDocument(document, css, template, assetManifest);
+    const output = await renderDocument(document, css, template, assetManifest);
     siteEntries.push(output.entry);
 
     await mkdir(outDir, { recursive: true });
@@ -82,9 +82,10 @@ async function main() {
   }
 }
 
-function renderDocument(document, css, template, assetManifest) {
+async function renderDocument(document, css, template, assetManifest) {
   const { metadata, body } = parseFrontmatter(document.markdown);
-  const html = renderMarkdown(body, { anchorHeadings: true }) + renderLegalAppendix(metadata, assetManifest);
+  const expandedBody = await expandIncludes(body);
+  const html = renderMarkdown(expandedBody, { anchorHeadings: true }) + renderLegalAppendix(metadata, assetManifest);
   const title = metadata.title || firstHeading(body) || "Homebrew";
   const slug = metadata.slug || basenameWithoutExt(document.path);
   const documentClass = [
@@ -125,16 +126,17 @@ async function renderBook(css, template, assetManifest) {
     const chapterPath = resolve(root, chapter.path || chapter);
     const markdown = await readFile(chapterPath, "utf8");
     const { metadata, body } = parseFrontmatter(markdown);
+    const expandedBody = await expandIncludes(body);
     const slug = metadata.slug || basenameWithoutExt(chapterPath);
-    const title = metadata.title || firstHeading(body) || `Capitolo ${index + 1}`;
+    const title = metadata.title || firstHeading(expandedBody) || `Capitolo ${index + 1}`;
 
     return {
-      body,
+      body: expandedBody,
       metadata,
       path: chapterPath,
       slug,
       title,
-      html: renderMarkdown(body, { anchorHeadings: true, headingPrefix: slug })
+      html: renderMarkdown(expandedBody, { anchorHeadings: true, headingPrefix: slug })
     };
   }));
 
@@ -200,6 +202,45 @@ function parseFrontmatter(markdown) {
   }
 
   return { metadata, body: markdown.slice(end + 4).trimStart() };
+}
+
+async function expandIncludes(markdown, seen = new Set()) {
+  const includePattern = /<rpg-include\s+src="([^"]+)"\s*><\/rpg-include>/g;
+  const chunks = [];
+  let cursor = 0;
+  let match;
+
+  while ((match = includePattern.exec(markdown)) !== null) {
+    chunks.push(markdown.slice(cursor, match.index));
+    const includePath = resolveIncludePath(match[1]);
+
+    if (seen.has(includePath)) {
+      throw new Error(`Include circolare rilevato: ${relative(root, includePath)}`);
+    }
+
+    seen.add(includePath);
+    const source = await readFile(includePath, "utf8");
+    chunks.push(await expandIncludes(source, seen));
+    seen.delete(includePath);
+    cursor = match.index + match[0].length;
+  }
+
+  chunks.push(markdown.slice(cursor));
+  return chunks.join("");
+}
+
+function resolveIncludePath(src) {
+  if (src.startsWith("/") || src.includes("..")) {
+    throw new Error(`Include non consentito: ${src}`);
+  }
+
+  const includePath = resolve(root, src);
+
+  if (!includePath.startsWith(root) || !existsSync(includePath)) {
+    throw new Error(`Include non trovato: ${src}`);
+  }
+
+  return includePath;
 }
 
 function renderMarkdown(markdown, options = {}) {

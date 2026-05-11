@@ -13,6 +13,7 @@ npm run build:book:pdf
 npm run build:site
 npm run check:legal
 npm run check:assets
+npm run check:includes
 npm run check
 npm run new -- adventure "La Torre Sommersa"
 npm run preview
@@ -25,7 +26,8 @@ npm run preview
 - `npm run build:site` genera `dist/site/`, pronta per una repo GitHub Pages.
 - `npm run check:legal` segnala termini rischiosi o marchi da trattare con cautela nei sorgenti Markdown.
 - `npm run check:assets` valida il registro asset e verifica che i file dichiarati esistano.
-- `npm run check` esegue i controlli legali/editoriali e il controllo asset.
+- `npm run check:includes` verifica che gli include riusabili puntino a file esistenti.
+- `npm run check` esegue controlli legali/editoriali, asset e include.
 - `npm run new -- adventure "Titolo"` crea un nuovo documento da template. Tipi disponibili: `adventure`, `bestiary`, `item`, `reference`.
 - `npm run preview` serve la cartella `dist` su `http://127.0.0.1:8081`.
 
@@ -63,6 +65,16 @@ npm run new -- reference "Appunti Campagna"
 ```
 
 I template vivono in `templates/markdown/`. Puoi modificarli per adattarli al tuo stile personale.
+
+## Libreria Riusabile
+
+I componenti ricorrenti possono vivere in `content/` ed essere richiamati dai documenti:
+
+```html
+<rpg-include src="content/monsters/custode-ossa.html"></rpg-include>
+```
+
+Il build espande gli include in HTML/PDF/sito. Markdown Preview mostra il tag non espanso, quindi usa `docs/reference.md` o `npm run build` per controllare la resa finale quando lavori con contenuti inclusi. `npm run check:includes` segnala percorsi mancanti o non consentiti.
 
 ## Asset e crediti
 
@@ -184,6 +196,7 @@ Il renderer conserva il supporto ai blocchi `:::` per file vecchi o bozze rapide
 
 - `docs/`: sorgenti Markdown.
 - `book.json`: manifest per PDF/HTML multi-capitolo.
+- `content/`: componenti riusabili richiamabili con `<rpg-include>`.
 - `styles/`: sistema tipografico e componenti.
 - `assets/`: manifest per font, immagini e risorse con crediti/licenze.
 - `templates/`: scheletro HTML.
@@ -197,7 +210,7 @@ Il renderer conserva il supporto ai blocchi `:::` per file vecchi o bozze rapide
 - [x] Generare un indice interno automatico per PDF lunghi.
 - [x] Supportare build multi-capitolo in un PDF unico.
 - [x] Aggiungere template per nuovi documenti.
-- [ ] Aggiungere un database locale riusabile per mostri, PNG, luoghi e oggetti.
+- [x] Aggiungere un database locale riusabile per mostri, PNG, luoghi e oggetti.
 - [ ] Creare un export `.zip` di pubblicazione con HTML, PDF, asset e crediti.
 - [ ] Aggiungere controlli di bilanciamento per GS, danni medi, CD e ricompense.
 - [ ] Aggiungere temi specializzati per hexcrawl, investigativo, grimdark e fiabesco.

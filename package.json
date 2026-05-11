@@ -14,7 +14,8 @@
     "build:site": "node scripts/build.js --site",
     "check:legal": "node scripts/check-legal.js",
     "check:assets": "node scripts/check-assets.js",
-    "check": "npm run check:legal && npm run check:assets",
+    "check:includes": "node scripts/check-includes.js",
+    "check": "npm run check:legal && npm run check:assets && npm run check:includes",
     "new": "node scripts/new.js",
     "preview": "node scripts/serve.js"
   }

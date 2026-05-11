@@ -208,5 +208,12 @@
       "<div class=\"page-break\"></div>"
     ],
     "description": "Interruzione pagina per PDF"
+  },
+  "RPG Include": {
+    "prefix": "include",
+    "body": [
+      "<rpg-include src=\"${1:content/monsters/nome.html}\"></rpg-include>"
+    ],
+    "description": "Include di un componente riusabile dalla libreria content"
   }
 }
