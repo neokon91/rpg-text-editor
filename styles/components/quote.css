@@ -1,0 +1,72 @@
+.quote {
+  position: relative;
+
+  margin:
+    2.5rem 1.5rem;
+
+  padding:
+    1rem
+    1.5rem
+    1rem
+    2rem;
+
+  color:
+    #4d392d;
+
+  font-style:
+    italic;
+
+  border-left:
+    4px solid rgba(176,138,60,.85);
+}
+
+.quote::before {
+  content:
+    "❦";
+
+  position:
+    absolute;
+
+  top:
+    -.55rem;
+
+  left:
+    -.15rem;
+
+  font-size:
+    2.5rem;
+
+  color:
+    rgba(127,29,29,.22);
+}
+
+.quote-author {
+  margin-top:
+    .85rem;
+
+  text-align:
+    right;
+
+  font-size:
+    .92rem;
+
+  font-style:
+    normal;
+
+  color:
+    var(--color-accent-dark);
+
+  letter-spacing:
+    .04em;
+}
+
+.quote__label {
+  margin-bottom: 0.45rem;
+  color: var(--color-border);
+  font-family: var(--font-heading);
+  font-size: 0.76rem;
+  font-style: normal;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}

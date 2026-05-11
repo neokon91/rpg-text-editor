@@ -1,0 +1,39 @@
+table {
+  width: 100%;
+
+  margin: 1.5rem 0;
+
+  border-collapse: collapse;
+
+  overflow: hidden;
+
+  font-size: .96rem;
+}
+
+thead {
+  background: var(--color-accent);
+  color: white;
+}
+
+th,
+td {
+  padding: .65rem .8rem;
+
+  border: 1px solid rgba(0,0,0,.12);
+
+  text-align: left;
+}
+
+tbody tr:nth-child(even) {
+  background: rgba(0,0,0,.045);
+}
+
+tbody tr:hover {
+  background: rgba(0,0,0,.08);
+}
+
+@media print {
+  tbody tr:hover {
+    background: transparent;
+  }
+}

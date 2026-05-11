@@ -1,0 +1,32 @@
+.columns-2 {
+  column-count: 2;
+  column-gap: 2.4rem;
+  column-rule: 1px solid rgba(122, 87, 35, 0.16);
+}
+
+.columns-3 {
+  column-count: 3;
+  column-gap: 2rem;
+  column-rule: 1px solid rgba(122, 87, 35, 0.14);
+}
+
+.columns-2 > *,
+.columns-3 > * {
+  break-inside: avoid;
+}
+
+.no-break {
+  break-inside: avoid;
+}
+
+.page-break {
+  break-after: page;
+  height: 0;
+}
+
+@media screen and (max-width: 760px) {
+  .columns-2,
+  .columns-3 {
+    column-count: 1;
+  }
+}

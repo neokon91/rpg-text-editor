@@ -1,0 +1,44 @@
+{
+  "Read Aloud Box": {
+    "prefix": "readaloud",
+    "body": [
+      "::: readaloud ${1:Da leggere al tavolo}",
+      "${2:Testo narrativo}",
+      ":::"
+    ],
+    "description": "Box narrativo RPG"
+  },
+  "Monster Block": {
+    "prefix": "monster",
+    "body": [
+      "::: monster ${1:Creatura}",
+      "name: ${2:Nome}",
+      "meta: ${3:Creatura media, neutrale}",
+      "ac: ${4:13}",
+      "hp: ${5:22}",
+      "speed: ${6:9 m}",
+      "cr: ${7:1}",
+      "str: ${8:10}",
+      "dex: ${9:10}",
+      "con: ${10:10}",
+      "int: ${11:10}",
+      "wis: ${12:10}",
+      "cha: ${13:10}",
+      "trait: ${14:Tratto} | ${15:Descrizione.}",
+      "action: ${16:Azione} | ${17:Descrizione.}",
+      ":::"
+    ],
+    "description": "Blocco creatura strutturato"
+  },
+  "Random Table": {
+    "prefix": "randomtable",
+    "body": [
+      "::: random-table ${1:Titolo tabella}",
+      "die: ${2:d6}",
+      "1 | ${3:Risultato}",
+      "2 | ${4:Risultato}",
+      ":::"
+    ],
+    "description": "Tabella casuale strutturata"
+  }
+}

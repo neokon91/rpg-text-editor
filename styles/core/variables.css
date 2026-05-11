@@ -1,0 +1,29 @@
+:root {
+  --page-width: 210mm;
+  --page-padding: 17mm;
+
+  --color-ink: #2a1d14;
+  --color-muted: #5a4636;
+  --color-paper: #f6e7c8;
+  --color-paper-light: #fff5d8;
+  --color-rule: #d1b16a;
+  --color-accent: #7f1d1d;
+  --color-accent-dark: #4a1111;
+  --color-gold: #a97d2d;
+  --color-border: #7a5723;
+  --color-green: #264f3d;
+  --color-blue: #243e63;
+
+  --shadow-page: 0 0 40px rgba(0, 0, 0, 0.45);
+  --shadow-box: 0 4px 14px rgba(0, 0, 0, 0.18);
+
+  --font-body: "Alegreya", Georgia, "Times New Roman", serif;
+  --font-heading: "Cinzel", Georgia, "Times New Roman", serif;
+  --font-ui: system-ui, sans-serif;
+  --font-mono: "Courier New", monospace;
+
+  --line-body: 1.58;
+
+  --radius-small: 4px;
+  --radius-medium: 8px;
+}

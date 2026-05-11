@@ -1,0 +1,51 @@
+.center {
+  text-align: center;
+}
+
+.right {
+  text-align: right;
+}
+
+.justify {
+  text-align: justify;
+}
+
+.italic {
+  font-style: italic;
+}
+
+.bold {
+  font-weight: 700;
+}
+
+.small {
+  font-size: .92rem;
+}
+
+.tiny {
+  font-size: .78rem;
+}
+
+.uppercase {
+  text-transform: uppercase;
+}
+
+.smallcaps {
+  font-variant: small-caps;
+}
+
+.gold {
+  color: var(--color-gold);
+}
+
+.accent {
+  color: var(--color-accent);
+}
+
+.muted {
+  color: var(--color-muted);
+}
+
+.shadow {
+  box-shadow: var(--shadow-box);
+}

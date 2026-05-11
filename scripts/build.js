@@ -1,0 +1,613 @@
+import { mkdir, readFile, readdir, writeFile } from "node:fs/promises";
+import { existsSync } from "node:fs";
+import { dirname, extname, join, resolve, relative } from "node:path";
+import { fileURLToPath, pathToFileURL } from "node:url";
+import { spawn } from "node:child_process";
+
+const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+const sourceDir = join(root, "docs");
+const outDir = join(root, "dist");
+const templatePath = join(root, "templates", "document.html");
+const cssPath = join(root, "styles", "main.css");
+
+const args = new Set(process.argv.slice(2));
+const buildSite = args.has("--site");
+const buildHtml = args.has("--html") || (!args.has("--pdf") && !buildSite);
+const buildPdf = args.has("--pdf");
+const sourceArg = [...args].find((arg) => arg.endsWith(".md"));
+const sourcePath = sourceArg ? resolve(root, sourceArg) : join(sourceDir, "esempio.md");
+
+async function main() {
+  const documents = buildSite && !sourceArg
+    ? await loadDocuments()
+    : [{ path: sourcePath, markdown: await readFile(sourcePath, "utf8") }];
+  const css = await loadCss(cssPath);
+  const template = await readFile(templatePath, "utf8");
+
+  const siteEntries = [];
+
+  for (const document of documents) {
+    const output = renderDocument(document, css, template);
+    siteEntries.push(output.entry);
+
+    await mkdir(outDir, { recursive: true });
+
+    if (buildHtml) {
+      await writeFile(output.htmlPath, output.rendered, "utf8");
+      console.log(`HTML scritto in ${relative(root, output.htmlPath)}`);
+    }
+
+    if (buildSite) {
+      await mkdir(dirname(output.sitePath), { recursive: true });
+      await writeFile(output.sitePath, output.rendered, "utf8");
+      console.log(`Sito scritto in ${relative(root, output.sitePath)}`);
+    }
+
+    if (buildPdf) {
+      if (!existsSync(output.htmlPath)) {
+        await writeFile(output.htmlPath, output.rendered, "utf8");
+      }
+      await printPdf(output.htmlPath, output.pdfPath);
+      console.log(`PDF scritto in ${relative(root, output.pdfPath)}`);
+    }
+  }
+
+  if (buildSite) {
+    await mkdir(join(outDir, "site"), { recursive: true });
+    await writeFile(join(outDir, "site", "index.html"), renderSiteIndex(siteEntries), "utf8");
+  }
+}
+
+function renderDocument(document, css, template) {
+  const { metadata, body } = parseFrontmatter(document.markdown);
+  const html = renderMarkdown(body) + renderLegalAppendix(metadata);
+  const title = metadata.title || firstHeading(body) || "Homebrew";
+  const slug = metadata.slug || basenameWithoutExt(document.path);
+  const documentClass = [
+    metadata.class || "homebrew-document",
+    metadata.theme ? `theme-${metadata.theme}` : "theme-classic-parchment",
+    metadata.paper ? `paper-${metadata.paper.toLowerCase()}` : ""
+  ].filter(Boolean).join(" ");
+  const rendered = template
+    .replaceAll("{{title}}", escapeHtml(title))
+    .replace("{{styles}}", css)
+    .replace("{{content}}", html)
+    .replace("{{documentClass}}", documentClass);
+
+  const htmlPath = join(outDir, `${slug}.html`);
+  const pdfPath = join(outDir, `${slug}.pdf`);
+  const sitePath = join(outDir, "site", slug, "index.html");
+
+  return {
+    rendered,
+    htmlPath,
+    pdfPath,
+    sitePath,
+    entry: {
+      title,
+      slug,
+      summary: metadata.summary || "",
+      category: metadata.category || "homebrew",
+      compatibility: metadata.compatibility || "",
+      tags: splitList(metadata.tags),
+      public: metadata.public !== "false"
+    }
+  };
+}
+
+function parseFrontmatter(markdown) {
+  if (!markdown.startsWith("---\n")) {
+    return { metadata: {}, body: markdown };
+  }
+
+  const end = markdown.indexOf("\n---", 4);
+  if (end === -1) {
+    return { metadata: {}, body: markdown };
+  }
+
+  const raw = markdown.slice(4, end).trim();
+  const metadata = {};
+
+  for (const line of raw.split("\n")) {
+    const index = line.indexOf(":");
+    if (index === -1) continue;
+    const key = line.slice(0, index).trim();
+    const value = line.slice(index + 1).trim().replace(/^["']|["']$/g, "");
+    metadata[key] = value;
+  }
+
+  return { metadata, body: markdown.slice(end + 4).trimStart() };
+}
+
+function renderMarkdown(markdown) {
+  const lines = markdown.replace(/\r\n/g, "\n").split("\n");
+  const out = [];
+
+  for (let i = 0; i < lines.length; i += 1) {
+    const line = lines[i];
+    const trimmed = line.trim();
+
+    if (!trimmed) continue;
+
+    if (trimmed === "---") {
+      out.push("<hr>");
+      continue;
+    }
+
+    if (trimmed === "\\page" || trimmed === "::pagebreak") {
+      out.push('<div class="page-break"></div>');
+      continue;
+    }
+
+    const container = trimmed.match(/^:::\s*([a-z0-9_-]+)(?:\s+(.*))?$/i);
+    if (container) {
+      const [, name, label] = container;
+      const inner = [];
+      while (++i < lines.length && lines[i].trim() !== ":::") {
+        inner.push(lines[i]);
+      }
+      out.push(renderContainer(name, label, inner.join("\n")));
+      continue;
+    }
+
+    if (/^<[^>]+>/.test(trimmed) || /^<\/[^>]+>/.test(trimmed)) {
+      out.push(line);
+      continue;
+    }
+
+    const heading = trimmed.match(/^(#{1,6})\s+(.+)$/);
+    if (heading) {
+      const level = heading[1].length;
+      out.push(`<h${level}>${renderInline(heading[2])}</h${level}>`);
+      continue;
+    }
+
+    if (isTableStart(lines, i)) {
+      const table = [];
+      while (i < lines.length && lines[i].includes("|") && lines[i].trim()) {
+        table.push(lines[i]);
+        i += 1;
+      }
+      i -= 1;
+      out.push(renderTable(table));
+      continue;
+    }
+
+    if (/^[-*]\s+/.test(trimmed)) {
+      const items = [];
+      while (i < lines.length && /^[-*]\s+/.test(lines[i].trim())) {
+        items.push(lines[i].trim().replace(/^[-*]\s+/, ""));
+        i += 1;
+      }
+      i -= 1;
+      out.push(`<ul>${items.map((item) => `<li>${renderInline(item)}</li>`).join("")}</ul>`);
+      continue;
+    }
+
+    if (/^\d+\.\s+/.test(trimmed)) {
+      const items = [];
+      while (i < lines.length && /^\d+\.\s+/.test(lines[i].trim())) {
+        items.push(lines[i].trim().replace(/^\d+\.\s+/, ""));
+        i += 1;
+      }
+      i -= 1;
+      out.push(`<ol>${items.map((item) => `<li>${renderInline(item)}</li>`).join("")}</ol>`);
+      continue;
+    }
+
+    const paragraph = [trimmed];
+    while (i + 1 < lines.length && isParagraphContinuation(lines[i + 1])) {
+      paragraph.push(lines[i + 1].trim());
+      i += 1;
+    }
+    out.push(`<p>${renderInline(paragraph.join(" "))}</p>`);
+  }
+
+  return out.join("\n");
+}
+
+function renderContainer(name, label, markdown) {
+  const className = name.toLowerCase();
+  const structured = renderStructuredContainer(className, label, markdown);
+  if (structured) return structured;
+
+  const title = label ? `<div class="${className}__label">${renderInline(label)}</div>` : "";
+  return `<aside class="${className} no-break">${title}${renderMarkdown(markdown)}</aside>`;
+}
+
+function renderStructuredContainer(name, label, markdown) {
+  const data = parseBlockData(markdown);
+
+  if (name === "monster") return renderMonster(data, label);
+  if (name === "spell") return renderSpell(data, label);
+  if (name === "magicitem") return renderMagicItem(data, label);
+  if (name === "npc") return renderNpc(data, label);
+  if (name === "location") return renderLocation(data, label);
+  if (name === "random-table") return renderRandomTable(data, label);
+  if (name === "hazard") return renderHazard(data, label);
+
+  return "";
+}
+
+function parseBlockData(markdown) {
+  const data = { body: [], traits: [], actions: [], reactions: [], legendary: [], rows: [], hooks: [] };
+
+  for (const rawLine of markdown.split("\n")) {
+    const line = rawLine.trim();
+    if (!line) continue;
+
+    const index = line.indexOf(":");
+    if (index > 0 && /^[a-zA-Z][a-zA-Z0-9_-]*:/.test(line)) {
+      const key = line.slice(0, index).trim().toLowerCase();
+      const value = line.slice(index + 1).trim();
+
+      if (["trait", "action", "reaction", "legendary", "row", "hook"].includes(key)) {
+        const listName = {
+          trait: "traits",
+          action: "actions",
+          reaction: "reactions",
+          legendary: "legendary",
+          row: "rows",
+          hook: "hooks"
+        }[key];
+        data[listName].push(splitPair(value));
+      } else {
+        data[key] = value;
+      }
+      continue;
+    }
+
+    if (line.includes("|") && /^[0-9dD%-]+/.test(line)) {
+      data.rows.push(splitPair(line));
+      continue;
+    }
+
+    data.body.push(line);
+  }
+
+  return data;
+}
+
+function splitPair(value) {
+  const [name, ...rest] = value.split("|");
+  return {
+    name: name.trim(),
+    text: rest.join("|").trim()
+  };
+}
+
+function renderMonster(data, label) {
+  const abilities = ["str", "dex", "con", "int", "wis", "cha"];
+  const hasAbilities = abilities.some((ability) => data[ability]);
+
+  return [
+    '<aside class="statblock monster no-break">',
+    label ? `<div class="statblock__label">${renderInline(label)}</div>` : "",
+    `<h2>${renderInline(data.name || "Creatura")}</h2>`,
+    data.meta ? `<p><em>${renderInline(data.meta)}</em></p>` : "",
+    '<div class="statline">',
+    data.ac ? `<span><strong>CA</strong> ${renderInline(data.ac)}</span>` : "",
+    data.hp ? `<span><strong>PF</strong> ${renderInline(data.hp)}</span>` : "",
+    data.speed ? `<span><strong>Vel</strong> ${renderInline(data.speed)}</span>` : "",
+    data.cr ? `<span><strong>GS</strong> ${renderInline(data.cr)}</span>` : "",
+    "</div>",
+    hasAbilities ? renderAbilities(data, abilities) : "",
+    renderKeyValueList(data, ["saves", "skills", "resistances", "immunities", "senses", "languages"]),
+    renderFeatureList(data.traits, "Tratti"),
+    renderFeatureList(data.actions, "Azioni"),
+    renderFeatureList(data.reactions, "Reazioni"),
+    renderFeatureList(data.legendary, "Azioni leggendarie"),
+    data.body.length ? renderMarkdown(data.body.join("\n")) : "",
+    "</aside>"
+  ].join("\n");
+}
+
+function renderAbilities(data, abilities) {
+  const labels = { str: "FOR", dex: "DES", con: "COS", int: "INT", wis: "SAG", cha: "CAR" };
+  return [
+    '<div class="stats-grid">',
+    ...abilities.map((ability) => {
+      const value = Number(data[ability] || 10);
+      const mod = Math.floor((value - 10) / 2);
+      const label = labels[ability] || ability.toUpperCase();
+      return `<div><strong>${label}</strong>${value}<small>${mod >= 0 ? "+" : ""}${mod}</small></div>`;
+    }),
+    "</div>"
+  ].join("");
+}
+
+function renderKeyValueList(data, keys) {
+  const items = keys
+    .filter((key) => data[key])
+    .map((key) => `<p class="rules-line"><strong>${labelFor(key)}.</strong> ${renderInline(data[key])}</p>`);
+  return items.join("\n");
+}
+
+function renderFeatureList(items, title) {
+  if (!items.length) return "";
+  return [
+    `<h3 class="feature-heading">${title}</h3>`,
+    ...items.map((item) => `<p><strong>${renderInline(item.name)}.</strong> ${renderInline(item.text)}</p>`)
+  ].join("\n");
+}
+
+function renderSpell(data, label) {
+  return renderRulesCard("spell", label || "Incantesimo", data.name || "Incantesimo", [
+    data.level || data.school ? `<p><em>${renderInline([data.level, data.school].filter(Boolean).join(", "))}</em></p>` : "",
+    renderKeyValueList(data, ["casting_time", "range", "components", "duration"]),
+    data.body.length ? renderMarkdown(data.body.join("\n")) : ""
+  ]);
+}
+
+function renderMagicItem(data, label) {
+  return renderRulesCard("magicitem", label || "Oggetto magico", data.name || "Oggetto magico", [
+    data.rarity || data.type ? `<p><em>${renderInline([data.type, data.rarity].filter(Boolean).join(", "))}</em></p>` : "",
+    data.attunement ? `<p class="rules-line"><strong>Sintonia.</strong> ${renderInline(data.attunement)}</p>` : "",
+    data.body.length ? renderMarkdown(data.body.join("\n")) : ""
+  ]);
+}
+
+function renderNpc(data, label) {
+  return renderRulesCard("npc", label || "PNG", data.name || "PNG", [
+    data.role ? `<p><em>${renderInline(data.role)}</em></p>` : "",
+    renderKeyValueList(data, ["motive", "secret", "voice", "appearance"]),
+    renderFeatureList(data.hooks, "Spunti"),
+    data.body.length ? renderMarkdown(data.body.join("\n")) : ""
+  ]);
+}
+
+function renderLocation(data, label) {
+  return renderRulesCard("location", label || "Luogo", data.name || "Luogo", [
+    data.tags ? `<p><em>${renderInline(data.tags)}</em></p>` : "",
+    renderKeyValueList(data, ["mood", "danger", "treasure"]),
+    renderFeatureList(data.hooks, "Dettagli"),
+    data.body.length ? renderMarkdown(data.body.join("\n")) : ""
+  ]);
+}
+
+function renderHazard(data, label) {
+  return renderRulesCard("hazard", label || "Pericolo", data.name || "Pericolo", [
+    renderKeyValueList(data, ["trigger", "effect", "countermeasure", "dc"]),
+    data.body.length ? renderMarkdown(data.body.join("\n")) : ""
+  ]);
+}
+
+function renderRandomTable(data, label) {
+  const die = data.die || "d6";
+  const title = data.name || label || "Tabella casuale";
+  const rows = data.rows.map((row) => `<tr><td>${renderInline(row.name)}</td><td>${renderInline(row.text)}</td></tr>`).join("");
+
+  return [
+    '<aside class="random-table no-break">',
+    `<div class="random-table__label">${renderInline(die)}</div>`,
+    `<h3>${renderInline(title)}</h3>`,
+    `<table class="table-compact"><thead><tr><th>${renderInline(die)}</th><th>Risultato</th></tr></thead><tbody>${rows}</tbody></table>`,
+    "</aside>"
+  ].join("\n");
+}
+
+function renderRulesCard(className, label, title, parts) {
+  return [
+    `<aside class="${className} rules-card no-break">`,
+    `<div class="${className}__label rules-card__label">${renderInline(label)}</div>`,
+    `<h3>${renderInline(title)}</h3>`,
+    ...parts.filter(Boolean),
+    "</aside>"
+  ].join("\n");
+}
+
+function labelFor(key) {
+  return {
+    casting_time: "Tempo di lancio",
+    range: "Gittata",
+    components: "Componenti",
+    duration: "Durata",
+    saves: "Tiri salvezza",
+    skills: "Abilità",
+    resistances: "Resistenze",
+    immunities: "Immunità",
+    senses: "Sensi",
+    languages: "Linguaggi",
+    motive: "Motivazione",
+    secret: "Segreto",
+    voice: "Voce",
+    appearance: "Aspetto",
+    mood: "Atmosfera",
+    danger: "Pericolo",
+    treasure: "Tesoro",
+    trigger: "Innesco",
+    effect: "Effetto",
+    countermeasure: "Contromisura",
+    dc: "CD"
+  }[key] || key;
+}
+
+function renderLegalAppendix(metadata) {
+  if (!metadata.license_mode) return "";
+
+  const compatibility = metadata.compatibility || "5e/5.5e";
+  const author = metadata.author || "Autore indipendente";
+  const mode = metadata.license_mode;
+  const srdVersion = mode.includes("5.2") ? "SRD 5.2.1" : "SRD 5.1";
+
+  if (!mode.startsWith("srd-")) return "";
+
+  return [
+    '<section class="legal page-break">',
+    "<h2>Legal & Attribution</h2>",
+    `<p><strong>Compatibilità:</strong> materiale originale compatibile con ${escapeHtml(compatibility)}.</p>`,
+    `<p><strong>Autore:</strong> ${escapeHtml(author)}.</p>`,
+    `<p>Questo documento usa contenuto di regole tratto dal ${escapeHtml(srdVersion)} pubblicato da Wizards of the Coast LLC sotto licenza Creative Commons Attribution 4.0 International (CC-BY-4.0).</p>`,
+    "<p>Questo documento è una pubblicazione indipendente. Non è approvato, sponsorizzato o affiliato a Wizards of the Coast LLC.</p>",
+    "<p>I nomi, i marchi, i loghi, le ambientazioni, i personaggi e le opere non inclusi nello SRD restano proprietà dei rispettivi titolari.</p>",
+    "</section>"
+  ].join("\n");
+}
+
+function renderSiteIndex(entries) {
+  const visibleEntries = entries.filter((entry) => entry.public);
+  const groups = Map.groupBy(visibleEntries, (entry) => entry.category);
+  const sections = [...groups.entries()].map(([category, items]) => [
+    `<section><h2>${renderInline(category)}</h2>`,
+    ...items.map((item) => [
+      '<article class="library-item">',
+      `<h3><a href="./${escapeHtml(item.slug)}/">${escapeHtml(item.title)}</a></h3>`,
+      item.summary ? `<p>${escapeHtml(item.summary)}</p>` : "",
+      `<p class="meta">${[item.compatibility, ...item.tags].filter(Boolean).map(escapeHtml).join(" · ")}</p>`,
+      "</article>"
+    ].join("")),
+    "</section>"
+  ].join("\n")).join("\n");
+
+  return [
+    "<!doctype html>",
+    '<html lang="it">',
+    "<head>",
+    '<meta charset="utf-8">',
+    '<meta name="viewport" content="width=device-width, initial-scale=1">',
+    "<title>Homebrew Library</title>",
+    "<style>body{font-family:system-ui,sans-serif;margin:3rem;line-height:1.5;max-width:900px}a{color:#7f1d1d}.library-item{border-top:1px solid #ddd;padding:1rem 0}.meta{color:#666;font-size:.9rem}</style>",
+    "</head>",
+    "<body>",
+    "<h1>Homebrew Library</h1>",
+    sections || "<p>Nessun documento pubblico.</p>",
+    "</body>",
+    "</html>"
+  ].join("\n");
+}
+
+function renderTable(lines) {
+  const [header, , ...body] = lines;
+  const headings = splitTableRow(header);
+  const rows = body.map(splitTableRow);
+
+  return [
+    "<table>",
+    `<thead><tr>${headings.map((cell) => `<th>${renderInline(cell)}</th>`).join("")}</tr></thead>`,
+    `<tbody>${rows.map((row) => `<tr>${row.map((cell) => `<td>${renderInline(cell)}</td>`).join("")}</tr>`).join("")}</tbody>`,
+    "</table>"
+  ].join("");
+}
+
+function splitTableRow(row) {
+  return row.trim().replace(/^\||\|$/g, "").split("|").map((cell) => cell.trim());
+}
+
+function isTableStart(lines, index) {
+  return lines[index]?.includes("|") && /^\s*\|?\s*:?-{3,}:?\s*(\|\s*:?-{3,}:?\s*)+\|?\s*$/.test(lines[index + 1] || "");
+}
+
+function isParagraphContinuation(line) {
+  const trimmed = line.trim();
+  return trimmed &&
+    trimmed !== "---" &&
+    !trimmed.startsWith("#") &&
+    !trimmed.startsWith(":::") &&
+    !/^[-*]\s+/.test(trimmed) &&
+    !/^\d+\.\s+/.test(trimmed) &&
+    !/^<[^>]+>/.test(trimmed) &&
+    !trimmed.includes("|");
+}
+
+function renderInline(value) {
+  return escapeHtml(value)
+    .replace(/`([^`]+)`/g, "<code>$1</code>")
+    .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+    .replace(/\*([^*]+)\*/g, "<em>$1</em>");
+}
+
+function firstHeading(markdown) {
+  const match = markdown.match(/^#\s+(.+)$/m);
+  return match?.[1]?.trim();
+}
+
+function basenameWithoutExt(path) {
+  return path.split(/[\\/]/).pop().replace(extname(path), "");
+}
+
+function splitList(value = "") {
+  return String(value)
+    .replace(/^\[|\]$/g, "")
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+async function loadDocuments() {
+  const files = (await readdir(sourceDir)).filter((file) => file.endsWith(".md")).sort();
+  return Promise.all(files.map(async (file) => ({
+    path: join(sourceDir, file),
+    markdown: await readFile(join(sourceDir, file), "utf8")
+  })));
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
+}
+
+async function printPdf(htmlPath, pdfPath) {
+  const browser = findBrowser();
+  if (!browser) {
+    throw new Error("Nessun browser Chromium/Brave trovato per esportare il PDF.");
+  }
+
+  const args = [
+    "--headless=new",
+    "--no-sandbox",
+    "--disable-gpu",
+    "--disable-dev-shm-usage",
+    `--print-to-pdf=${pdfPath}`,
+    "--print-to-pdf-no-header",
+    pathToFileURL(htmlPath).href
+  ];
+
+  await new Promise((resolvePromise, reject) => {
+    const child = spawn(browser, args, { stdio: "inherit" });
+    child.on("exit", (code) => {
+      code === 0 ? resolvePromise() : reject(new Error(`Export PDF fallito con codice ${code}.`));
+    });
+  });
+}
+
+function findBrowser() {
+  const candidates = [
+    "/Applications/Brave Browser.app/Contents/MacOS/Brave Browser",
+    "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+    "/Applications/Chromium.app/Contents/MacOS/Chromium",
+    "chromium",
+    "google-chrome",
+    "brave-browser"
+  ];
+
+  return candidates.find((candidate) => existsSync(candidate) || !candidate.startsWith("/"));
+}
+
+async function loadCss(path, seen = new Set()) {
+  if (seen.has(path)) return "";
+  seen.add(path);
+
+  const source = await readFile(path, "utf8");
+  const folder = dirname(path);
+  const chunks = [];
+  const importPattern = /@import\s+["'](.+?)["'];/g;
+  let cursor = 0;
+  let match;
+
+  while ((match = importPattern.exec(source)) !== null) {
+    chunks.push(source.slice(cursor, match.index));
+    chunks.push(await loadCss(resolve(folder, match[1]), seen));
+    cursor = match.index + match[0].length;
+  }
+
+  chunks.push(source.slice(cursor));
+  return chunks.join("\n");
+}
+
+main().catch((error) => {
+  console.error(error.message);
+  process.exit(1);
+});

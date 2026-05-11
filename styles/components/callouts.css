@@ -1,0 +1,61 @@
+.note,
+.treasure,
+.encounter {
+  margin: 1.4rem 0;
+  padding: 0.9rem 1rem;
+  border: 1px solid rgba(122, 87, 35, 0.35);
+  border-left-width: 6px;
+  border-radius: 3px;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.48), rgba(255, 255, 255, 0.48)),
+    linear-gradient(135deg, #fff3cc, #efd8a6);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+}
+
+.note {
+  border-left-color: var(--color-blue);
+}
+
+.treasure {
+  border-left-color: var(--color-gold);
+}
+
+.encounter {
+  border-left-color: var(--color-accent);
+}
+
+.note__label,
+.treasure__label,
+.encounter__label {
+  margin-bottom: 0.35rem;
+  font-family: var(--font-heading);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.note__label {
+  color: var(--color-blue);
+}
+
+.treasure__label {
+  color: #765317;
+}
+
+.encounter__label {
+  color: var(--color-accent-dark);
+}
+
+.legal {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 3px double var(--color-border);
+  color: var(--color-muted);
+  font-size: 0.88rem;
+}
+
+.legal h2 {
+  color: var(--color-border);
+  font-size: 1.2rem;
+}

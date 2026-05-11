@@ -1,0 +1,76 @@
+.theme-classic-parchment {
+  --color-ink: #2a1d14;
+  --color-muted: #5a4636;
+  --color-paper: #f6e7c8;
+  --color-paper-light: #fff5d8;
+  --color-accent: #7f1d1d;
+  --color-accent-dark: #4a1111;
+  --color-gold: #a97d2d;
+  --color-border: #7a5723;
+  --color-green: #264f3d;
+  --color-blue: #243e63;
+}
+
+.theme-dark-arcane {
+  --color-ink: #eadfc4;
+  --color-muted: #c3b292;
+  --color-paper: #211a1f;
+  --color-paper-light: #31252d;
+  --color-rule: #9d7a43;
+  --color-accent: #d7a24a;
+  --color-accent-dark: #f0c779;
+  --color-gold: #d4a84f;
+  --color-border: #8b6435;
+  --color-green: #89b89d;
+  --color-blue: #92a6cf;
+  --shadow-page: 0 0 48px rgba(0, 0, 0, 0.72);
+}
+
+.theme-clean-guild {
+  --color-ink: #252525;
+  --color-muted: #5d6470;
+  --color-paper: #f5f2ea;
+  --color-paper-light: #ffffff;
+  --color-rule: #c8b47a;
+  --color-accent: #7a2430;
+  --color-accent-dark: #4d1720;
+  --color-gold: #987539;
+  --color-border: #8d7a54;
+  --color-green: #2f614f;
+  --color-blue: #2f5278;
+}
+
+.theme-printer-friendly {
+  --color-ink: #111111;
+  --color-muted: #4d4d4d;
+  --color-paper: #ffffff;
+  --color-paper-light: #ffffff;
+  --color-rule: #999999;
+  --color-accent: #111111;
+  --color-accent-dark: #000000;
+  --color-gold: #666666;
+  --color-border: #333333;
+  --color-green: #111111;
+  --color-blue: #111111;
+  --shadow-page: none;
+  --shadow-box: none;
+}
+
+.theme-dark-arcane .page-shell {
+  background:
+    radial-gradient(circle at 16% 12%, rgba(215, 162, 74, 0.16), transparent 28%),
+    radial-gradient(circle at 88% 18%, rgba(146, 166, 207, 0.12), transparent 26%),
+    linear-gradient(135deg, var(--color-paper-light), var(--color-paper));
+}
+
+.theme-clean-guild .page-shell,
+.theme-printer-friendly .page-shell {
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0.82)),
+    linear-gradient(110deg, var(--color-paper-light), var(--color-paper));
+}
+
+.theme-printer-friendly .page-shell::before,
+.theme-printer-friendly .page-shell::after {
+  display: none;
+}
