@@ -8,6 +8,8 @@ Suite editoriale leggera per scrivere homebrew fantasy in Markdown ed esportarli
 npm run build
 npm run build:pdf
 npm run build:all
+npm run build:book
+npm run build:book:pdf
 npm run build:site
 npm run check:legal
 npm run check:assets
@@ -17,6 +19,8 @@ npm run preview
 
 - `npm run build` genera `dist/santuario-sepolto.html`.
 - `npm run build:pdf` genera anche il PDF usando Brave/Chrome in modalità headless, se disponibile.
+- `npm run build:book` genera `dist/book/santuario-sepolto-book.html` usando `book.json`.
+- `npm run build:book:pdf` genera anche il PDF unico multi-capitolo da `book.json`.
 - `npm run build:site` genera `dist/site/`, pronta per una repo GitHub Pages.
 - `npm run check:legal` segnala termini rischiosi o marchi da trattare con cautela nei sorgenti Markdown.
 - `npm run check:assets` valida il registro asset e verifica che i file dichiarati esistano.
@@ -61,6 +65,28 @@ Ogni asset usato stabilmente dalla suite dovrebbe essere dichiarato in `assets/m
 ```
 
 La build include questi crediti nella sezione finale “Legal & Attribution”. Prima di pubblicare, usa `npm run check`.
+
+## Libri Multi-Capitolo
+
+Per generare un volume unico, modifica `book.json`:
+
+```json
+{
+  "title": "Il Santuario Sepolto",
+  "slug": "santuario-sepolto-book",
+  "summary": "Volume TTRPG compatibile 5e/5.5e.",
+  "author": "Andrea",
+  "compatibility": "5e/5.5e",
+  "license_mode": "srd-5.2-cc",
+  "theme": "classic-parchment",
+  "paper": "A4",
+  "chapters": [
+    { "path": "docs/esempio.md" }
+  ]
+}
+```
+
+`npm run build:book` crea copertina, indice automatico da `#`/`##`, capitoli concatenati e appendice legale finale. Aggiungi altri file Markdown a `chapters` quando il progetto cresce.
 
 ## Scrivere un documento
 
@@ -142,6 +168,7 @@ Il renderer conserva il supporto ai blocchi `:::` per file vecchi o bozze rapide
 ## Struttura
 
 - `docs/`: sorgenti Markdown.
+- `book.json`: manifest per PDF/HTML multi-capitolo.
 - `styles/`: sistema tipografico e componenti.
 - `assets/`: manifest per font, immagini e risorse con crediti/licenze.
 - `templates/`: scheletro HTML.
@@ -151,8 +178,8 @@ Il renderer conserva il supporto ai blocchi `:::` per file vecchi o bozze rapide
 
 ## Mini Checklist Migliorie
 
-- [ ] Generare un indice interno automatico per PDF lunghi.
-- [ ] Supportare build multi-capitolo in un PDF unico.
+- [x] Generare un indice interno automatico per PDF lunghi.
+- [x] Supportare build multi-capitolo in un PDF unico.
 - [ ] Aggiungere un database locale riusabile per mostri, PNG, luoghi e oggetti.
 - [ ] Creare un export `.zip` di pubblicazione con HTML, PDF, asset e crediti.
 - [ ] Aggiungere controlli di bilanciamento per GS, danni medi, CD e ricompense.

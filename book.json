@@ -1,0 +1,15 @@
+{
+  "title": "Il Santuario Sepolto",
+  "slug": "santuario-sepolto-book",
+  "summary": "Un esempio di volume TTRPG compatibile 5e/5.5e con avventura, componenti editoriali e appendice legale automatica.",
+  "author": "Andrea",
+  "compatibility": "5e/5.5e",
+  "license_mode": "srd-5.2-cc",
+  "theme": "classic-parchment",
+  "paper": "A4",
+  "chapters": [
+    {
+      "path": "docs/esempio.md"
+    }
+  ]
+}

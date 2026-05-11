@@ -9,6 +9,8 @@
     "build:html": "node scripts/build.js --html",
     "build:pdf": "node scripts/build.js --pdf",
     "build:all": "node scripts/build.js --html --pdf",
+    "build:book": "node scripts/build.js --book",
+    "build:book:pdf": "node scripts/build.js --book --pdf",
     "build:site": "node scripts/build.js --site",
     "check:legal": "node scripts/check-legal.js",
     "check:assets": "node scripts/check-assets.js",

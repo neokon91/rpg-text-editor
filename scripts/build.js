@@ -10,21 +10,43 @@ const outDir = join(root, "dist");
 const templatePath = join(root, "templates", "document.html");
 const cssPath = join(root, "styles", "main.css");
 const assetManifestPath = join(root, "assets", "manifest.json");
+const bookManifestPath = join(root, "book.json");
 
 const args = new Set(process.argv.slice(2));
 const buildSite = args.has("--site");
+const buildBook = args.has("--book");
 const buildHtml = args.has("--html") || (!args.has("--pdf") && !buildSite);
 const buildPdf = args.has("--pdf");
 const sourceArg = [...args].find((arg) => arg.endsWith(".md"));
 const sourcePath = sourceArg ? resolve(root, sourceArg) : join(sourceDir, "esempio.md");
 
 async function main() {
-  const documents = buildSite && !sourceArg
+  const documents = buildSite && !sourceArg && !buildBook
     ? await loadDocuments()
     : [{ path: sourcePath, markdown: await readFile(sourcePath, "utf8") }];
   const css = await loadCss(cssPath);
   const template = await readFile(templatePath, "utf8");
   const assetManifest = await loadAssetManifest();
+
+  if (buildBook) {
+    const output = await renderBook(css, template, assetManifest);
+    await mkdir(dirname(output.htmlPath), { recursive: true });
+
+    if (buildHtml) {
+      await writeFile(output.htmlPath, output.rendered, "utf8");
+      console.log(`Libro HTML scritto in ${relative(root, output.htmlPath)}`);
+    }
+
+    if (buildPdf) {
+      if (!existsSync(output.htmlPath)) {
+        await writeFile(output.htmlPath, output.rendered, "utf8");
+      }
+      await printPdf(output.htmlPath, output.pdfPath);
+      console.log(`Libro PDF scritto in ${relative(root, output.pdfPath)}`);
+    }
+
+    return;
+  }
 
   const siteEntries = [];
 
@@ -62,7 +84,7 @@ async function main() {
 
 function renderDocument(document, css, template, assetManifest) {
   const { metadata, body } = parseFrontmatter(document.markdown);
-  const html = renderMarkdown(body) + renderLegalAppendix(metadata, assetManifest);
+  const html = renderMarkdown(body, { anchorHeadings: true }) + renderLegalAppendix(metadata, assetManifest);
   const title = metadata.title || firstHeading(body) || "Homebrew";
   const slug = metadata.slug || basenameWithoutExt(document.path);
   const documentClass = [
@@ -97,6 +119,65 @@ function renderDocument(document, css, template, assetManifest) {
   };
 }
 
+async function renderBook(css, template, assetManifest) {
+  const book = await loadBookManifest();
+  const chapters = await Promise.all(book.chapters.map(async (chapter, index) => {
+    const chapterPath = resolve(root, chapter.path || chapter);
+    const markdown = await readFile(chapterPath, "utf8");
+    const { metadata, body } = parseFrontmatter(markdown);
+    const slug = metadata.slug || basenameWithoutExt(chapterPath);
+    const title = metadata.title || firstHeading(body) || `Capitolo ${index + 1}`;
+
+    return {
+      body,
+      metadata,
+      path: chapterPath,
+      slug,
+      title,
+      html: renderMarkdown(body, { anchorHeadings: true, headingPrefix: slug })
+    };
+  }));
+
+  const metadata = {
+    title: book.title || "Homebrew",
+    slug: book.slug || "homebrew-book",
+    summary: book.summary || "",
+    author: book.author || "Autore indipendente",
+    compatibility: book.compatibility || "5e/5.5e",
+    license_mode: book.license_mode || "srd-5.2-cc",
+    theme: book.theme || "classic-parchment",
+    paper: book.paper || "A4"
+  };
+
+  const documentClass = [
+    "homebrew-document",
+    `theme-${metadata.theme}`,
+    `paper-${metadata.paper.toLowerCase()}`
+  ].join(" ");
+
+  const content = [
+    renderBookCover(metadata),
+    renderBookToc(chapters),
+    ...chapters.map((chapter, index) => [
+      `<section class="book-chapter${index > 0 ? " page-break" : ""}">`,
+      chapter.html,
+      "</section>"
+    ].join("\n")),
+    renderLegalAppendix(metadata, assetManifest)
+  ].join("\n");
+
+  const rendered = template
+    .replaceAll("{{title}}", escapeHtml(metadata.title))
+    .replace("{{styles}}", css)
+    .replace("{{content}}", content)
+    .replace("{{documentClass}}", documentClass);
+
+  const htmlPath = join(outDir, "book", `${metadata.slug}.html`);
+  const pdfPath = join(outDir, "book", `${metadata.slug}.pdf`);
+
+  return { rendered, htmlPath, pdfPath };
+}
+
 function parseFrontmatter(markdown) {
   if (!markdown.startsWith("---\n")) {
     return { metadata: {}, body: markdown };
@@ -121,9 +202,10 @@ function parseFrontmatter(markdown) {
   return { metadata, body: markdown.slice(end + 4).trimStart() };
 }
 
-function renderMarkdown(markdown) {
+function renderMarkdown(markdown, options = {}) {
   const lines = markdown.replace(/\r\n/g, "\n").split("\n");
   const out = [];
+  const headingCounts = new Map();
 
   for (let i = 0; i < lines.length; i += 1) {
     const line = lines[i];
@@ -160,7 +242,11 @@ function renderMarkdown(markdown) {
     const heading = trimmed.match(/^(#{1,6})\s+(.+)$/);
     if (heading) {
       const level = heading[1].length;
-      out.push(`<h${level}>${renderInline(heading[2])}</h${level}>`);
+      const text = heading[2];
+      const id = options.anchorHeadings && level <= 2
+        ? ` id="${headingId(options.headingPrefix || "", text, headingCounts)}"`
+        : "";
+      out.push(`<h${level}${id}>${renderInline(text)}</h${level}>`);
       continue;
     }
 
@@ -452,6 +538,49 @@ function renderLegalAppendix(metadata, assetManifest = { assets: [] }) {
   ].join("\n");
 }
 
+function renderBookCover(metadata) {
+  return [
+    '<section class="book-cover">',
+    `<p class="book-kicker">${escapeHtml(metadata.compatibility || "5e/5.5e")}</p>`,
+    `<h1>${escapeHtml(metadata.title)}</h1>`,
+    metadata.summary ? `<p class="book-summary">${escapeHtml(metadata.summary)}</p>` : "",
+    `<p class="book-author">${escapeHtml(metadata.author || "Autore indipendente")}</p>`,
+    "</section>"
+  ].join("\n");
+}
+
+function renderBookToc(chapters) {
+  const items = chapters.flatMap((chapter) => {
+    const headings = extractTocHeadings(chapter.body, chapter.slug);
+    return headings.map((heading) => [
+      `<li class="toc-level-${heading.level}">`,
+      `<a href="#${escapeHtml(heading.id)}">${escapeHtml(heading.text)}</a>`,
+      "</li>"
+    ].join(""));
+  }).join("\n");
+
+  return [
+    '<nav class="book-toc page-break" aria-label="Indice">',
+    "<h2>Indice</h2>",
+    `<ol>${items}</ol>`,
+    "</nav>"
+  ].join("\n");
+}
+
+function extractTocHeadings(markdown, prefix) {
+  const counts = new Map();
+
+  return markdown
+    .split(/\r?\n/)
+    .map((line) => line.match(/^(#{1,2})\s+(.+)$/))
+    .filter(Boolean)
+    .map((match) => ({
+      level: match[1].length,
+      text: stripInlineMarkdown(match[2]),
+      id: headingId(prefix, match[2], counts)
+    }));
+}
+
 function renderSiteIndex(entries) {
   const visibleEntries = entries.filter((entry) => entry.public);
   const groups = Map.groupBy(visibleEntries, (entry) => entry.category);
@@ -529,6 +658,31 @@ function firstHeading(markdown) {
   return match?.[1]?.trim();
 }
 
+function headingId(prefix, text, counts) {
+  const base = [prefix, slugify(stripInlineMarkdown(text))].filter(Boolean).join("-");
+  const count = counts.get(base) || 0;
+  counts.set(base, count + 1);
+  return count ? `${base}-${count + 1}` : base;
+}
+
+function stripInlineMarkdown(value) {
+  return String(value)
+    .replace(/`([^`]+)`/g, "$1")
+    .replace(/\*\*([^*]+)\*\*/g, "$1")
+    .replace(/\*([^*]+)\*/g, "$1")
+    .replace(/<[^>]+>/g, "")
+    .trim();
+}
+
+function slugify(value) {
+  return String(value)
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "") || "section";
+}
+
 function basenameWithoutExt(path) {
   return path.split(/[\\/]/).pop().replace(extname(path), "");
 }
@@ -555,6 +709,19 @@ async function loadAssetManifest() {
   }
 
   return JSON.parse(await readFile(assetManifestPath, "utf8"));
+}
+
+async function loadBookManifest() {
+  if (!existsSync(bookManifestPath)) {
+    throw new Error("Manca book.json: crea un manifest con title, slug e chapters.");
+  }
+
+  const manifest = JSON.parse(await readFile(bookManifestPath, "utf8"));
+  if (!Array.isArray(manifest.chapters) || manifest.chapters.length === 0) {
+    throw new Error("book.json deve contenere un array chapters con almeno un documento.");
+  }
+
+  return manifest;
 }
 
 function escapeHtml(value) {
