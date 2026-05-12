@@ -66,7 +66,7 @@ public: false
     <span><strong>CA</strong> 15</span>
     <span><strong>PF</strong> 38</span>
     <span><strong>Vel</strong> 9 m</span>
-    <span><strong>GS</strong> 2</span>
+    <span><strong>GS</strong> 1</span>
   </div>
   <div class="stats-grid">
     <div><strong>FOR</strong>14<small>+2</small></div>

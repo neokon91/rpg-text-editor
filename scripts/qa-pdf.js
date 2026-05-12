@@ -25,10 +25,18 @@ async function main() {
   }
 
   const manifest = JSON.parse(await readFile(join(qaDir, "manifest.json"), "utf8"));
+  const findings = analyzeManifest(manifest);
   await writeFile(join(qaDir, "index.html"), renderContactSheet(manifest), "utf8");
 
   console.log(`PDF QA: ${manifest.pages.length} pagine rasterizzate a ${dpi} dpi.`);
   console.log(`Contact sheet: ${relative(root, join(qaDir, "index.html"))}`);
+
+  if (findings.length) {
+    for (const finding of findings) {
+      console.log(`ERRORE ${finding}`);
+    }
+    process.exit(1);
+  }
 }
 
 function swiftRenderer() {
@@ -62,6 +70,7 @@ struct PageInfo: Encodable {
   let heightPx: Int
   let widthPt: Double
   let heightPt: Double
+  let nonWhiteRatio: Double
 }
 
 struct Manifest: Encodable {
@@ -110,13 +119,15 @@ for index in 0..<document.pageCount {
 
   let file = String(format: "page-%02d.png", index + 1)
   try data.write(to: outURL.appendingPathComponent(file))
+  let nonWhiteRatio = measureNonWhiteRatio(bitmap: bitmap)
   pages.append(PageInfo(
     page: index + 1,
     file: file,
     widthPx: widthPx,
     heightPx: heightPx,
     widthPt: Double(bounds.width),
-    heightPt: Double(bounds.height)
+    heightPt: Double(bounds.height),
+    nonWhiteRatio: nonWhiteRatio
   ))
 }
 
@@ -124,14 +135,63 @@ let manifest = Manifest(source: pdfURL.path, dpi: Int(dpi), pages: pages)
 let encoder = JSONEncoder()
 encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
 try encoder.encode(manifest).write(to: outURL.appendingPathComponent("manifest.json"))
+
+func measureNonWhiteRatio(bitmap: NSBitmapImageRep) -> Double {
+  let step = max(1, min(bitmap.pixelsWide, bitmap.pixelsHigh) / 160)
+  var total = 0
+  var nonWhite = 0
+
+  var y = 0
+  while y < bitmap.pixelsHigh {
+    var x = 0
+    while x < bitmap.pixelsWide {
+      total += 1
+      if let color = bitmap.colorAt(x: x, y: y) {
+        let red = color.redComponent
+        let green = color.greenComponent
+        let blue = color.blueComponent
+        if min(red, green, blue) < 0.96 {
+          nonWhite += 1
+        }
+      }
+      x += step
+    }
+    y += step
+  }
+
+  return total == 0 ? 0 : Double(nonWhite) / Double(total)
+}
 `;
+}
+
+function analyzeManifest(manifest) {
+  const findings = [];
+  const expectedWidth = 595;
+  const expectedHeight = 842;
+  const tolerance = 3;
+
+  if (!manifest.pages.length) {
+    findings.push("nessuna pagina rasterizzata.");
+  }
+
+  for (const page of manifest.pages) {
+    if (Math.abs(page.widthPt - expectedWidth) > tolerance || Math.abs(page.heightPt - expectedHeight) > tolerance) {
+      findings.push(`pagina ${page.page} non A4: ${Math.round(page.widthPt)} x ${Math.round(page.heightPt)} pt.`);
+    }
+
+    if (page.nonWhiteRatio < 0.002) {
+      findings.push(`pagina ${page.page} sembra bianca o quasi vuota.`);
+    }
+  }
+
+  return findings;
 }
 
 function renderContactSheet(manifest) {
   const pages = manifest.pages.map((page) => [
     '<article class="page">',
     `<h2>Pagina ${page.page}</h2>`,
-    `<p>${page.widthPx} x ${page.heightPx}px, ${Math.round(page.widthPt)} x ${Math.round(page.heightPt)}pt</p>`,
+    `<p>${page.widthPx} x ${page.heightPx}px, ${Math.round(page.widthPt)} x ${Math.round(page.heightPt)}pt, contenuto ${(page.nonWhiteRatio * 100).toFixed(1)}%</p>`,
     `<img src="./${page.file}" alt="Pagina ${page.page} del PDF">`,
     "</article>"
   ].join("\n")).join("\n");
