@@ -21,6 +21,7 @@ npm run check:includes
 npm run check:components
 npm run check:documents
 npm run check:schema-artifacts
+npm run test:rendering
 npm run check
 npm run generate:schema-artifacts
 npm run new -- adventure "La Torre Sommersa"
@@ -45,7 +46,8 @@ npm run editor
 - `npm run check:components` valida manifest e plugin pack dei componenti.
 - `npm run check:documents` valida i blocchi `:::` in `docs/` contro lo schema componenti.
 - `npm run check:schema-artifacts` verifica che reference e snippet generati siano aggiornati.
-- `npm run check` esegue controlli legali/editoriali, asset, include, componenti, documenti e artefatti schema.
+- `npm run test:rendering` costruisce una fixture HTML e verifica il rendering strutturato di componenti core e plugin pack.
+- `npm run check` esegue controlli legali/editoriali, asset, include, componenti, documenti, artefatti schema e rendering.
 - `npm run generate:schema-artifacts` rigenera `docs/reference.md` e `.vscode/rpg.schema.code-snippets` dallo schema componenti.
 - `npm run new -- adventure "Titolo"` crea un nuovo documento da template. Tipi disponibili: `adventure`, `bestiary`, `item`, `reference`.
 - `npm run preview` serve la cartella `dist` su `http://127.0.0.1:8081`.

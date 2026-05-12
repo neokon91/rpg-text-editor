@@ -78,4 +78,4 @@ Componenti prioritari:
 
 - Fatto: rendere lo schema una fonte comune per UI, snippet e documentazione.
 - Fatto: generare reference componenti e snippet VS Code a partire dallo schema.
-- Aggiungere test di regressione per rendering componenti strutturati.
+- Fatto: aggiungere test di regressione per rendering componenti strutturati.
