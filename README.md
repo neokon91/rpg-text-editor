@@ -93,6 +93,17 @@ Ogni asset usato stabilmente dalla suite dovrebbe essere dichiarato in `assets/m
 
 La build include questi crediti nella sezione finale “Legal & Attribution”. Prima di pubblicare, usa `npm run check`.
 
+## Visual System
+
+Il layer decorativo vive in `styles/components/ornaments.css` e usa SVG sorgenti in `assets/svg/`:
+
+- `assets/svg/dividers/`: separatori editoriali.
+- `assets/svg/corners/`: ornamenti di cornice pagina.
+- `assets/svg/icons/`: icone per etichette di componenti.
+- `assets/svg/seals/`: sigilli per copertina o colophon.
+
+Gli SVG sono tracciati in `assets/manifest.json`. Il CSS usa data URI derivate dagli SVG per mantenere portabili gli HTML generati in `dist/`, `dist/book/` e `dist/site/`.
+
 ## Libri Multi-Capitolo
 
 Per generare un volume unico, modifica `book.json`:
@@ -199,6 +210,7 @@ Il renderer conserva il supporto ai blocchi `:::` per file vecchi o bozze rapide
 - `content/`: componenti riusabili richiamabili con `<rpg-include>`.
 - `styles/`: sistema tipografico e componenti.
 - `assets/`: manifest per font, immagini e risorse con crediti/licenze.
+- `assets/svg/`: sorgenti ornamentali del visual system.
 - `templates/`: scheletro HTML.
 - `templates/markdown/`: template sorgente per nuovi documenti.
 - `scripts/`: build HTML/PDF e preview locale.
@@ -211,10 +223,12 @@ Il renderer conserva il supporto ai blocchi `:::` per file vecchi o bozze rapide
 - [x] Supportare build multi-capitolo in un PDF unico.
 - [x] Aggiungere template per nuovi documenti.
 - [x] Aggiungere un database locale riusabile per mostri, PNG, luoghi e oggetti.
+- [x] Aggiungere un visual system SVG coerente per cornici, icone, separatori e cover.
 - [ ] Creare un export `.zip` di pubblicazione con HTML, PDF, asset e crediti.
 - [ ] Aggiungere controlli di bilanciamento per GS, danni medi, CD e ricompense.
 - [ ] Aggiungere temi specializzati per hexcrawl, investigativo, grimdark e fiabesco.
-- [ ] Aggiungere immagini di copertina e pagine capitolo con manifest asset obbligatorio.
+- [ ] Aggiungere componenti immagine/mappe/handout con manifest asset obbligatorio.
+- [ ] Aggiungere preview espansa per `<rpg-include>` senza passare dal PDF.
 
 ## Obiettivo editoriale
 

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Book seal">
+  <circle cx="64" cy="64" r="52" fill="none" stroke="#7a5723" stroke-width="5"/>
+  <circle cx="64" cy="64" r="39" fill="none" stroke="#a97d2d" stroke-width="3"/>
+  <path fill="#7f1d1d" d="M64 24l11 28 29 2-22 19 7 29-25-16-25 16 7-29-22-19 29-2z"/>
+</svg>

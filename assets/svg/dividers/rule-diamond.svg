@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 48" role="img" aria-label="Ornamental divider">
+  <path fill="#7a5723" d="M0 23h256v2H0zM384 23h256v2H384z"/>
+  <path fill="#a97d2d" d="M320 4l28 20-28 20-28-20z"/>
+  <path fill="#7f1d1d" d="M320 13l15 11-15 11-15-11z"/>
+  <circle cx="272" cy="24" r="5" fill="#a97d2d"/>
+  <circle cx="368" cy="24" r="5" fill="#a97d2d"/>
+</svg>

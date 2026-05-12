@@ -47,6 +47,70 @@
       "license": "OFL-1.1",
       "source": "Bundled local font file",
       "usage": "Headings"
+    },
+    {
+      "path": "assets/svg/dividers/rule-diamond.svg",
+      "title": "Rule Diamond Divider",
+      "author": "Andrea",
+      "license": "Project-owned",
+      "source": "Local SVG asset",
+      "usage": "Section and legal dividers"
+    },
+    {
+      "path": "assets/svg/corners/page-corner.svg",
+      "title": "Page Corner Ornament",
+      "author": "Andrea",
+      "license": "Project-owned",
+      "source": "Local SVG asset",
+      "usage": "Page frame corners"
+    },
+    {
+      "path": "assets/svg/seals/book-seal.svg",
+      "title": "Book Seal",
+      "author": "Andrea",
+      "license": "Project-owned",
+      "source": "Local SVG asset",
+      "usage": "Book cover seal"
+    },
+    {
+      "path": "assets/svg/icons/readaloud.svg",
+      "title": "Read Aloud Icon",
+      "author": "Andrea",
+      "license": "Project-owned",
+      "source": "Local SVG asset",
+      "usage": "Read-aloud labels"
+    },
+    {
+      "path": "assets/svg/icons/encounter.svg",
+      "title": "Encounter Icon",
+      "author": "Andrea",
+      "license": "Project-owned",
+      "source": "Local SVG asset",
+      "usage": "Encounter labels"
+    },
+    {
+      "path": "assets/svg/icons/treasure.svg",
+      "title": "Treasure Icon",
+      "author": "Andrea",
+      "license": "Project-owned",
+      "source": "Local SVG asset",
+      "usage": "Treasure labels"
+    },
+    {
+      "path": "assets/svg/icons/note.svg",
+      "title": "Note Icon",
+      "author": "Andrea",
+      "license": "Project-owned",
+      "source": "Local SVG asset",
+      "usage": "Note labels"
+    },
+    {
+      "path": "assets/svg/icons/hazard.svg",
+      "title": "Hazard Icon",
+      "author": "Andrea",
+      "license": "Project-owned",
+      "source": "Local SVG asset",
+      "usage": "Hazard labels"
     }
   ]
 }
