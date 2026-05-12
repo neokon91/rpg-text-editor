@@ -15,8 +15,12 @@
         </div>
         <div class="topbar__actions" aria-label="Azioni documento">
           <button id="new-document" type="button">Nuovo</button>
+          <select id="document-picker" aria-label="Documenti salvati">
+            <option value="">Apri documento</option>
+          </select>
           <button id="copy-markdown" type="button">Copia Markdown</button>
           <button id="download-markdown" type="button">Scarica .md</button>
+          <button id="save-document" type="button">Salva in docs</button>
         </div>
       </header>
 
@@ -42,7 +46,10 @@
             <h2>Preview</h2>
             <span id="word-count" class="save-state">0 parole</span>
           </div>
-          <article id="preview" class="preview-document"></article>
+          <div class="preview-stack">
+            <aside id="validation-panel" class="validation-panel" aria-live="polite"></aside>
+            <article id="preview" class="preview-document"></article>
+          </div>
         </section>
       </main>
     </div>

@@ -18,6 +18,8 @@ npm run check:legal
 npm run check:editorial
 npm run check:assets
 npm run check:includes
+npm run check:components
+npm run check:documents
 npm run check
 npm run new -- adventure "La Torre Sommersa"
 npm run preview
@@ -38,7 +40,9 @@ npm run editor
 - `npm run check:editorial` controlla metadati, gerarchia titoli, CD, GS, danni medi e ricompense.
 - `npm run check:assets` valida il registro asset e verifica che i file dichiarati esistano.
 - `npm run check:includes` verifica che gli include riusabili puntino a file esistenti.
-- `npm run check` esegue controlli legali/editoriali, asset e include.
+- `npm run check:components` valida manifest e plugin pack dei componenti.
+- `npm run check:documents` valida i blocchi `:::` in `docs/` contro lo schema componenti.
+- `npm run check` esegue controlli legali/editoriali, asset, include, componenti e documenti.
 - `npm run new -- adventure "Titolo"` crea un nuovo documento da template. Tipi disponibili: `adventure`, `bestiary`, `item`, `reference`.
 - `npm run preview` serve la cartella `dist` su `http://127.0.0.1:8081`.
 - `npm run preview:expanded` rigenera `dist/site/` e serve una preview navigabile con `<rpg-include>` gia espansi.
@@ -57,7 +61,9 @@ La prima UI locale vive in `editor/` e si avvia con:
 npm run editor
 ```
 
-L'editor mantiene il Markdown come sorgente primaria, salva bozze in `localStorage` e inserisce blocchi `:::` compatibili con la build. La palette componenti non usa un registry JavaScript hardcoded: viene generata dal manifest `schemas/components.json`, che aggrega lo schema core in `schemas/core/components.json` e i plugin pack abilitati.
+L'editor mantiene il Markdown come sorgente primaria, salva bozze in `localStorage` e inserisce blocchi `:::` compatibili con la build. La palette componenti non usa un registry JavaScript hardcoded: viene generata dal manifest `schemas/components.json`, che aggrega lo schema core in `schemas/core/components.json` e i plugin pack abilitati. Il pannello preview segnala in tempo reale componenti sconosciuti, campi obbligatori mancanti, chiavi non previste e liste malformate.
+
+Dal server locale dell'editor puoi aprire documenti Markdown esistenti da `docs/` e salvare la bozza corrente direttamente come file `.md` in `docs/`. Il salvataggio usa lo `slug` del frontmatter, il primo H1 o un fallback normalizzato.
 
 I plugin pack vivono in `schemas/plugins/<pack-id>/pack.json` e dichiarano nome, versione, compatibilita e componenti esportati. `npm run check:components` valida campi obbligatori e collisioni di `id`/`container`.
 

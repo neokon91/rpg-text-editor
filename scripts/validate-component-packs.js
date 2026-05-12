@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { mergeComponentSources } from "./lib/component-schema.js";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const manifestPath = resolve(root, "schemas", "components.json");
@@ -33,8 +34,6 @@ async function main() {
     });
   }
 
-  const componentIds = new Map();
-  const containers = new Map();
   let componentCount = 0;
 
   for (const source of sources) {
@@ -46,10 +45,10 @@ async function main() {
     for (const component of components) {
       componentCount += 1;
       validateComponent(source.id, component);
-      assertUnique(componentIds, component.id, source.id, "component id");
-      assertUnique(containers, component.container, source.id, "container");
     }
   }
+
+  mergeComponentSources(sources);
 
   console.log(`Component packs validi: ${sources.length} sorgenti, ${componentCount} componenti.`);
 }
@@ -79,14 +78,6 @@ function validateComponent(sourceId, component) {
     }
     fieldKeys.add(field.key);
   }
-}
-
-function assertUnique(registry, key, sourceId, label) {
-  if (registry.has(key)) {
-    throw new Error(`Collisione ${label} "${key}" tra ${registry.get(key)} e ${sourceId}.`);
-  }
-
-  registry.set(key, sourceId);
 }
 
 function resolveSchemaPath(path) {

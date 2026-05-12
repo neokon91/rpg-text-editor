@@ -1,3 +1,5 @@
+import { mergeComponentSources, slugifyDocumentName, validateMarkdownBlocks } from "/scripts/lib/component-schema.js";
+
 const storageKey = "rpg-text-editor:draft";
 const manifestUrl = "/schemas/components.json";
 
@@ -12,6 +14,8 @@ const componentForm = document.querySelector("#component-form");
 const insertButton = document.querySelector("#insert-component");
 const saveState = document.querySelector("#save-state");
 const wordCount = document.querySelector("#word-count");
+const validationPanel = document.querySelector("#validation-panel");
+const documentPicker = document.querySelector("#document-picker");
 
 let schema;
 let manifest;
@@ -47,6 +51,7 @@ async function init() {
 
   input.value = localStorage.getItem(storageKey) || starterDocument;
   renderComponentList();
+  await refreshDocumentPicker();
   renderPreview();
 
   input.addEventListener("input", () => {
@@ -59,6 +64,8 @@ async function init() {
   document.querySelector("#new-document").addEventListener("click", resetDraft);
   document.querySelector("#copy-markdown").addEventListener("click", copyMarkdown);
   document.querySelector("#download-markdown").addEventListener("click", downloadMarkdown);
+  document.querySelector("#save-document").addEventListener("click", saveDocumentToDocs);
+  documentPicker.addEventListener("change", importSelectedDocument);
   insertButton.addEventListener("click", insertSelectedComponent);
 }
 
@@ -85,29 +92,6 @@ async function fetchJson(url, errorMessage) {
   const response = await fetch(url);
   if (!response.ok) throw new Error(`${errorMessage}: ${response.status}`);
   return response.json();
-}
-
-function mergeComponentSources(sources) {
-  const components = [];
-  const ids = new Set();
-  const containers = new Set();
-
-  for (const source of sources) {
-    for (const component of source.schema.components || []) {
-      if (ids.has(component.id)) throw new Error(`Component id duplicato: ${component.id}`);
-      if (containers.has(component.container)) throw new Error(`Container duplicato: ${component.container}`);
-
-      ids.add(component.id);
-      containers.add(component.container);
-      components.push({
-        ...component,
-        source: source.id,
-        source_name: source.name
-      });
-    }
-  }
-
-  return { components };
 }
 
 function renderComponentList() {
@@ -249,6 +233,24 @@ function renderPreview() {
   const { body } = stripFrontmatter(input.value);
   preview.innerHTML = renderMarkdown(body);
   wordCount.textContent = `${countWords(body)} parole`;
+  renderValidation();
+}
+
+function renderValidation() {
+  const diagnostics = validateMarkdownBlocks(input.value, schema);
+  validationPanel.className = `validation-panel${diagnostics.some((item) => item.severity === "error") ? " has-errors" : ""}`;
+
+  if (!diagnostics.length) {
+    validationPanel.innerHTML = '<strong>Schema ok</strong><span>Nessun problema nei componenti Markdown.</span>';
+    return;
+  }
+
+  validationPanel.innerHTML = [
+    "<strong>Controllo schema</strong>",
+    "<ul>",
+    ...diagnostics.map((diagnostic) => `<li class="${diagnostic.severity}">Riga ${diagnostic.line}: ${escapeHtml(diagnostic.message)}</li>`),
+    "</ul>"
+  ].join("");
 }
 
 function renderMarkdown(markdown) {
@@ -437,9 +439,55 @@ function downloadMarkdown() {
   const blob = new Blob([input.value], { type: "text/markdown;charset=utf-8" });
   const link = document.createElement("a");
   link.href = URL.createObjectURL(blob);
-  link.download = "bozza-rpg.md";
+  link.download = `${slugifyDocumentName(input.value)}.md`;
   link.click();
   URL.revokeObjectURL(link.href);
+}
+
+async function saveDocumentToDocs() {
+  const filename = `${slugifyDocumentName(input.value)}.md`;
+  const response = await fetch("/api/documents", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ filename, content: input.value })
+  });
+
+  if (!response.ok) {
+    saveState.textContent = "Salvataggio non riuscito";
+    return;
+  }
+
+  const result = await response.json();
+  saveState.textContent = `Salvato in docs/${result.filename}`;
+  await refreshDocumentPicker(result.filename);
+}
+
+async function refreshDocumentPicker(selected = "") {
+  const response = await fetch("/api/documents");
+  if (!response.ok) return;
+
+  const { documents } = await response.json();
+  documentPicker.replaceChildren(new Option("Apri documento", ""));
+  for (const document of documents) {
+    documentPicker.append(new Option(document.title || document.filename, document.filename));
+  }
+  documentPicker.value = selected;
+}
+
+async function importSelectedDocument() {
+  if (!documentPicker.value) return;
+
+  const response = await fetch(`/api/documents/${encodeURIComponent(documentPicker.value)}`);
+  if (!response.ok) {
+    saveState.textContent = "Import non riuscito";
+    return;
+  }
+
+  const { content, filename } = await response.json();
+  input.value = content;
+  localStorage.setItem(storageKey, input.value);
+  saveState.textContent = `Aperto docs/${filename}`;
+  renderPreview();
 }
 
 function groupBy(items, key) {

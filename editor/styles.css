@@ -25,6 +25,7 @@ body {
 
 button,
 input,
+select,
 textarea {
   font: inherit;
 }
@@ -36,6 +37,16 @@ button {
   background: var(--surface);
   color: var(--ink);
   cursor: pointer;
+}
+
+select {
+  min-height: 36px;
+  max-width: 190px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 0 10px;
+  background: var(--surface);
+  color: var(--ink);
 }
 
 button:hover {
@@ -212,11 +223,46 @@ textarea:focus-visible {
   font: 14px/1.6 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
 
-.preview-document {
+.preview-stack {
   overflow: auto;
+  min-height: 0;
+}
+
+.preview-document {
   padding: 28px;
   font-family: Georgia, "Times New Roman", serif;
   line-height: 1.55;
+}
+
+.validation-panel {
+  display: grid;
+  gap: 4px;
+  margin: 14px 14px 0;
+  padding: 10px 12px;
+  border: 1px solid #b7d4c0;
+  border-radius: 8px;
+  background: #f4fbf5;
+  color: #244b2b;
+  font-size: 13px;
+}
+
+.validation-panel.has-errors {
+  border-color: #d8b0a7;
+  background: #fff6f2;
+  color: #6a2a1b;
+}
+
+.validation-panel ul {
+  margin: 4px 0 0;
+  padding-left: 18px;
+}
+
+.validation-panel li + li {
+  margin-top: 3px;
+}
+
+.validation-panel .warning {
+  color: #6f4a00;
 }
 
 .preview-document h1,

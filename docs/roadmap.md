@@ -68,10 +68,11 @@ Componenti prioritari:
 
 ## Fase 4 - Validazione e import/export
 
-- Validare blocchi Markdown contro lo schema.
-- Segnalare campi mancanti, chiavi sconosciute e liste malformate.
-- Esportare bozze in file Markdown dentro `docs/`.
-- Importare documenti esistenti mantenendo frontmatter e contenuti non riconosciuti.
+- Fatto: validare blocchi Markdown contro lo schema.
+- Fatto: segnalare campi mancanti, chiavi sconosciute e liste malformate.
+- Fatto: esportare bozze in file Markdown dentro `docs/` dal server editor locale.
+- Fatto: importare documenti esistenti mantenendo frontmatter e contenuti non riconosciuti.
+- Prossimo: aggiungere test fixture per diagnostica e copertura di casi limite.
 
 ## Fase 5 - Integrazione build
 
