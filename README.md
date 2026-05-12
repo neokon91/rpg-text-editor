@@ -11,12 +11,18 @@ npm run build:all
 npm run build:book
 npm run build:book:pdf
 npm run build:site
+npm run export:package
+npm run export:package:pdf
+npm run qa:pdf
 npm run check:legal
+npm run check:editorial
 npm run check:assets
 npm run check:includes
 npm run check
 npm run new -- adventure "La Torre Sommersa"
 npm run preview
+npm run preview:expanded
+npm run preview:watch
 ```
 
 - `npm run build` genera `dist/santuario-sepolto.html`.
@@ -24,14 +30,22 @@ npm run preview
 - `npm run build:book` genera `dist/book/santuario-sepolto-book.html` usando `book.json`.
 - `npm run build:book:pdf` genera anche il PDF unico multi-capitolo da `book.json`.
 - `npm run build:site` genera `dist/site/`, pronta per una repo GitHub Pages.
+- `npm run export:package` crea uno ZIP di pubblicazione da `book.json` con HTML, asset, crediti e manifest verificabile.
+- `npm run export:package:pdf` include anche il PDF nel package, se Brave/Chrome headless e disponibile.
+- `npm run qa:pdf` genera il PDF, rasterizza tutte le pagine in PNG e crea `dist/qa/pdf/index.html` per controllare il layout.
 - `npm run check:legal` segnala termini rischiosi o marchi da trattare con cautela nei sorgenti Markdown.
+- `npm run check:editorial` controlla metadati, gerarchia titoli, CD, GS, danni medi e ricompense.
 - `npm run check:assets` valida il registro asset e verifica che i file dichiarati esistano.
 - `npm run check:includes` verifica che gli include riusabili puntino a file esistenti.
 - `npm run check` esegue controlli legali/editoriali, asset e include.
 - `npm run new -- adventure "Titolo"` crea un nuovo documento da template. Tipi disponibili: `adventure`, `bestiary`, `item`, `reference`.
 - `npm run preview` serve la cartella `dist` su `http://127.0.0.1:8081`.
+- `npm run preview:expanded` rigenera `dist/site/` e serve una preview navigabile con `<rpg-include>` gia espansi.
+- `npm run preview:watch` mantiene la preview espansa aggiornata mentre modifichi sorgenti, stili, template e asset.
 
 ## Authoring in VS Code
+
+Per il flusso pratico completo vedi `docs/authoring.md`.
 
 La repo include snippet in `.vscode/rpg.code-snippets` per creare rapidamente frontmatter e blocchi TTRPG. I prefissi principali sono:
 
@@ -48,6 +62,15 @@ La repo include snippet in `.vscode/rpg.code-snippets` per creare rapidamente fr
 - `treasure`
 - `note`
 - `quote`
+- `map`
+- `image`
+- `include`
+- `qreadaloud`
+- `qencounter`
+- `qtreasure`
+- `qnote`
+- `qmap`
+- `qimage`
 
 Se usi Markdown Preview, `.vscode/settings.json` aggancia `styles/preview.css` alla preview. Per vedere i componenti renderizzati direttamente nella preview usa gli snippet HTML di `.vscode/rpg.code-snippets`; la vecchia sintassi `:::` resta supportata dal build finale, ma Markdown Preview la mostra come testo.
 
@@ -93,6 +116,24 @@ Ogni asset usato stabilmente dalla suite dovrebbe essere dichiarato in `assets/m
 
 La build include questi crediti nella sezione finale “Legal & Attribution”. Prima di pubblicare, usa `npm run check`.
 
+## Mappe e immagini
+
+Usa componenti HTML preview-safe con file dichiarati in `assets/manifest.json`:
+
+```html
+<figure class="rpg-map no-break">
+  <img src="../assets/images/maps/santuario-sepolto-map.svg" alt="Mappa del Santuario Sepolto">
+  <figcaption>Mappa del Santuario Sepolto</figcaption>
+</figure>
+
+<figure class="rpg-image no-break">
+  <img src="../assets/images/handouts/sigillo-antico.webp" alt="Handout del Sigillo Antico">
+  <figcaption>Handout per i giocatori</figcaption>
+</figure>
+```
+
+`npm run check:assets` verifica che ogni `<img src="...">` locale in `docs/` e `content/` sia presente nel manifest. La build copia gli asset dichiarati dentro `dist/` e `dist/site/`, così preview, sito, libro ed export ZIP restano portabili.
+
 ## Visual System
 
 Il layer decorativo vive in `styles/components/ornaments.css` e usa SVG sorgenti in `assets/svg/`:
@@ -125,6 +166,47 @@ Per generare un volume unico, modifica `book.json`:
 ```
 
 `npm run build:book` crea copertina, indice automatico da `#`/`##`, capitoli concatenati e appendice legale finale. Aggiungi altri file Markdown a `chapters` quando il progetto cresce.
+
+## Package Export
+
+`npm run export:package` genera `dist/packages/<slug>-v<version>.zip` partendo da `book.json`.
+
+Il package contiene:
+
+- `book/<slug>.html`: output pubblicabile con CSS inline.
+- `assets/` e `fonts/`: file dichiarati in `assets/manifest.json`, copiati mantenendo i percorsi originali.
+- `credits.md`: riepilogo leggibile di compatibilità, attribuzione e asset.
+- `package-manifest.json`: schema, metadati libro, capitoli, output, asset, dimensioni e checksum SHA-256.
+
+Lo script esegue la build del libro prima di comprimere e valida lo ZIP con `unzip -t`. Usa `npm run export:package:pdf` quando vuoi forzare anche la generazione e inclusione del PDF.
+
+## Editorial Checks
+
+`npm run check:editorial` aggiunge controlli leggeri da revisione TTRPG:
+
+- frontmatter minimo per i documenti in `docs/`;
+- presenza di un titolo H1 e gerarchia titoli senza salti;
+- CD fuori scala o molto alte;
+- confronto indicativo tra GS, CD e danno medio massimo delle formule tipo `2d6 + 3`;
+- ricompense PE/PX/XP molto elevate.
+
+I problemi strutturali sono errori e bloccano `npm run check`. Le valutazioni di bilanciamento sono avvisi, perché dipendono da contesto, numero di personaggi, azioni disponibili e obiettivi di design.
+
+## Preview Expanded
+
+`npm run preview:expanded` esegue una build HTML del sito e poi avvia il server locale. La home punta a `dist/site/index.html`, quindi puoi controllare i documenti con include gia espansi senza generare PDF.
+
+`npm run preview:watch` usa la stessa preview, ma ricostruisce automaticamente quando salvi file in `docs/`, `content/`, `styles/`, `templates/`, `assets/` o `book.json`. Dopo il rebuild aggiorna il browser.
+
+La preview resta uno strumento di lavoro: il target primario e il PDF A4. Prima di chiudere una modifica di layout, componenti o CSS usa `npm run build:book:pdf` e controlla che box, tabelle, immagini, cornici e titoli non si sovrappongano.
+
+Per un controllo piu rapido dell'intero PDF usa `npm run qa:pdf`: produce una PNG per pagina e una contact sheet HTML in `dist/qa/pdf/index.html`.
+
+Percorsi utili:
+
+- `http://127.0.0.1:8081/`: indice dei documenti pubblici.
+- `http://127.0.0.1:8081/site/santuario-sepolto/`: avventura renderizzata con contenuti da `content/`.
+- `http://127.0.0.1:8081/site/reference-componenti/`: reference componenti, anche se non pubblica nell'indice.
 
 ## Scrivere un documento
 
@@ -224,11 +306,11 @@ Il renderer conserva il supporto ai blocchi `:::` per file vecchi o bozze rapide
 - [x] Aggiungere template per nuovi documenti.
 - [x] Aggiungere un database locale riusabile per mostri, PNG, luoghi e oggetti.
 - [x] Aggiungere un visual system SVG coerente per cornici, icone, separatori e cover.
-- [ ] Creare un export `.zip` di pubblicazione con HTML, PDF, asset e crediti.
-- [ ] Aggiungere controlli di bilanciamento per GS, danni medi, CD e ricompense.
+- [x] Creare un export `.zip` di pubblicazione con HTML, PDF, asset e crediti.
+- [x] Aggiungere controlli di bilanciamento per GS, danni medi, CD e ricompense.
 - [ ] Aggiungere temi specializzati per hexcrawl, investigativo, grimdark e fiabesco.
-- [ ] Aggiungere componenti immagine/mappe/handout con manifest asset obbligatorio.
-- [ ] Aggiungere preview espansa per `<rpg-include>` senza passare dal PDF.
+- [x] Aggiungere componenti immagine/mappe/handout con manifest asset obbligatorio.
+- [x] Aggiungere preview espansa per `<rpg-include>` senza passare dal PDF.
 
 ## Obiettivo editoriale
 

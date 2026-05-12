@@ -1,6 +1,7 @@
 :root {
   --page-width: 210mm;
-  --page-padding: 17mm;
+  --page-padding: 18mm;
+  --content-width: calc(var(--page-width) - (var(--page-padding) * 2));
 
   --color-ink: #2a1d14;
   --color-muted: #5a4636;
@@ -23,6 +24,7 @@
   --font-mono: "Courier New", monospace;
 
   --line-body: 1.58;
+  --line-tight: 1.25;
 
   --radius-small: 4px;
   --radius-medium: 8px;

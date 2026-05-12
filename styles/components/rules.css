@@ -194,3 +194,31 @@
 .book-chapter {
   break-before: page;
 }
+
+@media print {
+  .rules-card,
+  .random-table {
+    margin: 1rem 0;
+    padding: 0.85rem 0.95rem;
+    box-shadow: none;
+  }
+
+  .rules-card h3,
+  .random-table h3 {
+    line-height: var(--line-tight);
+  }
+
+  .book-cover {
+    min-height: 260mm;
+    padding: 12mm 7mm;
+  }
+
+  .book-cover h1 {
+    font-size: 3rem;
+    line-height: 1.08;
+  }
+
+  .book-toc li {
+    break-inside: avoid;
+  }
+}

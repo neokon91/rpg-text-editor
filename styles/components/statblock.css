@@ -191,3 +191,33 @@
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
+
+@media print {
+  .statblock {
+    margin: 1.35rem 0;
+    padding: 1rem 1.1rem;
+    box-shadow: none;
+  }
+
+  .statblock h2 {
+    font-size: 1.52rem;
+    line-height: var(--line-tight);
+  }
+
+  .statline {
+    gap: 0.4rem;
+  }
+
+  .statline span {
+    padding: 0.24rem 0.42rem;
+  }
+
+  .stats-grid {
+    gap: 0.3rem;
+  }
+
+  .stats-grid div {
+    min-width: 0;
+    padding: 0.36rem 0.22rem;
+  }
+}

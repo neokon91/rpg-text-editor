@@ -13,6 +13,7 @@ table {
   border: 1px solid rgba(122, 87, 35, 0.28);
   border-radius: 3px;
   box-shadow: 0 2px 7px rgba(0, 0, 0, 0.08);
+  table-layout: fixed;
 }
 
 thead {
@@ -29,6 +30,8 @@ td {
   border-width: 0 1px 1px 0;
 
   text-align: left;
+  overflow-wrap: anywhere;
+  vertical-align: top;
 }
 
 tbody tr:nth-child(even) {
@@ -49,6 +52,21 @@ tbody tr:hover {
 }
 
 @media print {
+  table {
+    break-inside: auto;
+    box-shadow: none;
+    font-size: 0.9rem;
+  }
+
+  thead {
+    display: table-header-group;
+  }
+
+  tr {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
   tbody tr:hover {
     background: transparent;
   }

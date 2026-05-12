@@ -111,6 +111,14 @@
       "license": "Project-owned",
       "source": "Local SVG asset",
       "usage": "Hazard labels"
+    },
+    {
+      "path": "assets/images/maps/santuario-sepolto-map.svg",
+      "title": "Mappa del Santuario Sepolto",
+      "author": "Andrea",
+      "license": "Project-owned",
+      "source": "Local SVG map asset",
+      "usage": "Adventure map component example"
     }
   ]
 }

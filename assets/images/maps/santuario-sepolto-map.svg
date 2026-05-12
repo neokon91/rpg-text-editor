@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 620" role="img" aria-labelledby="title desc">
+  <title id="title">Mappa del Santuario Sepolto</title>
+  <desc id="desc">Pianta stilizzata di una cripta con ingresso, sala delle candele, corridoi laterali e camera del custode.</desc>
+  <rect width="960" height="620" fill="#efe0b8"/>
+  <g fill="none" stroke="#6f5730" stroke-width="10" stroke-linejoin="round">
+    <path d="M92 262h190v96H92z"/>
+    <path d="M282 214h242v194H282z"/>
+    <path d="M524 256h172v110H524z"/>
+    <path d="M696 204h168v214H696z"/>
+    <path d="M362 78h112v136"/>
+    <path d="M362 408v124h248V408"/>
+  </g>
+  <g fill="#d4bb7c" stroke="#9a7a3f" stroke-width="5">
+    <rect x="110" y="282" width="154" height="56"/>
+    <rect x="304" y="236" width="198" height="150"/>
+    <rect x="546" y="278" width="128" height="66"/>
+    <rect x="718" y="226" width="124" height="170"/>
+    <rect x="384" y="100" width="68" height="92"/>
+    <rect x="384" y="430" width="204" height="80"/>
+  </g>
+  <g stroke="#7f1d1d" stroke-width="8" stroke-linecap="round">
+    <path d="M282 310h-18"/>
+    <path d="M524 312h22"/>
+    <path d="M418 214v-22"/>
+    <path d="M486 408v22"/>
+    <path d="M696 312h22"/>
+  </g>
+  <g fill="#7f1d1d">
+    <circle cx="418" cy="312" r="14"/>
+    <circle cx="780" cy="312" r="18"/>
+    <path d="M178 310l18-30 18 30-18 30z"/>
+  </g>
+  <g fill="#3f3322" font-family="serif" font-size="28" text-anchor="middle">
+    <text x="186" y="375">Ingresso</text>
+    <text x="404" y="455">Sala delle Candele</text>
+    <text x="608" y="255">Corridoio</text>
+    <text x="780" y="455">Custode</text>
+    <text x="418" y="68">Altare</text>
+  </g>
+  <g fill="none" stroke="#9a7a3f" stroke-width="3" opacity="0.55">
+    <path d="M44 44h872v532H44z"/>
+    <path d="M62 62h836v496H62z"/>
+  </g>
+</svg>

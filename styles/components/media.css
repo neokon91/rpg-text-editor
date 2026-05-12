@@ -1,0 +1,74 @@
+.rpg-image,
+.rpg-map {
+  margin: 1.5rem 0;
+  break-inside: avoid;
+  max-width: 100%;
+}
+
+.rpg-image img,
+.rpg-map img {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  border: 1px solid rgba(122, 87, 35, 0.42);
+  border-radius: 4px;
+  background: #f8ecd0;
+  box-shadow:
+    0 8px 18px rgba(0, 0, 0, 0.14),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.28);
+}
+
+.rpg-map {
+  padding: 0.55rem;
+  border: 1px solid rgba(122, 87, 35, 0.38);
+  border-radius: 4px;
+  background:
+    linear-gradient(135deg, rgba(255, 246, 219, 0.92), rgba(226, 203, 150, 0.7)),
+    #ead29c;
+}
+
+.rpg-map img {
+  border-color: rgba(91, 62, 25, 0.52);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22);
+}
+
+.rpg-image figcaption,
+.rpg-map figcaption {
+  margin-top: 0.45rem;
+  color: var(--color-muted);
+  font-size: 0.82rem;
+  line-height: 1.35;
+  text-align: center;
+}
+
+.rpg-map figcaption {
+  font-family: var(--font-heading);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+@media print {
+  .rpg-image,
+  .rpg-map {
+    margin: 1rem 0;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .rpg-image img,
+  .rpg-map img {
+    max-height: 170mm;
+    object-fit: contain;
+    box-shadow: none;
+  }
+
+  .columns-2 .rpg-image img,
+  .columns-2 .rpg-map img,
+  .columns-3 .rpg-image img,
+  .columns-3 .rpg-map img {
+    max-height: 95mm;
+  }
+}

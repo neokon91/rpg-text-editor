@@ -6,6 +6,7 @@ body {
   font-size: 16px;
   line-height: var(--line-body);
   background: #1c1510;
+  overflow-wrap: break-word;
 }
 
 .page-shell {
@@ -21,6 +22,10 @@ body {
     linear-gradient(110deg, var(--color-paper-light), var(--color-paper));
   box-shadow: var(--shadow-page);
   overflow: hidden;
+}
+
+.page-shell > * {
+  max-width: 100%;
 }
 
 .paper-letter {
@@ -65,19 +70,51 @@ hr {
 }
 
 @media print {
+  @page {
+    size: A4;
+    margin: 0;
+  }
+
   html,
   body {
     width: 210mm;
+    min-height: auto;
     background: white;
   }
 
   .page-shell {
     width: var(--page-width);
-    min-height: 297mm;
+    min-height: auto;
     margin: 0;
     box-shadow: none;
+    overflow: visible;
     print-color-adjust: exact;
     -webkit-print-color-adjust: exact;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  figcaption,
+  .readaloud__label,
+  .encounter__label,
+  .treasure__label,
+  .note__label,
+  .quote__label,
+  .rules-card__label,
+  .random-table__label,
+  .statblock__label {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  p,
+  li {
+    orphans: 3;
+    widows: 3;
   }
 }
 

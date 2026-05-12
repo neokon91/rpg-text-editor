@@ -12,11 +12,17 @@
     "build:book": "node scripts/build.js --book",
     "build:book:pdf": "node scripts/build.js --book --pdf",
     "build:site": "node scripts/build.js --site",
+    "export:package": "node scripts/export-package.js",
+    "export:package:pdf": "node scripts/export-package.js --pdf",
+    "qa:pdf": "node scripts/qa-pdf.js",
     "check:legal": "node scripts/check-legal.js",
+    "check:editorial": "node scripts/check-editorial.js",
     "check:assets": "node scripts/check-assets.js",
     "check:includes": "node scripts/check-includes.js",
-    "check": "npm run check:legal && npm run check:assets && npm run check:includes",
+    "check": "npm run check:legal && npm run check:editorial && npm run check:assets && npm run check:includes",
     "new": "node scripts/new.js",
-    "preview": "node scripts/serve.js"
+    "preview": "node scripts/serve.js",
+    "preview:expanded": "node scripts/serve.js --expanded",
+    "preview:watch": "node scripts/serve.js --expanded --watch"
   }
 }

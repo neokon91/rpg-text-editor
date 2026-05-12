@@ -215,5 +215,82 @@
       "<rpg-include src=\"${1:content/monsters/nome.html}\"></rpg-include>"
     ],
     "description": "Include di un componente riusabile dalla libreria content"
+  },
+  "Map Figure": {
+    "prefix": "map",
+    "body": [
+      "<figure class=\"rpg-map no-break\">",
+      "  <img src=\"${1:../assets/images/maps/mappa.svg}\" alt=\"${2:Descrizione accessibile della mappa}\">",
+      "  <figcaption>${3:Titolo mappa}</figcaption>",
+      "</figure>"
+    ],
+    "description": "Mappa renderizzata nella Markdown Preview"
+  },
+  "Image Figure": {
+    "prefix": "image",
+    "body": [
+      "<figure class=\"rpg-image no-break\">",
+      "  <img src=\"${1:../assets/images/handouts/immagine.webp}\" alt=\"${2:Descrizione accessibile dell'immagine}\">",
+      "  <figcaption>${3:Didascalia}</figcaption>",
+      "</figure>"
+    ],
+    "description": "Immagine o handout renderizzato nella Markdown Preview"
+  },
+  "Quick Read Aloud": {
+    "prefix": "qreadaloud",
+    "body": [
+      "::: readaloud ${1:Da leggere al tavolo}",
+      "${2:Testo narrativo}",
+      ":::"
+    ],
+    "description": "Sintassi breve per preview expanded"
+  },
+  "Quick Encounter": {
+    "prefix": "qencounter",
+    "body": [
+      "::: encounter ${1:Incontro}",
+      "${2:Dettagli tattici o conseguenze.}",
+      ":::"
+    ],
+    "description": "Sintassi breve per preview expanded"
+  },
+  "Quick Treasure": {
+    "prefix": "qtreasure",
+    "body": [
+      "::: treasure ${1:Tesoro}",
+      "- ${2:Oggetto o ricompensa}",
+      "- ${3:Oggetto o ricompensa}",
+      ":::"
+    ],
+    "description": "Sintassi breve per preview expanded"
+  },
+  "Quick Note": {
+    "prefix": "qnote",
+    "body": [
+      "::: note ${1:Nota}",
+      "${2:Promemoria per master o autore.}",
+      ":::"
+    ],
+    "description": "Sintassi breve per preview expanded"
+  },
+  "Quick Map": {
+    "prefix": "qmap",
+    "body": [
+      "::: map ${1:Titolo mappa}",
+      "src: ${2:../assets/images/maps/mappa.svg}",
+      "alt: ${3:Descrizione accessibile della mappa}",
+      ":::"
+    ],
+    "description": "Sintassi breve per mappa in preview expanded"
+  },
+  "Quick Image": {
+    "prefix": "qimage",
+    "body": [
+      "::: image ${1:Didascalia}",
+      "src: ${2:../assets/images/handouts/immagine.webp}",
+      "alt: ${3:Descrizione accessibile dell'immagine}",
+      ":::"
+    ],
+    "description": "Sintassi breve per immagine in preview expanded"
   }
 }

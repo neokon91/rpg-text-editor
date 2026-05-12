@@ -1,4 +1,4 @@
-import { mkdir, readFile, readdir, writeFile } from "node:fs/promises";
+import { cp, mkdir, readFile, readdir, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { dirname, extname, join, resolve, relative } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -27,6 +27,7 @@ async function main() {
   const css = await loadCss(cssPath);
   const template = await readFile(templatePath, "utf8");
   const assetManifest = await loadAssetManifest();
+  await copyBuildAssets(assetManifest, { includeSite: buildSite });
 
   if (buildBook) {
     const output = await renderBook(css, template, assetManifest);
@@ -38,9 +39,7 @@ async function main() {
     }
 
     if (buildPdf) {
-      if (!existsSync(output.htmlPath)) {
-        await writeFile(output.htmlPath, output.rendered, "utf8");
-      }
+      await writeFile(output.htmlPath, output.rendered, "utf8");
       await printPdf(output.htmlPath, output.pdfPath);
       console.log(`Libro PDF scritto in ${relative(root, output.pdfPath)}`);
     }
@@ -68,9 +67,7 @@ async function main() {
     }
 
     if (buildPdf) {
-      if (!existsSync(output.htmlPath)) {
-        await writeFile(output.htmlPath, output.rendered, "utf8");
-      }
+      await writeFile(output.htmlPath, output.rendered, "utf8");
       await printPdf(output.htmlPath, output.pdfPath);
       console.log(`PDF scritto in ${relative(root, output.pdfPath)}`);
     }
@@ -206,12 +203,36 @@ function parseFrontmatter(markdown) {
 
 async function expandIncludes(markdown, seen = new Set()) {
   const includePattern = /<rpg-include\s+src="([^"]+)"\s*><\/rpg-include>/g;
+  const lines = markdown.replace(/\r\n/g, "\n").split("\n");
+  const chunks = [];
+  let inFence = false;
+
+  for (const line of lines) {
+    if (/^```/.test(line.trim())) {
+      inFence = !inFence;
+      chunks.push(line);
+      continue;
+    }
+
+    if (inFence) {
+      chunks.push(line);
+      continue;
+    }
+
+    chunks.push(await replaceIncludesInLine(line, includePattern, seen));
+  }
+
+  return chunks.join("\n");
+}
+
+async function replaceIncludesInLine(line, includePattern, seen) {
   const chunks = [];
   let cursor = 0;
   let match;
+  includePattern.lastIndex = 0;
 
-  while ((match = includePattern.exec(markdown)) !== null) {
-    chunks.push(markdown.slice(cursor, match.index));
+  while ((match = includePattern.exec(line)) !== null) {
+    chunks.push(line.slice(cursor, match.index));
     const includePath = resolveIncludePath(match[1]);
 
     if (seen.has(includePath)) {
@@ -225,7 +246,7 @@ async function expandIncludes(markdown, seen = new Set()) {
     cursor = match.index + match[0].length;
   }
 
-  chunks.push(markdown.slice(cursor));
+  chunks.push(line.slice(cursor));
   return chunks.join("");
 }
 
@@ -256,6 +277,17 @@ function renderMarkdown(markdown, options = {}) {
 
     if (trimmed === "---") {
       out.push("<hr>");
+      continue;
+    }
+
+    const fence = trimmed.match(/^```([a-z0-9_-]+)?$/i);
+    if (fence) {
+      const code = [];
+      while (++i < lines.length && lines[i].trim() !== "```") {
+        code.push(lines[i]);
+      }
+      const language = fence[1] ? ` class="language-${escapeHtml(fence[1])}"` : "";
+      out.push(`<pre><code${language}>${escapeHtml(code.join("\n"))}</code></pre>`);
       continue;
     }
 
@@ -353,7 +385,10 @@ function renderStructuredContainer(name, label, markdown) {
   if (name === "npc") return renderNpc(data, label);
   if (name === "location") return renderLocation(data, label);
   if (name === "random-table") return renderRandomTable(data, label);
+  if (name === "randomtable") return renderRandomTable(data, label);
   if (name === "hazard") return renderHazard(data, label);
+  if (name === "map") return renderMediaFigure("rpg-map", data, label || data.caption || "Mappa");
+  if (name === "image") return renderMediaFigure("rpg-image", data, label || data.caption || "");
 
   return "";
 }
@@ -515,6 +550,24 @@ function renderRandomTable(data, label) {
   ].join("\n");
 }
 
+function renderMediaFigure(className, data, label) {
+  if (!data.src) {
+    return renderRulesCard("note", "Asset mancante", "Componente immagine", [
+      "<p>Manca il campo <code>src</code>.</p>"
+    ]);
+  }
+
+  const alt = data.alt || label || data.caption || "Immagine";
+  const caption = data.caption || label || "";
+
+  return [
+    `<figure class="${className} no-break">`,
+    `  <img src="${escapeHtml(data.src)}" alt="${escapeHtml(alt)}">`,
+    caption ? `  <figcaption>${renderInline(caption)}</figcaption>` : "",
+    "</figure>"
+  ].filter(Boolean).join("\n");
+}
+
 function renderRulesCard(className, label, title, parts) {
   return [
     `<aside class="${className} rules-card no-break">`,
@@ -566,7 +619,7 @@ function renderLegalAppendix(metadata, assetManifest = { assets: [] }) {
     .join("");
 
   return [
-    '<section class="legal page-break">',
+    '<section class="legal">',
     "<h2>Legal & Attribution</h2>",
     `<p><strong>Compatibilità:</strong> materiale originale compatibile con ${escapeHtml(compatibility)}.</p>`,
     `<p><strong>Autore:</strong> ${escapeHtml(author)}.</p>`,
@@ -763,6 +816,21 @@ async function loadBookManifest() {
   }
 
   return manifest;
+}
+
+async function copyBuildAssets(assetManifest, options = {}) {
+  for (const asset of assetManifest.assets || []) {
+    if (!asset.path || !existsSync(join(root, asset.path))) continue;
+    await copyFileWithDirs(join(root, asset.path), join(outDir, asset.path));
+    if (options.includeSite) {
+      await copyFileWithDirs(join(root, asset.path), join(outDir, "site", asset.path));
+    }
+  }
+}
+
+async function copyFileWithDirs(source, target) {
+  await mkdir(dirname(target), { recursive: true });
+  await cp(source, target);
 }
 
 function escapeHtml(value) {

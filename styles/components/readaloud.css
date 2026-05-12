@@ -86,3 +86,11 @@
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
+
+@media print {
+  .readaloud {
+    margin: 1.25rem 0;
+    padding: 1rem 1.15rem;
+    box-shadow: none;
+  }
+}

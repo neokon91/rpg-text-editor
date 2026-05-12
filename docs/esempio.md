@@ -25,6 +25,11 @@ public: true
 
 ## Entrata del Tempio
 
+<figure class="rpg-map no-break">
+  <img src="../assets/images/maps/santuario-sepolto-map.svg" alt="Mappa del Santuario Sepolto con ingresso, sala delle candele, altare e camera del custode">
+  <figcaption>Mappa del Santuario Sepolto</figcaption>
+</figure>
+
 <div class="columns-2">
 
 ### Corridoi Frantumati
@@ -104,7 +109,7 @@ Un passaggio cede se più di una creatura si ferma sulla piattaforma centrale. L
 
 <aside class="note no-break">
   <div class="note__label">Nota editoriale</div>
-  <p>Per vedere i componenti già renderizzati nella Markdown Preview, usa i blocchi HTML degli snippet. Il renderer supporta ancora anche la vecchia sintassi <code>:::</code> per compatibilità.</p>
+  <p>Per scrivere rapidamente usa gli snippet HTML nella Markdown Preview o gli snippet rapidi <code>q...</code> con <code>npm run preview:watch</code>.</p>
 </aside>
 
 <div class="center smallcaps muted mt-3">Fine del Capitolo I</div>
