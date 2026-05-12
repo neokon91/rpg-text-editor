@@ -198,7 +198,7 @@
       "container": "image",
       "default_label": "Immagine",
       "fields": [
-        { "key": "src", "label": "Sorgente", "type": "text", "required": true, "default": "../assets/images/handouts/sigillo-antico.webp" },
+        { "key": "src", "label": "Sorgente", "type": "text", "required": true, "default": "../assets/images/maps/santuario-sepolto-map.svg" },
         { "key": "alt", "label": "Alt", "type": "text", "default": "Handout" },
         { "key": "caption", "label": "Didascalia", "type": "text", "default": "Handout per i giocatori" }
       ]

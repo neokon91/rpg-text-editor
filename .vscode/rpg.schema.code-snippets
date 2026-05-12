@@ -1,0 +1,214 @@
+{
+  "TTRPG Frontmatter": {
+    "prefix": "frontttrpg",
+    "body": [
+      "---",
+      "title: ${1:Titolo}",
+      "slug: ${2:slug-documento}",
+      "summary: ${3:Riassunto breve.}",
+      "category: ${4:avventure}",
+      "tags: ${5:dungeon, livello-1}",
+      "compatibility: 5e/5.5e",
+      "license_mode: srd-5.2-cc",
+      "author: ${6:Andrea}",
+      "theme: ${7|classic-parchment,dark-arcane,clean-guild,printer-friendly|}",
+      "paper: ${8|A4,Letter|}",
+      "public: ${9|true,false|}",
+      "---"
+    ],
+    "description": "Frontmatter completo per documenti TTRPG"
+  },
+  "Schema Creatura": {
+    "prefix": "qmonster",
+    "body": [
+      "::: monster ${1:Creatura}",
+      "name: ${2:Guardiano della Soglia}",
+      "meta: ${3:Costrutto medio, senza allineamento}",
+      "ac: ${4:15}",
+      "hp: ${5:38}",
+      "speed: ${6:9 m}",
+      "cr: ${7:1}",
+      "str: ${8:14}",
+      "dex: ${9:10}",
+      "con: ${10:16}",
+      "int: ${11:5}",
+      "wis: ${12:12}",
+      "cha: ${13:6}",
+      "senses: ${14:scurovisione 18 m, Percezione passiva 11}",
+      "languages: ${15:comprende una lingua scelta dal creatore}",
+      "${16:}",
+      "trait: ${17:Corpo di Pietra} | ${18:Ha vantaggio ai tiri salvezza contro veleno e malattia.}",
+      "action: ${19:Pugno Inciso} | ${20:+4 a colpire, portata 1,5 m, un bersaglio. Colpisce per 1d8 + 2 danni contundenti.}",
+      ":::"
+    ],
+    "description": "Creatura da schema (Core)"
+  },
+  "Schema Incantesimo": {
+    "prefix": "qspell",
+    "body": [
+      "::: spell ${1:Formula rituale}",
+      "name: ${2:Luce del Cartografo}",
+      "level: ${3:1° livello}",
+      "school: ${4:divinazione}",
+      "casting_time: ${5:1 azione}",
+      "range: ${6:personale}",
+      "components: ${7:V, S, M}",
+      "duration: ${8:10 minuti}",
+      "${9:Una linea luminosa indica il percorso piu breve verso una destinazione nominata entro 300 metri.}",
+      ":::"
+    ],
+    "description": "Incantesimo da schema (Core)"
+  },
+  "Schema Oggetto": {
+    "prefix": "qmagicitem",
+    "body": [
+      "::: magicitem ${1:Oggetto magico}",
+      "name: ${2:Bussola senza Nord}",
+      "type: ${3:Oggetto meraviglioso}",
+      "rarity: ${4:raro}",
+      "attunement: ${5:richiesta}",
+      "${6:La bussola indica la cosa che chi la impugna teme di trovare.}",
+      ":::"
+    ],
+    "description": "Oggetto da schema (Core)"
+  },
+  "Schema PNG": {
+    "prefix": "qnpc",
+    "body": [
+      "::: npc ${1:PNG}",
+      "name: ${2:Mira Calden}",
+      "role: ${3:Mediatrice di gilda con troppi debiti}",
+      "appearance: ${4:abiti eleganti consumati ai polsini}",
+      "voice: ${5:precisa, gentile, sempre un mezzo tono troppo calma}",
+      "motive: ${6:vuole uscire viva da un accordo sbagliato}",
+      "secret: ${7:ha venduto una mappa falsa a due fazioni diverse}",
+      "hook: ${8:Offerta} | ${9:Paga bene per recuperare l'originale prima dell'alba.}",
+      ":::"
+    ],
+    "description": "PNG da schema (Core)"
+  },
+  "Schema Luogo": {
+    "prefix": "qlocation",
+    "body": [
+      "::: location ${1:Luogo}",
+      "name: ${2:Ponte delle Campane}",
+      "tags: ${3:rovina, vento, vertigine}",
+      "mood: ${4:ogni passo risponde con un tintinnio lontano}",
+      "danger: ${5:una campana spezzata attira creature ostili se viene toccata}",
+      "treasure: ${6:una moneta votiva incastrata tra le pietre}",
+      "hook: ${7:Segno} | ${8:Le corde delle campane formano un simbolo ricorrente.}",
+      ":::"
+    ],
+    "description": "Luogo da schema (Core)"
+  },
+  "Schema Pericolo": {
+    "prefix": "qhazard",
+    "body": [
+      "::: hazard ${1:Pericolo}",
+      "name: ${2:Nebbia di Vetro}",
+      "trigger: ${3:una creatura corre o cade nella sala}",
+      "dc: ${4:Costituzione CD 14}",
+      "effect: ${5:la creatura subisce 2d6 danni taglienti e tossisce sangue cristallino}",
+      "countermeasure: ${6:muoversi lentamente evita di sollevare la nebbia}",
+      ":::"
+    ],
+    "description": "Pericolo da schema (Core)"
+  },
+  "Schema Tabella": {
+    "prefix": "qrandomtable",
+    "body": [
+      "::: random-table ${1:d6}",
+      "name: ${2:Eventi rapidi}",
+      "die: ${3:d6}",
+      "row: ${4:1} | ${5:Si sente un colpo metallico.}",
+      "row: ${6:2} | ${7:Una porta si apre da sola.}",
+      ":::"
+    ],
+    "description": "Tabella da schema (Core)"
+  },
+  "Schema Readaloud": {
+    "prefix": "qreadaloud",
+    "body": [
+      "::: readaloud ${1:Da leggere al tavolo}",
+      "${2:Le torce proiettano ombre innaturali sulle colonne spezzate.}",
+      ":::"
+    ],
+    "description": "Readaloud da schema (Core)"
+  },
+  "Schema Incontro": {
+    "prefix": "qencounter",
+    "body": [
+      "::: encounter ${1:Incontro}",
+      "${2:Tre avversari deboli entrano da lati opposti.}",
+      ":::"
+    ],
+    "description": "Incontro da schema (Core)"
+  },
+  "Schema Tesoro": {
+    "prefix": "qtreasure",
+    "body": [
+      "::: treasure ${1:Tesoro}",
+      "${2:- 25 monete d'argento}",
+      "${3:- Una chiave annerita}",
+      "${4:- Un frammento di mappa}",
+      ":::"
+    ],
+    "description": "Tesoro da schema (Core)"
+  },
+  "Schema Nota": {
+    "prefix": "qnote",
+    "body": [
+      "::: note ${1:Nota autore}",
+      "${2:Promemoria di design, appunto per playtest o variante opzionale.}",
+      ":::"
+    ],
+    "description": "Nota da schema (Core)"
+  },
+  "Schema Mappa": {
+    "prefix": "qmap",
+    "body": [
+      "::: map ${1:Mappa}",
+      "src: ${2:../assets/images/maps/santuario-sepolto-map.svg}",
+      "alt: ${3:Mappa del Santuario Sepolto}",
+      ":::"
+    ],
+    "description": "Mappa da schema (Core)"
+  },
+  "Schema Immagine": {
+    "prefix": "qimage",
+    "body": [
+      "::: image ${1:Immagine}",
+      "src: ${2:../assets/images/maps/santuario-sepolto-map.svg}",
+      "alt: ${3:Handout}",
+      "caption: ${4:Handout per i giocatori}",
+      ":::"
+    ],
+    "description": "Immagine da schema (Core)"
+  },
+  "Schema Fazione": {
+    "prefix": "qfaction",
+    "body": [
+      "::: faction ${1:Fazione}",
+      "name: ${2:Ordine della Lanterna}",
+      "goal: ${3:Recuperare reliquie perdute prima che cadano in mani ostili.}",
+      "resources: ${4:Informatori, archivi sigillati, piccoli santuari lungo le strade.}",
+      "complication: ${5:Un ramo interno nasconde un patto con una creatura extraplanare.}",
+      "hook: ${6:Richiesta} | ${7:La fazione offre protezione in cambio di una mappa sottratta a un rivale.}",
+      ":::"
+    ],
+    "description": "Fazione da schema (Fantasy Classic Pack)"
+  },
+  "Schema Missione": {
+    "prefix": "qquest",
+    "body": [
+      "::: quest ${1:Missione}",
+      "name: ${2:La Campana Sepolta}",
+      "objective: ${3:Trovare la campana votiva prima dell'equinozio.}",
+      "stakes: ${4:Se la campana resta sepolta, il villaggio perdera la protezione rituale.}",
+      "reward: ${5:Accesso agli archivi del tempio e una reliquia minore.}",
+      "hook: ${6:Rivale} | ${7:Una compagnia mercenaria vuole vendere la campana al miglior offerente.}",
+      ":::"
+    ],
+    "description": "Missione da schema (Fantasy Classic Pack)"
+  }
+}

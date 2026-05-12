@@ -3,6 +3,7 @@ import { existsSync } from "node:fs";
 import { dirname, extname, join, resolve, relative } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { spawn } from "node:child_process";
+import { mergeComponentSources } from "./lib/component-schema.js";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const sourceDir = join(root, "docs");
@@ -11,6 +12,7 @@ const templatePath = join(root, "templates", "document.html");
 const cssPath = join(root, "styles", "main.css");
 const assetManifestPath = join(root, "assets", "manifest.json");
 const bookManifestPath = join(root, "book.json");
+const componentManifestPath = join(root, "schemas", "components.json");
 
 const args = new Set(process.argv.slice(2));
 const buildSite = args.has("--site");
@@ -19,6 +21,7 @@ const buildHtml = args.has("--html") || (!args.has("--pdf") && !buildSite);
 const buildPdf = args.has("--pdf");
 const sourceArg = [...args].find((arg) => arg.endsWith(".md"));
 const sourcePath = sourceArg ? resolve(root, sourceArg) : join(sourceDir, "esempio.md");
+let componentSchema = { components: [] };
 
 async function main() {
   const documents = buildSite && !sourceArg && !buildBook
@@ -27,6 +30,7 @@ async function main() {
   const css = await loadCss(cssPath);
   const template = await readFile(templatePath, "utf8");
   const assetManifest = await loadAssetManifest();
+  componentSchema = await loadComponentSchema();
   await copyBuildAssets(assetManifest, { includeSite: buildSite });
 
   if (buildBook) {
@@ -390,7 +394,32 @@ function renderStructuredContainer(name, label, markdown) {
   if (name === "map") return renderMediaFigure("rpg-map", data, label || data.caption || "Mappa");
   if (name === "image") return renderMediaFigure("rpg-image", data, label || data.caption || "");
 
+  const component = componentSchema.components.find((item) => item.container === name || item.id === name);
+  if (component) return renderSchemaComponent(component, data, label);
+
   return "";
+}
+
+function renderSchemaComponent(component, data, label) {
+  const className = component.container;
+  const bodyKeys = new Set(["body", "name"]);
+  const title = data.name || label || component.default_label || component.label;
+  const lines = (component.fields || [])
+    .filter((field) => !bodyKeys.has(field.key) && data[field.key])
+    .map((field) => `<p class="rules-line"><strong>${renderInline(field.label)}.</strong> ${renderInline(data[field.key])}</p>`);
+  const features = [
+    ...data.hooks,
+    ...data.traits,
+    ...data.actions,
+    ...data.reactions,
+    ...data.legendary
+  ].map((item) => `<p><strong>${renderInline(item.name)}.</strong> ${renderInline(item.text)}</p>`);
+
+  return renderRulesCard(className, label || component.default_label || component.label, title, [
+    ...lines,
+    ...features,
+    data.body.length ? renderMarkdown(data.body.join("\n")) : ""
+  ]);
 }
 
 function parseBlockData(markdown) {
@@ -803,6 +832,38 @@ async function loadAssetManifest() {
   }
 
   return JSON.parse(await readFile(assetManifestPath, "utf8"));
+}
+
+async function loadComponentSchema() {
+  if (!existsSync(componentManifestPath)) {
+    return { components: [] };
+  }
+
+  const manifest = JSON.parse(await readFile(componentManifestPath, "utf8"));
+  const sources = [{
+    id: "core",
+    name: "Core",
+    schema: JSON.parse(await readFile(resolveSchemaPath(manifest.core), "utf8"))
+  }];
+
+  for (const pack of manifest.packs || []) {
+    if (pack.enabled === false) continue;
+    sources.push({
+      id: pack.id,
+      name: pack.name,
+      schema: JSON.parse(await readFile(resolveSchemaPath(pack.path), "utf8"))
+    });
+  }
+
+  return mergeComponentSources(sources);
+}
+
+function resolveSchemaPath(path) {
+  if (!path || path.includes("..")) {
+    throw new Error(`Path schema non consentito: ${path}`);
+  }
+
+  return resolve(root, path.replace(/^\/+/, ""));
 }
 
 async function loadBookManifest() {

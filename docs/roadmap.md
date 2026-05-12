@@ -76,6 +76,6 @@ Componenti prioritari:
 
 ## Fase 5 - Integrazione build
 
-- Rendere lo schema una fonte comune per UI, snippet e documentazione.
-- Generare reference componenti e snippet VS Code a partire dallo schema.
+- Fatto: rendere lo schema una fonte comune per UI, snippet e documentazione.
+- Fatto: generare reference componenti e snippet VS Code a partire dallo schema.
 - Aggiungere test di regressione per rendering componenti strutturati.

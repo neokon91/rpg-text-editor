@@ -20,7 +20,9 @@ npm run check:assets
 npm run check:includes
 npm run check:components
 npm run check:documents
+npm run check:schema-artifacts
 npm run check
+npm run generate:schema-artifacts
 npm run new -- adventure "La Torre Sommersa"
 npm run preview
 npm run preview:expanded
@@ -42,7 +44,9 @@ npm run editor
 - `npm run check:includes` verifica che gli include riusabili puntino a file esistenti.
 - `npm run check:components` valida manifest e plugin pack dei componenti.
 - `npm run check:documents` valida i blocchi `:::` in `docs/` contro lo schema componenti.
-- `npm run check` esegue controlli legali/editoriali, asset, include, componenti e documenti.
+- `npm run check:schema-artifacts` verifica che reference e snippet generati siano aggiornati.
+- `npm run check` esegue controlli legali/editoriali, asset, include, componenti, documenti e artefatti schema.
+- `npm run generate:schema-artifacts` rigenera `docs/reference.md` e `.vscode/rpg.schema.code-snippets` dallo schema componenti.
 - `npm run new -- adventure "Titolo"` crea un nuovo documento da template. Tipi disponibili: `adventure`, `bestiary`, `item`, `reference`.
 - `npm run preview` serve la cartella `dist` su `http://127.0.0.1:8081`.
 - `npm run preview:expanded` rigenera `dist/site/` e serve una preview navigabile con `<rpg-include>` gia espansi.
@@ -66,6 +70,8 @@ L'editor mantiene il Markdown come sorgente primaria, salva bozze in `localStora
 Dal server locale dell'editor puoi aprire documenti Markdown esistenti da `docs/` e salvare la bozza corrente direttamente come file `.md` in `docs/`. Il salvataggio usa lo `slug` del frontmatter, il primo H1 o un fallback normalizzato.
 
 I plugin pack vivono in `schemas/plugins/<pack-id>/pack.json` e dichiarano nome, versione, compatibilita e componenti esportati. `npm run check:components` valida campi obbligatori e collisioni di `id`/`container`.
+
+`npm run generate:schema-artifacts` usa lo stesso manifest per rigenerare la reference componenti e gli snippet rapidi in `.vscode/rpg.schema.code-snippets`. `npm run check:schema-artifacts` fallisce se questi file non sono allineati allo schema.
 
 La direzione prodotto e tracciata in `docs/roadmap.md`.
 
