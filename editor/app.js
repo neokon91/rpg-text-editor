@@ -1,6 +1,7 @@
 import { mergeComponentSources, slugifyDocumentName, validateMarkdownBlocks } from "/scripts/lib/component-schema.js";
 
 const storageKey = "rpg-text-editor:draft";
+const enabledPacksKey = "rpg-text-editor:enabled-packs";
 const manifestUrl = "/schemas/components.json";
 
 const input = document.querySelector("#markdown-input");
@@ -16,9 +17,11 @@ const saveState = document.querySelector("#save-state");
 const wordCount = document.querySelector("#word-count");
 const validationPanel = document.querySelector("#validation-panel");
 const documentPicker = document.querySelector("#document-picker");
+const packList = document.querySelector("#pack-list");
 
 let schema;
 let manifest;
+let enabledPacks = new Set();
 let selectedComponent;
 
 const starterDocument = `---
@@ -47,9 +50,12 @@ Scrivi qui la prima scena.
 init();
 
 async function init() {
-  ({ manifest, schema } = await loadComponentManifest(manifestUrl));
+  manifest = await fetchJson(manifestUrl, "Manifest componenti non caricato");
+  enabledPacks = loadEnabledPacks(manifest);
+  schema = await loadComponentSchema(manifest, enabledPacks);
 
   input.value = localStorage.getItem(storageKey) || starterDocument;
+  renderPackList();
   renderComponentList();
   await refreshDocumentPicker();
   renderPreview();
@@ -69,23 +75,19 @@ async function init() {
   insertButton.addEventListener("click", insertSelectedComponent);
 }
 
-async function loadComponentManifest(url) {
-  const loadedManifest = await fetchJson(url, "Manifest componenti non caricato");
+async function loadComponentSchema(loadedManifest, activePackIds) {
   const sources = [];
   const core = await fetchJson(loadedManifest.core, "Schema core non caricato");
   sources.push({ id: "core", name: "Core", schema: core });
 
   for (const pack of loadedManifest.packs || []) {
-    if (pack.enabled === false) continue;
+    if (!activePackIds.has(pack.id)) continue;
 
     const packSchema = await fetchJson(pack.path, `Plugin pack non caricato: ${pack.id}`);
     sources.push({ id: pack.id, name: pack.name, schema: packSchema });
   }
 
-  return {
-    manifest: loadedManifest,
-    schema: mergeComponentSources(sources)
-  };
+  return mergeComponentSources(sources);
 }
 
 async function fetchJson(url, errorMessage) {
@@ -122,6 +124,41 @@ function renderComponentList() {
 
     return section;
   }));
+}
+
+function renderPackList() {
+  const packs = manifest.packs || [];
+  if (!packs.length) {
+    packList.innerHTML = '<p class="pack-empty">Nessun pack dichiarato.</p>';
+    return;
+  }
+
+  packList.replaceChildren(...packs.map((pack) => {
+    const label = document.createElement("label");
+    label.className = "pack-toggle";
+    label.innerHTML = `
+      <input type="checkbox" value="${escapeHtml(pack.id)}" ${enabledPacks.has(pack.id) ? "checked" : ""}>
+      <span>
+        <strong>${escapeHtml(pack.name)}</strong>
+        <small>${escapeHtml(pack.version)} · ${escapeHtml(pack.compatibility)}</small>
+      </span>
+    `;
+    label.querySelector("input").addEventListener("change", () => updatePackSelection(pack.id));
+    return label;
+  }));
+}
+
+async function updatePackSelection(packId) {
+  if (enabledPacks.has(packId)) {
+    enabledPacks.delete(packId);
+  } else {
+    enabledPacks.add(packId);
+  }
+
+  localStorage.setItem(enabledPacksKey, JSON.stringify([...enabledPacks]));
+  schema = await loadComponentSchema(manifest, enabledPacks);
+  renderComponentList();
+  renderPreview();
 }
 
 function openComponentDialog(component) {
@@ -251,6 +288,24 @@ function renderValidation() {
     ...diagnostics.map((diagnostic) => `<li class="${diagnostic.severity}">Riga ${diagnostic.line}: ${escapeHtml(diagnostic.message)}</li>`),
     "</ul>"
   ].join("");
+}
+
+function loadEnabledPacks(loadedManifest) {
+  const declared = new Set((loadedManifest.packs || []).map((pack) => pack.id));
+  const stored = localStorage.getItem(enabledPacksKey);
+
+  if (stored) {
+    try {
+      const selected = JSON.parse(stored).filter((id) => declared.has(id));
+      return new Set(selected);
+    } catch {
+      localStorage.removeItem(enabledPacksKey);
+    }
+  }
+
+  return new Set((loadedManifest.packs || [])
+    .filter((pack) => pack.enabled !== false)
+    .map((pack) => pack.id));
 }
 
 function renderMarkdown(markdown) {

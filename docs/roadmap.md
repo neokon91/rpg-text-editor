@@ -64,7 +64,7 @@ Componenti prioritari:
 - Fatto: introdurre manifest per plugin pack con nome, versione, compatibilita e componenti esportati.
 - Fatto: validare collisioni di `id` e `container`.
 - Fatto: aggiungere pack tematico `fantasy-classic`.
-- Prossimo: decidere strategia di caricamento pack da UI, invece che solo da manifest versionato.
+- Fatto: decidere strategia di caricamento pack da UI, con scelta locale in `localStorage` e manifest versionato per build/check.
 
 ## Fase 4 - Validazione e import/export
 

@@ -73,6 +73,8 @@ Dal server locale dell'editor puoi aprire documenti Markdown esistenti da `docs/
 
 I plugin pack vivono in `schemas/plugins/<pack-id>/pack.json` e dichiarano nome, versione, compatibilita e componenti esportati. `npm run check:components` valida campi obbligatori e collisioni di `id`/`container`.
 
+Nel pannello componenti dell'editor puoi attivare o disattivare i pack dichiarati nel manifest. La scelta resta locale in `localStorage`: build, check e artefatti generati continuano a usare il manifest versionato.
+
 `npm run generate:schema-artifacts` usa lo stesso manifest per rigenerare la reference componenti e gli snippet rapidi in `.vscode/rpg.schema.code-snippets`. `npm run check:schema-artifacts` fallisce se questi file non sono allineati allo schema.
 
 La direzione prodotto e tracciata in `docs/roadmap.md`.
