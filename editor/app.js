@@ -18,11 +18,14 @@ const wordCount = document.querySelector("#word-count");
 const validationPanel = document.querySelector("#validation-panel");
 const documentPicker = document.querySelector("#document-picker");
 const packList = document.querySelector("#pack-list");
+const metadataControls = [...document.querySelectorAll("[data-meta]")];
+const toolbar = document.querySelector(".editor-toolbar");
 
 let schema;
 let manifest;
 let enabledPacks = new Set();
 let selectedComponent;
+let syncingMetadata = false;
 
 const starterDocument = `---
 title: Nuova Avventura
@@ -55,6 +58,7 @@ async function init() {
   schema = await loadComponentSchema(manifest, enabledPacks);
 
   input.value = localStorage.getItem(storageKey) || starterDocument;
+  syncMetadataForm();
   renderPackList();
   renderComponentList();
   await refreshDocumentPicker();
@@ -63,9 +67,16 @@ async function init() {
   input.addEventListener("input", () => {
     localStorage.setItem(storageKey, input.value);
     saveState.textContent = "Salvato localmente";
+    syncMetadataForm();
     renderPreview();
   });
 
+  for (const control of metadataControls) {
+    control.addEventListener("input", applyMetadataForm);
+    control.addEventListener("change", applyMetadataForm);
+  }
+
+  toolbar.addEventListener("click", handleToolbarClick);
   componentSearch.addEventListener("input", renderComponentList);
   document.querySelector("#new-document").addEventListener("click", resetDraft);
   document.querySelector("#copy-markdown").addEventListener("click", copyMarkdown);
@@ -264,6 +275,70 @@ function insertAtCursor(textarea, text) {
   textarea.value = `${textarea.value.slice(0, start)}${text}${textarea.value.slice(end)}`;
   textarea.focus();
   textarea.selectionStart = textarea.selectionEnd = start + text.length;
+}
+
+function handleToolbarClick(event) {
+  const button = event.target.closest("button[data-action]");
+  if (!button) return;
+
+  const action = button.dataset.action;
+  const selected = input.value.slice(input.selectionStart, input.selectionEnd);
+  const fallback = selected || {
+    heading: "Nuova sezione",
+    bold: "testo importante",
+    italic: "enfasi",
+    list: "Elemento",
+    readaloud: "Testo da leggere al tavolo",
+    pagebreak: ""
+  }[action] || "";
+
+  const snippets = {
+    heading: `\n\n## ${fallback}\n`,
+    bold: `**${fallback}**`,
+    italic: `*${fallback}*`,
+    list: `\n- ${fallback}\n`,
+    readaloud: `\n\n::: readaloud Da leggere al tavolo\n${fallback}\n:::\n`,
+    pagebreak: "\n\n::pagebreak\n"
+  };
+
+  insertAtCursor(input, snippets[action]);
+  persistEditorChange();
+}
+
+function syncMetadataForm() {
+  if (syncingMetadata) return;
+
+  syncingMetadata = true;
+  const { metadata } = parseFrontmatter(input.value);
+  const defaults = parseFrontmatter(starterDocument).metadata;
+
+  for (const control of metadataControls) {
+    const key = control.dataset.meta;
+    control.value = metadata[key] ?? defaults[key] ?? "";
+  }
+
+  syncingMetadata = false;
+}
+
+function applyMetadataForm() {
+  if (syncingMetadata) return;
+
+  const parsed = parseFrontmatter(input.value);
+  const metadata = { ...parsed.metadata };
+  for (const control of metadataControls) {
+    metadata[control.dataset.meta] = control.value.trim();
+  }
+  metadata.compatibility ||= "5e/5.5e";
+  metadata.license_mode ||= "srd-5.2-cc";
+
+  input.value = `${serializeFrontmatter(metadata)}\n\n${parsed.body.trimStart()}`;
+  persistEditorChange();
+}
+
+function persistEditorChange() {
+  localStorage.setItem(storageKey, input.value);
+  saveState.textContent = "Salvato localmente";
+  renderPreview();
 }
 
 function renderPreview() {
@@ -482,6 +557,7 @@ function stripFrontmatter(markdown) {
 function resetDraft() {
   input.value = starterDocument;
   localStorage.setItem(storageKey, input.value);
+  syncMetadataForm();
   renderPreview();
 }
 
@@ -542,6 +618,7 @@ async function importSelectedDocument() {
   input.value = content;
   localStorage.setItem(storageKey, input.value);
   saveState.textContent = `Aperto docs/${filename}`;
+  syncMetadataForm();
   renderPreview();
 }
 
@@ -552,6 +629,43 @@ function groupBy(items, key) {
     groups[value].push(item);
     return groups;
   }, {});
+}
+
+function parseFrontmatter(markdown) {
+  if (!markdown.startsWith("---\n")) return { metadata: {}, body: markdown };
+  const end = markdown.indexOf("\n---", 4);
+  if (end === -1) return { metadata: {}, body: markdown };
+
+  const raw = markdown.slice(4, end).trim();
+  const metadata = {};
+  for (const line of raw.split("\n")) {
+    const index = line.indexOf(":");
+    if (index === -1) continue;
+    metadata[line.slice(0, index).trim()] = line.slice(index + 1).trim().replace(/^["']|["']$/g, "");
+  }
+
+  return { metadata, body: markdown.slice(end + 4).trimStart() };
+}
+
+function serializeFrontmatter(metadata) {
+  const order = [
+    "title",
+    "slug",
+    "summary",
+    "category",
+    "tags",
+    "compatibility",
+    "license_mode",
+    "author",
+    "theme",
+    "paper",
+    "public"
+  ];
+  const keys = [...order, ...Object.keys(metadata).filter((key) => !order.includes(key))];
+  const lines = keys
+    .filter((key, index) => keys.indexOf(key) === index && metadata[key] !== undefined && metadata[key] !== "")
+    .map((key) => `${key}: ${metadata[key]}`);
+  return ["---", ...lines, "---"].join("\n");
 }
 
 function countWords(text) {

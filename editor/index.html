@@ -44,6 +44,63 @@
             <h2>Markdown</h2>
             <span id="save-state" class="save-state">Bozza locale</span>
           </div>
+          <div class="metadata-panel" aria-label="Metadati documento">
+            <label>
+              <span>Titolo</span>
+              <input id="meta-title" data-meta="title" type="text">
+            </label>
+            <label>
+              <span>Slug</span>
+              <input id="meta-slug" data-meta="slug" type="text">
+            </label>
+            <label class="metadata-wide">
+              <span>Summary</span>
+              <input id="meta-summary" data-meta="summary" type="text">
+            </label>
+            <label>
+              <span>Categoria</span>
+              <input id="meta-category" data-meta="category" type="text">
+            </label>
+            <label>
+              <span>Tags</span>
+              <input id="meta-tags" data-meta="tags" type="text">
+            </label>
+            <label>
+              <span>Autore</span>
+              <input id="meta-author" data-meta="author" type="text">
+            </label>
+            <label>
+              <span>Tema</span>
+              <select id="meta-theme" data-meta="theme">
+                <option value="classic-parchment">classic-parchment</option>
+                <option value="dark-arcane">dark-arcane</option>
+                <option value="clean-guild">clean-guild</option>
+                <option value="printer-friendly">printer-friendly</option>
+              </select>
+            </label>
+            <label>
+              <span>Carta</span>
+              <select id="meta-paper" data-meta="paper">
+                <option value="A4">A4</option>
+                <option value="Letter">Letter</option>
+              </select>
+            </label>
+            <label>
+              <span>Pubblico</span>
+              <select id="meta-public" data-meta="public">
+                <option value="true">true</option>
+                <option value="false">false</option>
+              </select>
+            </label>
+          </div>
+          <div class="editor-toolbar" aria-label="Toolbar Markdown">
+            <button type="button" data-action="heading">H2</button>
+            <button type="button" data-action="bold">B</button>
+            <button type="button" data-action="italic">I</button>
+            <button type="button" data-action="list">Lista</button>
+            <button type="button" data-action="readaloud">Readaloud</button>
+            <button type="button" data-action="pagebreak">Pagina</button>
+          </div>
           <textarea id="markdown-input" spellcheck="true"></textarea>
         </section>
 
