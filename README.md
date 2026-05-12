@@ -69,7 +69,7 @@ npm run editor
 
 L'editor mantiene il Markdown come sorgente primaria, salva bozze in `localStorage` e inserisce blocchi `:::` compatibili con la build. La palette componenti non usa un registry JavaScript hardcoded: viene generata dal manifest `schemas/components.json`, che aggrega lo schema core in `schemas/core/components.json` e i plugin pack abilitati. Il pannello preview segnala in tempo reale componenti sconosciuti, campi obbligatori mancanti, chiavi non previste e liste malformate.
 
-Il pannello Markdown include un form per i metadati principali del frontmatter e una toolbar rapida per heading, enfasi, liste, readaloud e page break. Ogni controllo aggiorna il sorgente Markdown visibile, senza introdurre un formato proprietario.
+Il pannello Markdown include un form per i metadati principali del frontmatter e una toolbar rapida per heading, enfasi, liste, readaloud e page break. Ogni controllo aggiorna il sorgente Markdown visibile, senza introdurre un formato proprietario. La preview usa un iframe con `styles/main.css`, `page-shell`, tema e formato carta del frontmatter, cosi resta molto piu vicina alla resa HTML/PDF finale.
 
 Dal server locale dell'editor puoi aprire documenti Markdown esistenti da `docs/` e salvare la bozza corrente direttamente come file `.md` in `docs/`. Il salvataggio usa lo `slug` del frontmatter, il primo H1 o un fallback normalizzato. L'editor tiene traccia del file corrente, segnala modifiche non salvate, chiede conferma prima di cambiare documento e distingue tra overwrite del file aperto e creazione di una nuova copia.
 

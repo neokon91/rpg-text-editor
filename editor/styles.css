@@ -361,10 +361,13 @@ textarea:focus-visible {
   min-height: 0;
 }
 
-.preview-document {
-  padding: 28px;
-  font-family: Georgia, "Times New Roman", serif;
-  line-height: 1.55;
+.preview-frame {
+  display: block;
+  width: 100%;
+  height: calc(100vh - 132px);
+  min-height: 560px;
+  border: 0;
+  background: #1c1510;
 }
 
 .validation-panel {
@@ -396,93 +399,6 @@ textarea:focus-visible {
 
 .validation-panel .warning {
   color: #6f4a00;
-}
-
-.preview-document h1,
-.preview-document h2,
-.preview-document h3 {
-  line-height: 1.15;
-  letter-spacing: 0;
-}
-
-.preview-document h1 {
-  margin: 0 0 16px;
-  font-size: 34px;
-}
-
-.preview-document h2 {
-  margin-top: 28px;
-  color: var(--accent-strong);
-}
-
-.subtitle {
-  color: var(--muted);
-  font-size: 18px;
-}
-
-.readaloud,
-.encounter,
-.treasure,
-.note,
-.random-table,
-.rules-card,
-.statblock,
-.rpg-map,
-.rpg-image {
-  margin: 18px 0;
-  padding: 14px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: #fffdf8;
-}
-
-.readaloud__label,
-.encounter__label,
-.treasure__label,
-.note__label,
-.random-table__label,
-.rules-card__label,
-.statblock__label {
-  margin-bottom: 8px;
-  color: var(--accent);
-  font: 700 12px/1.2 ui-sans-serif, system-ui, sans-serif;
-  text-transform: uppercase;
-}
-
-.statblock {
-  border-color: var(--accent);
-  background: #fff8ea;
-}
-
-.rules-line {
-  margin: 6px 0;
-}
-
-.table-compact {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.table-compact td,
-.table-compact th {
-  padding: 6px 8px;
-  border-bottom: 1px solid var(--line);
-  text-align: left;
-}
-
-.rpg-map img,
-.rpg-image img {
-  display: block;
-  max-width: 100%;
-  border: 1px solid var(--line);
-}
-
-.rpg-map figcaption,
-.rpg-image figcaption {
-  margin-top: 8px;
-  color: var(--muted);
-  font-size: 13px;
-  text-align: center;
 }
 
 .component-dialog {
@@ -627,6 +543,11 @@ textarea:focus-visible {
 
   .metadata-wide {
     grid-column: auto;
+  }
+
+  .preview-frame {
+    height: 640px;
+    min-height: 640px;
   }
 
   .component-form,
