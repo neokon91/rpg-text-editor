@@ -136,7 +136,7 @@ textarea:focus-visible {
 }
 
 .editor-panel {
-  grid-template-rows: auto auto auto 1fr;
+  grid-template-rows: auto auto auto auto 1fr;
 }
 
 .preview-panel {
@@ -170,6 +170,29 @@ textarea:focus-visible {
 .save-state {
   color: var(--muted);
   font-size: 12px;
+}
+
+.document-state {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--line);
+  background: #fffdf8;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.document-state span:first-child {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.document-state .dirty {
+  color: var(--accent);
+  font-weight: 700;
 }
 
 .component-scroll {

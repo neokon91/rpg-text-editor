@@ -69,7 +69,14 @@ async function handleDocumentsApi(request, response, url) {
 
   if (request.method === "POST" && url.pathname === "/api/documents") {
     const payload = JSON.parse(await readRequestBody(request));
-    const filename = safeMarkdownFilename(payload.filename || `${slugify(readTitle(payload.content || "") || "bozza-rpg")}.md`);
+    let filename = safeMarkdownFilename(payload.filename || `${slugify(readTitle(payload.content || "") || "bozza-rpg")}.md`);
+    if (payload.unique) {
+      filename = await uniqueMarkdownFilename(filename);
+    } else if (!payload.overwrite && existsSync(join(docsDir, filename))) {
+      response.writeHead(409, { "content-type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({ error: "File already exists", filename }));
+      return;
+    }
     await writeFile(join(docsDir, filename), payload.content || "", "utf8");
     sendJson(response, { filename });
     return;
@@ -82,6 +89,19 @@ async function handleDocumentsApi(request, response, url) {
 function safeMarkdownFilename(filename) {
   const clean = basename(filename).replace(/\.md$/i, "");
   return `${slugify(clean)}.md`;
+}
+
+async function uniqueMarkdownFilename(filename) {
+  const base = safeMarkdownFilename(filename).replace(/\.md$/i, "");
+  let candidate = `${base}.md`;
+  let index = 2;
+
+  while (existsSync(join(docsDir, candidate))) {
+    candidate = `${base}-${index}.md`;
+    index += 1;
+  }
+
+  return candidate;
 }
 
 function readTitle(markdown) {

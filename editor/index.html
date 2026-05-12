@@ -20,7 +20,8 @@
           </select>
           <button id="copy-markdown" type="button">Copia Markdown</button>
           <button id="download-markdown" type="button">Scarica .md</button>
-          <button id="save-document" type="button">Salva in docs</button>
+          <button id="save-document" type="button">Salva</button>
+          <button id="save-copy" type="button">Salva nuovo</button>
         </div>
       </header>
 
@@ -43,6 +44,10 @@
           <div class="panel-header">
             <h2>Markdown</h2>
             <span id="save-state" class="save-state">Bozza locale</span>
+          </div>
+          <div class="document-state">
+            <span id="current-document">Nessun file aperto</span>
+            <span id="dirty-state">Non salvato in docs</span>
           </div>
           <div class="metadata-panel" aria-label="Metadati documento">
             <label>

@@ -20,12 +20,17 @@ const documentPicker = document.querySelector("#document-picker");
 const packList = document.querySelector("#pack-list");
 const metadataControls = [...document.querySelectorAll("[data-meta]")];
 const toolbar = document.querySelector(".editor-toolbar");
+const currentDocumentLabel = document.querySelector("#current-document");
+const dirtyState = document.querySelector("#dirty-state");
 
 let schema;
 let manifest;
 let enabledPacks = new Set();
 let selectedComponent;
 let syncingMetadata = false;
+let currentDocument = "";
+let lastSavedContent = "";
+let isDirty = false;
 
 const starterDocument = `---
 title: Nuova Avventura
@@ -58,6 +63,8 @@ async function init() {
   schema = await loadComponentSchema(manifest, enabledPacks);
 
   input.value = localStorage.getItem(storageKey) || starterDocument;
+  lastSavedContent = input.value;
+  setDirty(Boolean(localStorage.getItem(storageKey)));
   syncMetadataForm();
   renderPackList();
   renderComponentList();
@@ -65,10 +72,8 @@ async function init() {
   renderPreview();
 
   input.addEventListener("input", () => {
-    localStorage.setItem(storageKey, input.value);
-    saveState.textContent = "Salvato localmente";
+    persistEditorChange();
     syncMetadataForm();
-    renderPreview();
   });
 
   for (const control of metadataControls) {
@@ -82,8 +87,14 @@ async function init() {
   document.querySelector("#copy-markdown").addEventListener("click", copyMarkdown);
   document.querySelector("#download-markdown").addEventListener("click", downloadMarkdown);
   document.querySelector("#save-document").addEventListener("click", saveDocumentToDocs);
+  document.querySelector("#save-copy").addEventListener("click", saveDocumentCopy);
   documentPicker.addEventListener("change", importSelectedDocument);
   insertButton.addEventListener("click", insertSelectedComponent);
+  window.addEventListener("beforeunload", (event) => {
+    if (!isDirty) return;
+    event.preventDefault();
+    event.returnValue = "";
+  });
 }
 
 async function loadComponentSchema(loadedManifest, activePackIds) {
@@ -238,8 +249,7 @@ function insertSelectedComponent() {
 
   const markdown = componentToMarkdown(selectedComponent);
   insertAtCursor(input, markdown);
-  localStorage.setItem(storageKey, input.value);
-  renderPreview();
+  persistEditorChange();
   dialog.close();
 }
 
@@ -337,8 +347,21 @@ function applyMetadataForm() {
 
 function persistEditorChange() {
   localStorage.setItem(storageKey, input.value);
-  saveState.textContent = "Salvato localmente";
+  setDirty(input.value !== lastSavedContent);
   renderPreview();
+}
+
+function setDirty(value) {
+  isDirty = value;
+  const filename = currentDocument || `${slugifyDocumentName(input.value)}.md`;
+  currentDocumentLabel.textContent = currentDocument ? `docs/${currentDocument}` : "Bozza locale";
+  dirtyState.textContent = isDirty ? "Modifiche non salvate" : `Salvato: ${filename}`;
+  dirtyState.className = isDirty ? "dirty" : "";
+  saveState.textContent = isDirty ? "Modifiche locali" : "Salvato in docs";
+}
+
+function confirmDiscardChanges() {
+  return !isDirty || window.confirm("Ci sono modifiche non salvate. Vuoi continuare e perderle?");
 }
 
 function renderPreview() {
@@ -555,10 +578,15 @@ function stripFrontmatter(markdown) {
 }
 
 function resetDraft() {
+  if (!confirmDiscardChanges()) return;
   input.value = starterDocument;
+  currentDocument = "";
+  lastSavedContent = starterDocument;
   localStorage.setItem(storageKey, input.value);
   syncMetadataForm();
+  setDirty(true);
   renderPreview();
+  documentPicker.value = "";
 }
 
 async function copyMarkdown() {
@@ -576,20 +604,47 @@ function downloadMarkdown() {
 }
 
 async function saveDocumentToDocs() {
-  const filename = `${slugifyDocumentName(input.value)}.md`;
+  const filename = currentDocument || `${slugifyDocumentName(input.value)}.md`;
   const response = await fetch("/api/documents", {
     method: "POST",
     headers: { "content-type": "application/json" },
-    body: JSON.stringify({ filename, content: input.value })
+    body: JSON.stringify({ filename, content: input.value, overwrite: Boolean(currentDocument) })
   });
 
   if (!response.ok) {
-    saveState.textContent = "Salvataggio non riuscito";
+    saveState.textContent = response.status === 409 ? "File gia esistente" : "Salvataggio non riuscito";
     return;
   }
 
   const result = await response.json();
-  saveState.textContent = `Salvato in docs/${result.filename}`;
+  currentDocument = result.filename;
+  lastSavedContent = input.value;
+  localStorage.removeItem(storageKey);
+  setDirty(false);
+  await refreshDocumentPicker(result.filename);
+}
+
+async function saveDocumentCopy() {
+  const response = await fetch("/api/documents", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      filename: `${slugifyDocumentName(input.value)}.md`,
+      content: input.value,
+      unique: true
+    })
+  });
+
+  if (!response.ok) {
+    saveState.textContent = "Salva nuovo non riuscito";
+    return;
+  }
+
+  const result = await response.json();
+  currentDocument = result.filename;
+  lastSavedContent = input.value;
+  localStorage.removeItem(storageKey);
+  setDirty(false);
   await refreshDocumentPicker(result.filename);
 }
 
@@ -607,8 +662,14 @@ async function refreshDocumentPicker(selected = "") {
 
 async function importSelectedDocument() {
   if (!documentPicker.value) return;
+  const selected = documentPicker.value;
 
-  const response = await fetch(`/api/documents/${encodeURIComponent(documentPicker.value)}`);
+  if (!confirmDiscardChanges()) {
+    documentPicker.value = currentDocument;
+    return;
+  }
+
+  const response = await fetch(`/api/documents/${encodeURIComponent(selected)}`);
   if (!response.ok) {
     saveState.textContent = "Import non riuscito";
     return;
@@ -616,9 +677,11 @@ async function importSelectedDocument() {
 
   const { content, filename } = await response.json();
   input.value = content;
-  localStorage.setItem(storageKey, input.value);
-  saveState.textContent = `Aperto docs/${filename}`;
+  currentDocument = filename;
+  lastSavedContent = content;
+  localStorage.removeItem(storageKey);
   syncMetadataForm();
+  setDirty(false);
   renderPreview();
 }
 

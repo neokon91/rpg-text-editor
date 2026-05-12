@@ -33,6 +33,7 @@ RPG Text Editor deve diventare un ambiente di scrittura Markdown per contenuti T
 - Fatto: form frontmatter e toolbar Markdown rapida.
 - Fatto: Markdown come sorgente primaria.
 - Fatto: salvataggio bozze in `localStorage`, senza backend.
+- Fatto: stato documento, dirty indicator, overwrite esplicito e salva come nuovo.
 - Fatto: script `npm run editor`.
 
 ## Fase 2 - Sistema componenti a schema
