@@ -57,7 +57,9 @@ La prima UI locale vive in `editor/` e si avvia con:
 npm run editor
 ```
 
-L'editor mantiene il Markdown come sorgente primaria, salva bozze in `localStorage` e inserisce blocchi `:::` compatibili con la build. La palette componenti non usa un registry JavaScript hardcoded: viene generata da `schemas/components.json`, che descrive campi, liste ripetibili, etichette e valori di default per creature, incantesimi, oggetti, PNG, luoghi, pericoli, tabelle, callout e media.
+L'editor mantiene il Markdown come sorgente primaria, salva bozze in `localStorage` e inserisce blocchi `:::` compatibili con la build. La palette componenti non usa un registry JavaScript hardcoded: viene generata dal manifest `schemas/components.json`, che aggrega lo schema core in `schemas/core/components.json` e i plugin pack abilitati.
+
+I plugin pack vivono in `schemas/plugins/<pack-id>/pack.json` e dichiarano nome, versione, compatibilita e componenti esportati. `npm run check:components` valida campi obbligatori e collisioni di `id`/`container`.
 
 La direzione prodotto e tracciata in `docs/roadmap.md`.
 

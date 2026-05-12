@@ -1,0 +1,207 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "schema_version": "0.1.0",
+  "title": "RPG Text Editor Component Schema",
+  "description": "Componenti disponibili nell'editor Markdown. Ogni componente descrive campi, liste ripetibili e template di output.",
+  "components": [
+    {
+      "id": "monster",
+      "label": "Creatura",
+      "group": "Regole",
+      "description": "Statblock completo per mostri e PNG ostili.",
+      "container": "monster",
+      "default_label": "Creatura",
+      "fields": [
+        { "key": "name", "label": "Nome", "type": "text", "required": true, "default": "Guardiano della Soglia" },
+        { "key": "meta", "label": "Tipo", "type": "text", "default": "Costrutto medio, senza allineamento" },
+        { "key": "ac", "label": "CA", "type": "text", "default": "15" },
+        { "key": "hp", "label": "PF", "type": "text", "default": "38" },
+        { "key": "speed", "label": "Velocita", "type": "text", "default": "9 m" },
+        { "key": "cr", "label": "GS", "type": "text", "default": "1" },
+        { "key": "str", "label": "FOR", "type": "number", "default": 14 },
+        { "key": "dex", "label": "DES", "type": "number", "default": 10 },
+        { "key": "con", "label": "COS", "type": "number", "default": 16 },
+        { "key": "int", "label": "INT", "type": "number", "default": 5 },
+        { "key": "wis", "label": "SAG", "type": "number", "default": 12 },
+        { "key": "cha", "label": "CAR", "type": "number", "default": 6 },
+        { "key": "senses", "label": "Sensi", "type": "text", "default": "scurovisione 18 m, Percezione passiva 11" },
+        { "key": "languages", "label": "Linguaggi", "type": "text", "default": "comprende una lingua scelta dal creatore" },
+        { "key": "body", "label": "Note", "type": "textarea", "default": "" }
+      ],
+      "lists": [
+        { "key": "trait", "label": "Tratto", "default_name": "Corpo di Pietra", "default_text": "Ha vantaggio ai tiri salvezza contro veleno e malattia." },
+        { "key": "action", "label": "Azione", "default_name": "Pugno Inciso", "default_text": "+4 a colpire, portata 1,5 m, un bersaglio. Colpisce per 1d8 + 2 danni contundenti." }
+      ]
+    },
+    {
+      "id": "spell",
+      "label": "Incantesimo",
+      "group": "Regole",
+      "description": "Scheda breve per incantesimi, rituali e formule.",
+      "container": "spell",
+      "default_label": "Formula rituale",
+      "fields": [
+        { "key": "name", "label": "Nome", "type": "text", "required": true, "default": "Luce del Cartografo" },
+        { "key": "level", "label": "Livello", "type": "text", "default": "1° livello" },
+        { "key": "school", "label": "Scuola", "type": "text", "default": "divinazione" },
+        { "key": "casting_time", "label": "Tempo di lancio", "type": "text", "default": "1 azione" },
+        { "key": "range", "label": "Gittata", "type": "text", "default": "personale" },
+        { "key": "components", "label": "Componenti", "type": "text", "default": "V, S, M" },
+        { "key": "duration", "label": "Durata", "type": "text", "default": "10 minuti" },
+        { "key": "body", "label": "Descrizione", "type": "textarea", "default": "Una linea luminosa indica il percorso piu breve verso una destinazione nominata entro 300 metri." }
+      ]
+    },
+    {
+      "id": "magicitem",
+      "label": "Oggetto",
+      "group": "Regole",
+      "description": "Oggetto magico o reliquia con rarita e sintonia.",
+      "container": "magicitem",
+      "default_label": "Oggetto magico",
+      "fields": [
+        { "key": "name", "label": "Nome", "type": "text", "required": true, "default": "Bussola senza Nord" },
+        { "key": "type", "label": "Tipo", "type": "text", "default": "Oggetto meraviglioso" },
+        { "key": "rarity", "label": "Rarita", "type": "text", "default": "raro" },
+        { "key": "attunement", "label": "Sintonia", "type": "text", "default": "richiesta" },
+        { "key": "body", "label": "Descrizione", "type": "textarea", "default": "La bussola indica la cosa che chi la impugna teme di trovare." }
+      ]
+    },
+    {
+      "id": "npc",
+      "label": "PNG",
+      "group": "Mondo",
+      "description": "Personaggio non giocante con motivazioni e spunti.",
+      "container": "npc",
+      "default_label": "PNG",
+      "fields": [
+        { "key": "name", "label": "Nome", "type": "text", "required": true, "default": "Mira Calden" },
+        { "key": "role", "label": "Ruolo", "type": "text", "default": "Mediatrice di gilda con troppi debiti" },
+        { "key": "appearance", "label": "Aspetto", "type": "text", "default": "abiti eleganti consumati ai polsini" },
+        { "key": "voice", "label": "Voce", "type": "text", "default": "precisa, gentile, sempre un mezzo tono troppo calma" },
+        { "key": "motive", "label": "Motivazione", "type": "text", "default": "vuole uscire viva da un accordo sbagliato" },
+        { "key": "secret", "label": "Segreto", "type": "text", "default": "ha venduto una mappa falsa a due fazioni diverse" }
+      ],
+      "lists": [
+        { "key": "hook", "label": "Spunto", "default_name": "Offerta", "default_text": "Paga bene per recuperare l'originale prima dell'alba." }
+      ]
+    },
+    {
+      "id": "location",
+      "label": "Luogo",
+      "group": "Mondo",
+      "description": "Luogo esplorabile con atmosfera, pericolo e ricompensa.",
+      "container": "location",
+      "default_label": "Luogo",
+      "fields": [
+        { "key": "name", "label": "Nome", "type": "text", "required": true, "default": "Ponte delle Campane" },
+        { "key": "tags", "label": "Tag", "type": "text", "default": "rovina, vento, vertigine" },
+        { "key": "mood", "label": "Atmosfera", "type": "text", "default": "ogni passo risponde con un tintinnio lontano" },
+        { "key": "danger", "label": "Pericolo", "type": "text", "default": "una campana spezzata attira creature ostili se viene toccata" },
+        { "key": "treasure", "label": "Tesoro", "type": "text", "default": "una moneta votiva incastrata tra le pietre" }
+      ],
+      "lists": [
+        { "key": "hook", "label": "Dettaglio", "default_name": "Segno", "default_text": "Le corde delle campane formano un simbolo ricorrente." }
+      ]
+    },
+    {
+      "id": "hazard",
+      "label": "Pericolo",
+      "group": "Regole",
+      "description": "Trappola, pericolo ambientale o complicazione meccanica.",
+      "container": "hazard",
+      "default_label": "Pericolo",
+      "fields": [
+        { "key": "name", "label": "Nome", "type": "text", "required": true, "default": "Nebbia di Vetro" },
+        { "key": "trigger", "label": "Innesco", "type": "text", "default": "una creatura corre o cade nella sala" },
+        { "key": "dc", "label": "CD", "type": "text", "default": "Costituzione CD 14" },
+        { "key": "effect", "label": "Effetto", "type": "textarea", "default": "la creatura subisce 2d6 danni taglienti e tossisce sangue cristallino" },
+        { "key": "countermeasure", "label": "Contromisura", "type": "textarea", "default": "muoversi lentamente evita di sollevare la nebbia" }
+      ]
+    },
+    {
+      "id": "random-table",
+      "label": "Tabella",
+      "group": "Tavolo",
+      "description": "Tabella casuale compatta.",
+      "container": "random-table",
+      "default_label": "d6",
+      "fields": [
+        { "key": "name", "label": "Titolo", "type": "text", "default": "Eventi rapidi" },
+        { "key": "die", "label": "Dado", "type": "text", "default": "d6" }
+      ],
+      "lists": [
+        { "key": "row", "label": "Riga", "default_name": "1", "default_text": "Si sente un colpo metallico." },
+        { "key": "row", "label": "Riga", "default_name": "2", "default_text": "Una porta si apre da sola." }
+      ]
+    },
+    {
+      "id": "readaloud",
+      "label": "Readaloud",
+      "group": "Tavolo",
+      "description": "Testo da leggere ai giocatori.",
+      "container": "readaloud",
+      "default_label": "Da leggere al tavolo",
+      "fields": [
+        { "key": "body", "label": "Testo", "type": "textarea", "default": "Le torce proiettano ombre innaturali sulle colonne spezzate." }
+      ]
+    },
+    {
+      "id": "encounter",
+      "label": "Incontro",
+      "group": "Tavolo",
+      "description": "Nota tattica o situazione di conflitto.",
+      "container": "encounter",
+      "default_label": "Incontro",
+      "fields": [
+        { "key": "body", "label": "Testo", "type": "textarea", "default": "Tre avversari deboli entrano da lati opposti." }
+      ]
+    },
+    {
+      "id": "treasure",
+      "label": "Tesoro",
+      "group": "Tavolo",
+      "description": "Ricompensa o bottino.",
+      "container": "treasure",
+      "default_label": "Tesoro",
+      "fields": [
+        { "key": "body", "label": "Testo", "type": "textarea", "default": "- 25 monete d'argento\n- Una chiave annerita\n- Un frammento di mappa" }
+      ]
+    },
+    {
+      "id": "note",
+      "label": "Nota",
+      "group": "Tavolo",
+      "description": "Promemoria per autore o master.",
+      "container": "note",
+      "default_label": "Nota autore",
+      "fields": [
+        { "key": "body", "label": "Testo", "type": "textarea", "default": "Promemoria di design, appunto per playtest o variante opzionale." }
+      ]
+    },
+    {
+      "id": "map",
+      "label": "Mappa",
+      "group": "Media",
+      "description": "Figura mappa con src e alt.",
+      "container": "map",
+      "default_label": "Mappa",
+      "fields": [
+        { "key": "src", "label": "Sorgente", "type": "text", "required": true, "default": "../assets/images/maps/santuario-sepolto-map.svg" },
+        { "key": "alt", "label": "Alt", "type": "text", "default": "Mappa del Santuario Sepolto" }
+      ]
+    },
+    {
+      "id": "image",
+      "label": "Immagine",
+      "group": "Media",
+      "description": "Figura immagine generica.",
+      "container": "image",
+      "default_label": "Immagine",
+      "fields": [
+        { "key": "src", "label": "Sorgente", "type": "text", "required": true, "default": "../assets/images/handouts/sigillo-antico.webp" },
+        { "key": "alt", "label": "Alt", "type": "text", "default": "Handout" },
+        { "key": "caption", "label": "Didascalia", "type": "text", "default": "Handout per i giocatori" }
+      ]
+    }
+  ]
+}

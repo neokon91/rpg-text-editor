@@ -19,8 +19,8 @@ public: false
 - Repository GitHub: `neokon91/rpg-text-editor`.
 - Visibilita GitHub: privata.
 - Branch corrente: `main`.
-- Stato locale prima di questa roadmap: pulito e allineato a `origin/main`.
-- Connettore GitHub Codex/GPT: installato sull'account `neokon91`, ma la repository deve essere inclusa nell'installazione GitHub App per essere visibile al connector.
+- Stato locale all'ultimo aggiornamento: pulito e allineato a `origin/main`.
+- Connettore GitHub Codex/GPT: installato sull'account `neokon91` e repository visibile al connector.
 
 ## Direzione
 
@@ -28,18 +28,18 @@ RPG Text Editor deve diventare un ambiente di scrittura Markdown per contenuti T
 
 ## Fase 1 - UI editor Markdown
 
-- Creare una UI locale con editor Markdown, preview e palette componenti.
-- Consentire inserimento guidato di blocchi `:::`.
-- Mantenere il testo Markdown come sorgente primaria.
-- Usare `localStorage` per bozze rapide, senza introdurre backend prematuro.
-- Servire l'editor con uno script npm dedicato.
+- Fatto: UI locale con editor Markdown, preview e palette componenti.
+- Fatto: inserimento guidato di blocchi `:::`.
+- Fatto: Markdown come sorgente primaria.
+- Fatto: salvataggio bozze in `localStorage`, senza backend.
+- Fatto: script `npm run editor`.
 
 ## Fase 2 - Sistema componenti a schema
 
-- Descrivere componenti come dati in `schemas/components.json`.
-- Modellare campi, liste ripetibili, valori di default e template di output.
-- Generare palette e form dalla definizione schema.
-- Evitare registry hardcoded in UI: nuovi componenti devono nascere aggiungendo o estendendo schema.
+- Fatto: descrivere componenti come dati.
+- Fatto: modellare campi, liste ripetibili e valori di default.
+- Fatto: generare palette e form dalla definizione schema.
+- Fatto: evitare registry hardcoded in UI per i componenti disponibili.
 - Allineare progressivamente schema UI e renderer Node.
 
 Componenti prioritari:
@@ -60,10 +60,11 @@ Componenti prioritari:
 
 ## Fase 3 - Plugin pack
 
-- Separare schema core da schema installabili.
-- Introdurre manifest per plugin pack con nome, versione, compatibilita e componenti esportati.
-- Validare collisioni di slug e classi CSS.
-- Consentire pack tematici, per esempio fantasy classico, fantascienza, horror investigativo.
+- Fatto: separare schema core da schema installabili.
+- Fatto: introdurre manifest per plugin pack con nome, versione, compatibilita e componenti esportati.
+- Fatto: validare collisioni di `id` e `container`.
+- Fatto: aggiungere pack tematico `fantasy-classic`.
+- Prossimo: decidere strategia di caricamento pack da UI, invece che solo da manifest versionato.
 
 ## Fase 4 - Validazione e import/export
 

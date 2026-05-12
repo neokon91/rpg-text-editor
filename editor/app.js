@@ -1,5 +1,5 @@
 const storageKey = "rpg-text-editor:draft";
-const schemaUrl = "/schemas/components.json";
+const manifestUrl = "/schemas/components.json";
 
 const input = document.querySelector("#markdown-input");
 const preview = document.querySelector("#preview");
@@ -14,6 +14,7 @@ const saveState = document.querySelector("#save-state");
 const wordCount = document.querySelector("#word-count");
 
 let schema;
+let manifest;
 let selectedComponent;
 
 const starterDocument = `---
@@ -42,10 +43,7 @@ Scrivi qui la prima scena.
 init();
 
 async function init() {
-  schema = await fetch(schemaUrl).then((response) => {
-    if (!response.ok) throw new Error(`Schema non caricato: ${response.status}`);
-    return response.json();
-  });
+  ({ manifest, schema } = await loadComponentManifest(manifestUrl));
 
   input.value = localStorage.getItem(storageKey) || starterDocument;
   renderComponentList();
@@ -62,6 +60,54 @@ async function init() {
   document.querySelector("#copy-markdown").addEventListener("click", copyMarkdown);
   document.querySelector("#download-markdown").addEventListener("click", downloadMarkdown);
   insertButton.addEventListener("click", insertSelectedComponent);
+}
+
+async function loadComponentManifest(url) {
+  const loadedManifest = await fetchJson(url, "Manifest componenti non caricato");
+  const sources = [];
+  const core = await fetchJson(loadedManifest.core, "Schema core non caricato");
+  sources.push({ id: "core", name: "Core", schema: core });
+
+  for (const pack of loadedManifest.packs || []) {
+    if (pack.enabled === false) continue;
+
+    const packSchema = await fetchJson(pack.path, `Plugin pack non caricato: ${pack.id}`);
+    sources.push({ id: pack.id, name: pack.name, schema: packSchema });
+  }
+
+  return {
+    manifest: loadedManifest,
+    schema: mergeComponentSources(sources)
+  };
+}
+
+async function fetchJson(url, errorMessage) {
+  const response = await fetch(url);
+  if (!response.ok) throw new Error(`${errorMessage}: ${response.status}`);
+  return response.json();
+}
+
+function mergeComponentSources(sources) {
+  const components = [];
+  const ids = new Set();
+  const containers = new Set();
+
+  for (const source of sources) {
+    for (const component of source.schema.components || []) {
+      if (ids.has(component.id)) throw new Error(`Component id duplicato: ${component.id}`);
+      if (containers.has(component.container)) throw new Error(`Container duplicato: ${component.container}`);
+
+      ids.add(component.id);
+      containers.add(component.container);
+      components.push({
+        ...component,
+        source: source.id,
+        source_name: source.name
+      });
+    }
+  }
+
+  return { components };
 }
 
 function renderComponentList() {
@@ -84,6 +130,7 @@ function renderComponentList() {
       button.innerHTML = `
         <span>${escapeHtml(component.label)}</span>
         <small>${escapeHtml(component.description)}</small>
+        <em>${escapeHtml(component.source_name || "Core")}</em>
       `;
       button.addEventListener("click", () => openComponentDialog(component));
       section.append(button);
@@ -268,8 +315,31 @@ function renderContainer(name, label, markdown) {
 
   if (className === "random-table") return renderRandomTable(title, data);
   if (className === "map" || className === "image") return renderMedia(className, title, data);
+  if (component) return renderSchemaComponent(component, title, data);
 
   return `<aside class="${escapeHtml(className)} no-break"><div class="${escapeHtml(className)}__label">${renderInline(title)}</div>${renderMarkdown(data.body.join("\n"))}</aside>`;
+}
+
+function renderSchemaComponent(component, label, data) {
+  const className = component.container;
+  const bodyKeys = new Set(["body"]);
+  const lines = (component.fields || [])
+    .filter((field) => !bodyKeys.has(field.key) && data[field.key])
+    .map((field) => `<p class="rules-line"><strong>${renderInline(field.label)}.</strong> ${renderInline(data[field.key])}</p>`)
+    .join("");
+  const features = [...(data.hooks || []), ...(data.traits || []), ...(data.actions || [])]
+    .map((item) => `<p><strong>${renderInline(item.name)}.</strong> ${renderInline(item.text)}</p>`)
+    .join("");
+
+  return `
+    <aside class="${escapeHtml(className)} rules-card no-break">
+      <div class="${escapeHtml(className)}__label rules-card__label">${renderInline(label)}</div>
+      <h3>${renderInline(data.name || label)}</h3>
+      ${lines}
+      ${features}
+      ${data.body.length ? renderMarkdown(data.body.join("\n")) : ""}
+    </aside>
+  `;
 }
 
 function renderRulesComponent(className, label, data) {

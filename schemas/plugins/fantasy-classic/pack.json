@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "schema_version": "0.1.0",
+  "id": "fantasy-classic",
+  "name": "Fantasy Classic Pack",
+  "version": "0.1.0",
+  "compatibility": "rpg-text-editor>=0.1.0",
+  "description": "Componenti installabili per campagne fantasy classiche.",
+  "components": [
+    {
+      "id": "faction",
+      "label": "Fazione",
+      "group": "Mondo",
+      "description": "Organizzazione con obiettivo, risorse e tensioni.",
+      "container": "faction",
+      "default_label": "Fazione",
+      "fields": [
+        { "key": "name", "label": "Nome", "type": "text", "required": true, "default": "Ordine della Lanterna" },
+        { "key": "goal", "label": "Obiettivo", "type": "textarea", "default": "Recuperare reliquie perdute prima che cadano in mani ostili." },
+        { "key": "resources", "label": "Risorse", "type": "textarea", "default": "Informatori, archivi sigillati, piccoli santuari lungo le strade." },
+        { "key": "complication", "label": "Complicazione", "type": "textarea", "default": "Un ramo interno nasconde un patto con una creatura extraplanare." }
+      ],
+      "lists": [
+        { "key": "hook", "label": "Aggancio", "default_name": "Richiesta", "default_text": "La fazione offre protezione in cambio di una mappa sottratta a un rivale." }
+      ]
+    },
+    {
+      "id": "quest",
+      "label": "Missione",
+      "group": "Tavolo",
+      "description": "Obiettivo giocabile con posta, ostacolo e ricompensa.",
+      "container": "quest",
+      "default_label": "Missione",
+      "fields": [
+        { "key": "name", "label": "Titolo", "type": "text", "required": true, "default": "La Campana Sepolta" },
+        { "key": "objective", "label": "Obiettivo", "type": "textarea", "default": "Trovare la campana votiva prima dell'equinozio." },
+        { "key": "stakes", "label": "Posta", "type": "textarea", "default": "Se la campana resta sepolta, il villaggio perdera la protezione rituale." },
+        { "key": "reward", "label": "Ricompensa", "type": "textarea", "default": "Accesso agli archivi del tempio e una reliquia minore." }
+      ],
+      "lists": [
+        { "key": "hook", "label": "Ostacolo", "default_name": "Rivale", "default_text": "Una compagnia mercenaria vuole vendere la campana al miglior offerente." }
+      ]
+    }
+  ]
+}
