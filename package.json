@@ -23,6 +23,7 @@
     "new": "node scripts/new.js",
     "preview": "node scripts/serve.js",
     "preview:expanded": "node scripts/serve.js --expanded",
+    "editor": "node scripts/serve-editor.js",
     "preview:watch": "node scripts/serve.js --expanded --watch"
   }
 }

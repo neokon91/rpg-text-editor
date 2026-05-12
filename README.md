@@ -23,6 +23,7 @@ npm run new -- adventure "La Torre Sommersa"
 npm run preview
 npm run preview:expanded
 npm run preview:watch
+npm run editor
 ```
 
 - `npm run build` genera `dist/santuario-sepolto.html`.
@@ -42,10 +43,23 @@ npm run preview:watch
 - `npm run preview` serve la cartella `dist` su `http://127.0.0.1:8081`.
 - `npm run preview:expanded` rigenera `dist/site/` e serve una preview navigabile con `<rpg-include>` gia espansi.
 - `npm run preview:watch` mantiene la preview espansa aggiornata mentre modifichi sorgenti, stili, template e asset.
+- `npm run editor` avvia la nuova UI locale su `http://127.0.0.1:8082` con editor Markdown, preview e componenti guidati da schema.
 
 ## Authoring in VS Code
 
 Per il flusso pratico completo vedi `docs/authoring.md`.
+
+## Editor UI
+
+La prima UI locale vive in `editor/` e si avvia con:
+
+```sh
+npm run editor
+```
+
+L'editor mantiene il Markdown come sorgente primaria, salva bozze in `localStorage` e inserisce blocchi `:::` compatibili con la build. La palette componenti non usa un registry JavaScript hardcoded: viene generata da `schemas/components.json`, che descrive campi, liste ripetibili, etichette e valori di default per creature, incantesimi, oggetti, PNG, luoghi, pericoli, tabelle, callout e media.
+
+La direzione prodotto e tracciata in `docs/roadmap.md`.
 
 La repo include snippet in `.vscode/rpg.code-snippets` per creare rapidamente frontmatter e blocchi TTRPG. I prefissi principali sono:
 

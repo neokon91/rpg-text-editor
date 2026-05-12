@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>RPG Text Editor</title>
+    <link rel="stylesheet" href="/editor/styles.css">
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div>
+          <h1>RPG Text Editor</h1>
+          <p>Editor Markdown con componenti TTRPG guidati da schema.</p>
+        </div>
+        <div class="topbar__actions" aria-label="Azioni documento">
+          <button id="new-document" type="button">Nuovo</button>
+          <button id="copy-markdown" type="button">Copia Markdown</button>
+          <button id="download-markdown" type="button">Scarica .md</button>
+        </div>
+      </header>
+
+      <main class="workspace">
+        <aside class="component-panel" aria-label="Componenti">
+          <div class="panel-header">
+            <h2>Componenti</h2>
+            <input id="component-search" type="search" placeholder="Cerca" autocomplete="off">
+          </div>
+          <div id="component-list" class="component-list"></div>
+        </aside>
+
+        <section class="editor-panel" aria-label="Editor Markdown">
+          <div class="panel-header">
+            <h2>Markdown</h2>
+            <span id="save-state" class="save-state">Bozza locale</span>
+          </div>
+          <textarea id="markdown-input" spellcheck="true"></textarea>
+        </section>
+
+        <section class="preview-panel" aria-label="Anteprima">
+          <div class="panel-header">
+            <h2>Preview</h2>
+            <span id="word-count" class="save-state">0 parole</span>
+          </div>
+          <article id="preview" class="preview-document"></article>
+        </section>
+      </main>
+    </div>
+
+    <dialog id="component-dialog" class="component-dialog">
+      <form method="dialog">
+        <header class="dialog-header">
+          <div>
+            <h2 id="dialog-title">Componente</h2>
+            <p id="dialog-description"></p>
+          </div>
+          <button value="cancel" class="icon-button" type="submit" aria-label="Chiudi">×</button>
+        </header>
+        <div id="component-form" class="component-form"></div>
+        <footer class="dialog-actions">
+          <button value="cancel" type="submit">Annulla</button>
+          <button id="insert-component" value="default" type="button">Inserisci</button>
+        </footer>
+      </form>
+    </dialog>
+
+    <script type="module" src="/editor/app.js"></script>
+  </body>
+</html>
