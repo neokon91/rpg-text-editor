@@ -1,11 +1,11 @@
 .readaloud {
   position: relative;
 
-  margin: 2rem 0;
+  margin: 1rem 0;
 
   padding:
-    1.2rem
-    1.5rem;
+    0.78rem
+    0.92rem;
 
   background:
     linear-gradient(rgba(255,255,255,.76), rgba(255,255,255,.6)),
@@ -18,10 +18,10 @@
     1px solid rgba(122, 87, 35, .45);
 
   border-left:
-    7px solid var(--color-verdigris);
+    5px solid var(--color-verdigris);
 
   border-radius:
-    2px;
+    0;
 
   box-shadow:
     0 3px 12px rgba(0,0,0,.14),

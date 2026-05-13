@@ -1,8 +1,7 @@
 @import "./main.css";
 
 body {
-  background:
-    linear-gradient(135deg, #181512, #27211d 55%, #151b1a);
+  background: #2a241f;
 }
 
 .markdown-body {
@@ -16,25 +15,13 @@ body {
   font-size: 16px;
   line-height: var(--line-body);
   background:
-    linear-gradient(rgba(255, 249, 232, 0.82), rgba(255, 249, 232, 0.88)),
-    radial-gradient(circle at 18% 10%, rgba(255, 255, 255, 0.7), transparent 24%),
-    radial-gradient(circle at 90% 18%, rgba(54, 113, 107, 0.12), transparent 25%),
-    radial-gradient(circle at 16% 90%, rgba(140, 47, 43, 0.1), transparent 28%),
-    linear-gradient(115deg, var(--color-paper-light), var(--color-paper) 68%, #e2cca0);
+    linear-gradient(rgba(255, 253, 246, 0.92), rgba(255, 250, 238, 0.92)),
+    linear-gradient(115deg, var(--color-paper-light), var(--color-paper) 70%, #ead8b6);
   box-shadow: var(--shadow-page);
 }
 
 .markdown-body::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background:
-    linear-gradient(90deg, rgba(80, 48, 18, 0.05) 1px, transparent 1px),
-    linear-gradient(rgba(80, 48, 18, 0.04) 1px, transparent 1px);
-  background-size: 22px 22px;
-  mix-blend-mode: multiply;
-  opacity: 0.22;
+  display: none;
 }
 
 .markdown-body::after {
@@ -42,13 +29,7 @@ body {
   position: absolute;
   inset: 8mm;
   pointer-events: none;
-  border: 1px solid rgba(111, 84, 40, 0.24);
-  background:
-    var(--svg-page-corner) top left / 12mm 12mm no-repeat,
-    var(--svg-page-corner) top right / 12mm 12mm no-repeat,
-    var(--svg-page-corner) bottom left / 12mm 12mm no-repeat,
-    var(--svg-page-corner) bottom right / 12mm 12mm no-repeat;
-  opacity: 0.9;
+  border: 1px solid rgba(105, 69, 38, 0.18);
 }
 
 .markdown-body > * {

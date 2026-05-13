@@ -5,8 +5,7 @@ body {
   font-family: var(--font-body);
   font-size: 16px;
   line-height: var(--line-body);
-  background:
-    linear-gradient(135deg, #181512, #27211d 55%, #151b1a);
+  background: #2a241f;
   overflow-wrap: break-word;
 }
 
@@ -16,12 +15,13 @@ body {
   min-height: 297mm;
   margin: 0 auto;
   padding: var(--page-padding);
+  column-count: 2;
+  column-gap: var(--column-gap);
+  column-fill: auto;
+  column-rule: 1px solid rgba(122, 87, 35, 0.16);
   background:
-    linear-gradient(rgba(255, 249, 232, 0.82), rgba(255, 249, 232, 0.88)),
-    radial-gradient(circle at 18% 10%, rgba(255, 255, 255, 0.7), transparent 24%),
-    radial-gradient(circle at 90% 18%, rgba(54, 113, 107, 0.12), transparent 25%),
-    radial-gradient(circle at 16% 90%, rgba(140, 47, 43, 0.1), transparent 28%),
-    linear-gradient(115deg, var(--color-paper-light), var(--color-paper) 68%, #e2cca0);
+    linear-gradient(rgba(255, 253, 246, 0.92), rgba(255, 250, 238, 0.92)),
+    linear-gradient(115deg, var(--color-paper-light), var(--color-paper) 70%, #ead8b6);
   box-shadow: var(--shadow-page);
   overflow: hidden;
 }
@@ -30,21 +30,21 @@ body {
   max-width: 100%;
 }
 
+.page-shell > h1,
+.page-shell > .subtitle,
+.page-shell > .book-cover,
+.page-shell > .book-toc,
+.page-shell > .wide,
+.page-shell > .legal {
+  column-span: all;
+}
+
 .paper-letter {
   --page-width: 216mm;
 }
 
 .page-shell::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background:
-    linear-gradient(90deg, rgba(80, 48, 18, 0.05) 1px, transparent 1px),
-    linear-gradient(rgba(80, 48, 18, 0.04) 1px, transparent 1px);
-  background-size: 22px 22px;
-  mix-blend-mode: multiply;
-  opacity: 0.22;
+  display: none;
 }
 
 .page-shell::after {
@@ -52,7 +52,7 @@ body {
   position: absolute;
   inset: 8mm;
   pointer-events: none;
-  border: 1px solid rgba(111, 84, 40, 0.24);
+  border: 1px solid rgba(105, 69, 38, 0.18);
 }
 
 .page-shell > * {
@@ -88,6 +88,9 @@ hr {
     width: var(--page-width);
     min-height: auto;
     margin: 0;
+    column-count: 2;
+    column-gap: var(--column-gap);
+    column-fill: auto;
     box-shadow: none;
     overflow: visible;
     print-color-adjust: exact;
@@ -122,6 +125,7 @@ hr {
 
 @media screen and (max-width: 760px) {
   .page-shell {
+    column-count: 1;
     padding: 1.25rem;
     min-height: 100vh;
   }

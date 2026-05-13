@@ -45,6 +45,24 @@
   --color-plum: #4f3d61;
 }
 
+.theme-modern-5-5 {
+  --color-ink: #202428;
+  --color-muted: #5a6470;
+  --color-paper: #f7f5ee;
+  --color-paper-light: #ffffff;
+  --color-rule: #b8a069;
+  --color-accent: #8a2633;
+  --color-accent-dark: #4a121a;
+  --color-gold: #a88334;
+  --color-border: #6f7480;
+  --color-green: #2e6757;
+  --color-blue: #245f85;
+  --color-verdigris: #2f7b78;
+  --color-plum: #3f3b64;
+  --shadow-page: 0 18px 46px rgba(20, 24, 28, 0.34);
+  --shadow-box: 0 5px 14px rgba(35, 39, 44, 0.12);
+}
+
 .theme-printer-friendly {
   --color-ink: #111111;
   --color-muted: #4d4d4d;
@@ -71,10 +89,62 @@
 }
 
 .theme-clean-guild .page-shell,
+.theme-modern-5-5 .page-shell,
 .theme-printer-friendly .page-shell {
   background:
     linear-gradient(rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0.82)),
     linear-gradient(110deg, var(--color-paper-light), var(--color-paper));
+}
+
+.theme-modern-5-5 .page-shell::before {
+  display: none;
+}
+
+.theme-modern-5-5 .page-shell::after {
+  inset: 6mm;
+  border-color: rgba(36, 95, 133, 0.18);
+}
+
+.theme-modern-5-5 h1 {
+  color: var(--color-accent-dark);
+  border-bottom: 2px solid var(--color-rule);
+}
+
+.theme-modern-5-5 h2 {
+  border-left-color: var(--color-blue);
+  border-bottom-color: rgba(36, 95, 133, 0.45);
+}
+
+.theme-modern-5-5 table {
+  border-color: rgba(36, 95, 133, 0.28);
+}
+
+.theme-modern-5-5 thead {
+  background: rgba(36, 95, 133, 0.12);
+  color: var(--color-blue);
+}
+
+.theme-modern-5-5 .rules-card,
+.theme-modern-5-5 .random-table,
+.theme-modern-5-5 .readaloud,
+.theme-modern-5-5 .note,
+.theme-modern-5-5 .treasure,
+.theme-modern-5-5 .encounter {
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.78), rgba(255, 255, 255, 0.5)),
+    linear-gradient(135deg, var(--color-paper-light), var(--color-paper));
+  border-radius: 2px;
+}
+
+.theme-modern-5-5 .statblock {
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.56)),
+    linear-gradient(135deg, #f1eee2, #ffffff 48%, #ded9c8);
+  border-color: rgba(36, 95, 133, 0.42);
+}
+
+.theme-modern-5-5 .statblock::before {
+  background: linear-gradient(to right, transparent, var(--color-blue), var(--color-verdigris), transparent);
 }
 
 .theme-printer-friendly .page-shell::before,

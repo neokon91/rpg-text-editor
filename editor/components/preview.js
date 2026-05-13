@@ -23,6 +23,11 @@ export function renderMarkdown(markdown, schema, options = {}) {
       continue;
     }
 
+    if (trimmed === "\\page" || trimmed === "::pagebreak") {
+      out.push(`<div class="page-break" data-source-line="${sourceLine}" aria-label="Interruzione pagina"></div>`);
+      continue;
+    }
+
     const heading = trimmed.match(/^(#{1,6})\s+(.+)$/);
     if (heading) {
       const level = heading[1].length;

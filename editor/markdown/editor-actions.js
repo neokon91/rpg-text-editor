@@ -54,7 +54,6 @@ function toolbarSnippet(action, selected) {
     table: "Voce",
     readaloud: "Testo da leggere al tavolo",
     callout: "Nota importante per il master.",
-    image: "",
     include: "",
     pagebreak: ""
   }[action] || "";
@@ -67,7 +66,6 @@ function toolbarSnippet(action, selected) {
     table: `\n\n| Voce | Dettaglio |\n| --- | --- |\n| ${fallback} | Descrizione |\n| Variante | Effetto |\n`,
     readaloud: `\n\n::: readaloud Da leggere al tavolo\n${fallback}\n:::\n`,
     callout: `\n\n::: note Nota\n${fallback}\n:::\n`,
-    image: "\n\n::: image Immagine\nsrc: ../assets/images/maps/santuario-sepolto-map.svg\nalt: Immagine di riferimento\ncaption: Didascalia\n:::\n",
     include: '\n\n<rpg-include src="content/monsters/custode-ossa.html"></rpg-include>\n',
     pagebreak: "\n\n::pagebreak\n"
   }[action] || "";

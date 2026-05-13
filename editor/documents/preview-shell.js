@@ -18,7 +18,24 @@ export function renderPreviewDocument(metadata, content, options = {}) {
     <style>
       html, body { min-height: 100%; }
       body { background: #1c1510; padding: 24px; }
+      body { zoom: var(--rpg-preview-zoom, 1); }
       .page-shell { min-height: 260mm; }
+      .page-break {
+        height: auto;
+        margin: 1.4rem 0;
+        border-top: 2px dashed rgba(31, 111, 120, 0.48);
+        break-after: page;
+      }
+      .page-break::after {
+        content: "Page break";
+        display: inline-block;
+        transform: translateY(-50%);
+        padding: 0.1rem 0.45rem;
+        background: var(--color-paper-light, #fff8e2);
+        color: #1f6f78;
+        font: 700 0.68rem/1.2 system-ui, sans-serif;
+        text-transform: uppercase;
+      }
       body.preview-mobile { padding: 0; }
       body.preview-mobile .page-shell { width: 390px; max-width: 100%; }
       [data-source-line] { cursor: pointer; }

@@ -34,6 +34,8 @@ public: false
 - [x] Import documenti da `docs/`.
 - [x] Salvataggio con file corrente.
 - [x] Dirty state.
+- [x] Autosave locale esplicito con pannello recovery e scarto bozza.
+- [x] Export HTML/PDF guidato dal workflow autore locale.
 - [x] Overwrite esplicito.
 - [x] Salva nuovo con nome unico.
 - [x] Conferma prima di perdere modifiche non salvate.
@@ -41,6 +43,8 @@ public: false
 - [x] Delete documento.
 - [x] Conferme custom non native.
 - [x] Toolbar estesa per tabelle, immagini, callout e include.
+- [x] Navigatore documento da heading Markdown con salto alla riga sorgente.
+- [x] Viste workspace persistenti `Tutto`, `Scrivi` e `Componenti`, mantenendo Markdown visibile.
 
 ## Preview
 
@@ -52,6 +56,8 @@ public: false
 - [x] Verifica visuale automatizzata stabile via browser.
 - [x] Controllo layout PDF/pagine integrato nel flusso editor.
 - [x] Markdown Preview VS Code allineata ai token visuali del template.
+- [x] Preview locale con zoom persistente, navigazione pagina e marker `::pagebreak` visibile.
+- [x] Tema originale `modern-5-5` per resa 5.5-compatible piu moderna e pulita.
 
 ## Componenti e schema
 
@@ -92,5 +98,5 @@ public: false
 
 ## Prossimi passi consigliati
 
-1. Migliorare UX autore nell'editor locale come flusso primario.
-2. Rafforzare componenti/statblock verso una resa fantasy professionale originale.
+1. Rafforzare componenti/statblock verso una resa fantasy professionale originale.
+2. Aggiungere rifiniture responsive finali su layout stretto e pannelli collassabili.

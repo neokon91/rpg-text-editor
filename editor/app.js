@@ -1,9 +1,10 @@
 import { slugifyDocumentName } from "/scripts/lib/component-schema.js";
 import { createComponentController } from "/editor/components/controller.js";
-import { renderDiagnostics } from "/editor/components/validation.js";
-import { checkDocument as checkDocumentQuality } from "/editor/documents/api.js";
+import { createAuthorCheckController } from "/editor/documents/check-controller.js";
 import { createDocumentController } from "/editor/documents/controller.js";
+import { createExportController } from "/editor/documents/export-controller.js";
 import { createMetadataController } from "/editor/documents/metadata-controller.js";
+import { createDraftRecoveryController } from "/editor/documents/recovery.js";
 import {
   copyMarkdown as copyMarkdownToClipboard,
   createSnippetHandler,
@@ -11,12 +12,17 @@ import {
   downloadMarkdown as downloadMarkdownFile,
   insertAtCursor
 } from "/editor/markdown/editor-actions.js";
+import { createOutlineController } from "/editor/markdown/outline.js";
 import { createPreviewController } from "/editor/preview/controller.js";
 import { createModalController } from "/editor/ui/modal.js";
+import { createWorkspaceViewController } from "/editor/ui/workspace-view.js";
 
 const storageKey = "rpg-text-editor:draft";
+const draftMetaKey = "rpg-text-editor:draft-meta";
 const enabledPacksKey = "rpg-text-editor:enabled-packs";
+const workspaceViewKey = "rpg-text-editor:workspace-view";
 
+const appShell = document.querySelector(".app-shell");
 const input = document.querySelector("#markdown-input");
 const preview = document.querySelector("#preview");
 const componentList = document.querySelector("#component-list");
@@ -35,15 +41,23 @@ const saveState = document.querySelector("#save-state");
 const wordCount = document.querySelector("#word-count");
 const validationPanel = document.querySelector("#validation-panel");
 const authorCheckPanel = document.querySelector("#author-check-panel");
+const exportPanel = document.querySelector("#export-panel");
 const documentPicker = document.querySelector("#document-picker");
 const packList = document.querySelector("#pack-list");
 const metadataControls = [...document.querySelectorAll("[data-meta]")];
 const toolbar = document.querySelector(".editor-toolbar");
 const currentDocumentLabel = document.querySelector("#current-document");
 const dirtyState = document.querySelector("#dirty-state");
+const recoveryPanel = document.querySelector("#recovery-panel");
+const discardDraftButton = document.querySelector("#discard-draft");
 const guideStatus = document.querySelector("#guide-status");
+const documentOutline = document.querySelector("#document-outline");
 const previewViewport = document.querySelector("#preview-viewport");
 const previewWidth = document.querySelector("#preview-width");
+const previewZoom = document.querySelector("#preview-zoom");
+const previewPagePrev = document.querySelector("#preview-page-prev");
+const previewPageNext = document.querySelector("#preview-page-next");
+const previewPageIndicator = document.querySelector("#preview-page-indicator");
 const previewSync = document.querySelector("#preview-sync");
 const previewMeta = document.querySelector("#preview-meta");
 const modalController = createModalController({
@@ -54,18 +68,21 @@ const modalController = createModalController({
   cancelButton: document.querySelector("#modal-cancel"),
   confirmButton: document.querySelector("#modal-confirm")
 });
+const workspaceViewButtons = [...document.querySelectorAll("button[data-workspace-view]")];
 
 let componentController;
+let authorCheckController;
 let documentController;
+let draftRecoveryController;
+let exportController;
 let metadataController;
+let outlineController;
 let previewController;
+let workspaceViewController;
 let currentDocument = "";
 let lastSavedContent = "";
 let isDirty = false;
 let currentDiagnostics = [];
-let authorDiagnostics = [];
-let authorCheckState = "idle";
-let authorCheckedMarkdown = "";
 
 const starterDocument = `---
 title: Nuova Avventura
@@ -131,12 +148,78 @@ async function init() {
     onChange: persistEditorChange
   });
   metadataController.init();
+  authorCheckController = createAuthorCheckController({
+    panel: authorCheckPanel,
+    saveState,
+    getMarkdown: () => input.value,
+    getFilename: editorFilename,
+    renderSchema: () => {
+      currentDiagnostics = previewController.render() || [];
+      updateGuideStatus();
+      return currentDiagnostics;
+    },
+    onSelectLine: focusMarkdownLine,
+    onStatusChange: updateGuideStatus
+  });
+  exportController = createExportController({
+    panel: exportPanel,
+    saveState,
+    getMarkdown: () => input.value,
+    getFilename: editorFilename,
+    getDownloadFilename: editorFilename,
+    downloadMarkdown: downloadMarkdownFile,
+    checkDocument: (options) => authorCheckController.checkDocument({
+      ...options,
+      schemaDiagnostics: currentDiagnostics
+    })
+  });
+  draftRecoveryController = createDraftRecoveryController({
+    storageKey,
+    draftMetaKey,
+    panel: recoveryPanel,
+    discardButton: discardDraftButton,
+    modalController,
+    starterDocument,
+    documentPicker,
+    getMarkdown: () => input.value,
+    setMarkdown: (markdown) => {
+      input.value = markdown;
+    },
+    getCurrentDocument: () => currentDocument,
+    setCurrentDocument: (filename) => {
+      currentDocument = filename;
+    },
+    setLastSavedContent: (content) => {
+      lastSavedContent = content;
+    },
+    setSaveState: (message) => {
+      saveState.textContent = message;
+    },
+    setDirty,
+    syncMetadata,
+    renderPreview
+  });
+  workspaceViewController = createWorkspaceViewController({
+    shell: appShell,
+    buttons: workspaceViewButtons,
+    storageKey: workspaceViewKey
+  });
+  outlineController = createOutlineController({
+    panel: documentOutline,
+    sourceInput: input,
+    getMarkdown: () => input.value,
+    onSelectLine: focusMarkdownLine
+  });
   previewController = createPreviewController({
     preview,
     wordCount,
     validationPanel,
     previewViewport,
     previewWidth,
+    previewZoom,
+    previewPagePrev,
+    previewPageNext,
+    previewPageIndicator,
     previewSync,
     previewMeta,
     sourceInput: input,
@@ -151,6 +234,7 @@ async function init() {
   documentController = createDocumentController({
     documentPicker,
     storageKey,
+    draftMetaKey,
     getMarkdown: () => input.value,
     setMarkdown: (markdown) => {
       input.value = markdown;
@@ -174,13 +258,16 @@ async function init() {
     confirmDelete
   });
 
-  input.value = localStorage.getItem(storageKey) || starterDocument;
+  const recoveredDraft = draftRecoveryController.loadDraft();
+  input.value = recoveredDraft.content || starterDocument;
+  currentDocument = recoveredDraft.currentDocument || "";
   lastSavedContent = input.value;
-  setDirty(Boolean(localStorage.getItem(storageKey)));
+  setDirty(Boolean(recoveredDraft.content));
   syncMetadata();
-  await documentController.refreshPicker();
+  await documentController.refreshPicker(currentDocument);
+  workspaceViewController.restore();
   renderPreview();
-  renderAuthorDiagnostics();
+  authorCheckController.render();
 
   input.addEventListener("input", () => {
     persistEditorChange();
@@ -199,7 +286,11 @@ async function init() {
   document.querySelector("#delete-document").addEventListener("click", documentController.deleteCurrent);
   document.querySelector("#guide-save").addEventListener("click", documentController.saveCurrent);
   document.querySelector("#guide-check").addEventListener("click", checkDocument);
-  document.querySelector("#guide-export").addEventListener("click", exportCheckedMarkdown);
+  document.querySelector("#guide-export").addEventListener("click", exportController.exportCheckedMarkdown);
+  document.querySelector("#guide-export-html").addEventListener("click", () => exportController.exportCheckedRender("html"));
+  document.querySelector("#guide-export-pdf").addEventListener("click", () => exportController.exportCheckedRender("pdf"));
+  discardDraftButton.addEventListener("click", draftRecoveryController.discardLocalDraft);
+  workspaceViewController.bind();
   documentPicker.addEventListener("change", documentController.importSelected);
   window.addEventListener("beforeunload", (event) => {
     if (!isDirty) return;
@@ -213,7 +304,7 @@ function syncMetadata() {
 }
 
 function persistEditorChange() {
-  localStorage.setItem(storageKey, input.value);
+  draftRecoveryController.saveDraft();
   setDirty(input.value !== lastSavedContent);
   renderPreview();
 }
@@ -225,6 +316,7 @@ function setDirty(value) {
   dirtyState.textContent = isDirty ? "Modifiche non salvate" : `Salvato: ${filename}`;
   dirtyState.className = isDirty ? "dirty" : "";
   saveState.textContent = isDirty ? "Modifiche locali" : "Salvato in docs";
+  draftRecoveryController?.render();
   updateGuideStatus();
 }
 
@@ -258,12 +350,10 @@ async function confirmDelete(filename) {
 }
 
 function renderPreview() {
-  if (authorCheckState === "fresh" && input.value !== authorCheckedMarkdown) {
-    authorCheckState = "stale";
-    authorDiagnostics = [];
-  }
+  outlineController?.render();
+  authorCheckController?.markStaleIfChanged();
   currentDiagnostics = previewController.render() || [];
-  renderAuthorDiagnostics();
+  authorCheckController?.render();
   updateGuideStatus();
 }
 
@@ -277,64 +367,15 @@ async function copyMarkdown() {
 }
 
 function downloadMarkdown() {
-  downloadMarkdownFile(input.value, `${slugifyDocumentName(input.value)}.md`);
+  downloadMarkdownFile(input.value, editorFilename());
   saveState.textContent = "Export Markdown pronto";
 }
 
-async function checkDocument(options = {}) {
-  const settings = options instanceof Event ? {} : options;
-  renderPreview();
-  authorCheckState = "running";
-  authorCheckPanel.replaceChildren(
-    document.createElement("strong"),
-    document.createElement("span")
-  );
-  authorCheckPanel.querySelector("strong").textContent = "Author check";
-  authorCheckPanel.querySelector("span").textContent = "Controlli editoriali in corso...";
-
-  try {
-    const result = await checkDocumentQuality({
-      filename: currentDocument || `${slugifyDocumentName(input.value)}.md`,
-      content: input.value
-    });
-    authorDiagnostics = result.diagnostics || [];
-    authorCheckState = "fresh";
-    authorCheckedMarkdown = input.value;
-  } catch {
-    authorCheckState = "failed";
-    authorDiagnostics = [{
-      severity: "error",
-      line: 1,
-      message: "Author check non disponibile.",
-      fix: "Verifica che il server editor locale sia attivo."
-    }];
-  }
-
-  renderAuthorDiagnostics();
-  if (settings.scroll !== false) authorCheckPanel.scrollIntoView({ block: "nearest" });
-  const allDiagnostics = checkedDiagnostics();
-  const firstBlocking = allDiagnostics.find((diagnostic) => diagnostic.severity === "error") || allDiagnostics[0];
-  if (firstBlocking) {
-    if (settings.focus !== false) focusMarkdownLine(firstBlocking.line);
-    saveState.textContent = firstBlocking.severity === "error" ? "Check: errori da correggere" : "Check: avvisi presenti";
-    return { ok: firstBlocking.severity !== "error", diagnostics: allDiagnostics };
-  }
-  saveState.textContent = "Check completo ok";
-  return { ok: true, diagnostics: allDiagnostics };
-}
-
-async function exportCheckedMarkdown() {
-  const result = await checkDocument({ scroll: false, focus: true });
-  const blocking = result.diagnostics.find((diagnostic) => diagnostic.severity === "error");
-  if (blocking) {
-    saveState.textContent = "Export bloccato: correggi gli errori";
-    return;
-  }
-
-  downloadMarkdownFile(input.value, `${slugifyDocumentName(input.value)}.md`);
-  saveState.textContent = result.diagnostics.length
-    ? "Export Markdown pronto con avvisi"
-    : "Export Markdown pronto";
+function checkDocument(options = {}) {
+  return authorCheckController.checkDocument({
+    ...(options instanceof Event ? {} : options),
+    schemaDiagnostics: currentDiagnostics
+  });
 }
 
 function focusMarkdownLine(lineNumber) {
@@ -356,35 +397,16 @@ function updateGuideStatus() {
     ? `${errors} errori schema`
     : warnings
       ? `${warnings} avvisi schema`
-      : authorCheckState === "stale"
+      : authorCheckController?.getState() === "stale"
         ? "author check da rifare"
         : "schema ok";
   guideStatus.textContent = `${saveHint}; ${checkHint}; esporta quando il Markdown e pronto.`;
 }
 
 function checkedDiagnostics() {
-  return [
-    ...currentDiagnostics,
-    ...(authorCheckState === "fresh" || authorCheckState === "failed" ? authorDiagnostics : [])
-  ];
+  return authorCheckController?.getDiagnostics(currentDiagnostics) || currentDiagnostics;
 }
 
-function renderAuthorDiagnostics() {
-  const emptyMessage = {
-    fresh: "Controlli editoriali, legali e include ok sulla bozza corrente.",
-    stale: "Il Markdown e cambiato dopo l'ultimo author check. Premi Check per aggiornare.",
-    failed: "Author check non disponibile.",
-    idle: "Premi Check per controlli editoriali, legali e include sulla bozza corrente.",
-    running: "Controlli editoriali in corso..."
-  }[authorCheckState] || "Premi Check per controlli editoriali, legali e include sulla bozza corrente.";
-
-  renderDiagnostics({
-    diagnostics: authorDiagnostics,
-    emptyTitle: "Author check",
-    emptyMessage,
-    panel: authorCheckPanel,
-    title: "Author check",
-    onSelectLine: focusMarkdownLine
-  });
-  updateGuideStatus();
+function editorFilename() {
+  return currentDocument || `${slugifyDocumentName(input.value)}.md`;
 }

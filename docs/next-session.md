@@ -1,9 +1,9 @@
 ---
 title: Prossima Sessione
 slug: prossima-sessione
-summary: Handoff conciso per il prossimo ciclo UX autore.
+summary: Handoff conciso per migrare l'editor verso una UX Homebrewery-like moderna.
 category: reference
-tags: handoff, editor, ux
+tags: handoff, editor, ux, codemirror
 compatibility: 5e/5.5e
 license_mode: srd-5.2-cc
 author: Andrea
@@ -16,48 +16,83 @@ public: false
 
 ## Obiettivo
 
-Rendere l'editor locale il flusso autore primario, cosi VS Code resta utile per sviluppo/review ma non necessario per scrivere contenuti.
+Preparare una nuova esperienza editor statica integrabile nel sito reference SRD: topbar minima, Markdown editor a sinistra, preview viva a destra, preview nascondibile, dati salvati localmente nel browser.
 
-## Stato
+## Decisione Tecnica
 
-- `main` e aggiornato con PR #1: refactor editor, QA schema/preview/PDF e restyling template.
-- Branch attivo: `codex/vscode-preview-rendering`.
-- Commit locale sul branch: `5a1015f Align VS Code preview guardrails`.
-- Pulizia branch precedente completata.
-- Guardrail visuali/licenza aggiunti in `docs/design-guardrails.md`.
-- Markdown Preview VS Code allineata meglio al template, ma il focus prossimo e l'editor locale.
+Migrare la UI editor verso:
 
-## File Di Riferimento
+```text
+Vite + React + CodeMirror 6 + iframe preview
+```
+
+- CodeMirror 6 per editing Markdown, shortcut, completions, lint e comandi.
+- React solo per shell, menu, pannelli e stato.
+- Preview iframe usando il renderer/CSS gia presenti.
+- Storage statico iniziale: `localStorage`/download-import Markdown.
+- Integrazione futura in una sottocartella `/editor/` del sito reference come app statica.
+
+## Stato Attuale
+
+- Il repo ha molte modifiche non committate e preesistenti. Non fare revert automatici.
+- Ultimo check completo eseguito con successo: `npm run check`.
+- Server locale puo essere avviato con `npm run editor` su `http://127.0.0.1:8082/`.
+- L'editor vanilla attuale e stato refactorizzato ma resta UX insufficiente; usarlo come riferimento funzionale, non come base UI definitiva.
+
+## File Da Conoscere
 
 - `editor/index.html`
-- `editor/styles.css`
 - `editor/app.js`
-- `editor/components/*`
-- `editor/documents/*`
+- `editor/markdown/editor-actions.js`
 - `editor/preview/controller.js`
 - `editor/documents/preview-shell.js`
+- `editor/components/preview.js`
+- `editor/documents/api.js`
 - `scripts/serve-editor.js`
+- `scripts/editor-server/*`
+- `styles/preview.css`
+- `styles/core/*`
 - `scripts/test-editor-ui.js`
 - `scripts/test-preview-visual.js`
-- `docs/editor-reference.md`
-- `docs/checklist.md`
-- `docs/design-guardrails.md`
 
-## Direzione UX
+## Primo Task Consigliato
 
-- Direzione Homebrewery-like, ma con identita originale: scrittura Markdown a sinistra, preview editoriale viva a destra, snippet rapidi e export/check nel flusso.
-- Priorita di composizione: scroll sync editor/preview, click dalla preview alla riga Markdown, navigatore documento, snippet rapidi con anteprima.
-- Priorita pagina/export: confini pagina visibili, segnali overflow/page break, export PDF/HTML guidato dopo check.
-- Pattern Homebrewery da adattare: split editor/preview con sync opzionale, toolbar preview persistente, snippet bar per gruppi, navigazione pagina/print integrata.
-- Diagnostic panel piu utile: errori cliccabili, severita visiva, suggerimento di fix.
-- Workflow autore chiaro: nuovo documento, salvataggio, stato dirty, export/check come azioni guidate.
-- Preview piu fedele e controllabile: desktop/mobile/page width, refresh stabile, segnale tema/carta.
-- Component insertion piu veloce: ricerca palette, filtri, preferiti o ultimi usati.
-- Ridurre dipendenza da VS Code: tutto cio che serve a scrivere e controllare deve essere nell'editor.
+Creare una nuova app editor moderna senza cancellare subito la vanilla:
 
-## Vincoli
+```text
+editor-next/
+  index.html
+  package/build config se necessario
+  src/
+    App.jsx
+    editor/MarkdownEditor.jsx
+    preview/PreviewFrame.jsx
+    shell/TopMenu.jsx
+    storage/localDrafts.js
+```
 
-- Markdown resta sorgente primaria e sempre visibile.
-- Output `5E compatible`, originale: niente loghi, marchi, impaginati o asset proprietari.
-- Non copiare trade dress ufficiale; usare token e componenti originali del progetto.
-- Ogni incremento deve passare almeno `npm run check` e `npm run test:editor-ui`.
+Poi:
+
+1. Installare/configurare Vite + React + CodeMirror 6.
+2. Montare layout split editor/preview a piena altezza.
+3. Collegare CodeMirror a preview iframe usando il renderer esistente.
+4. Implementare toggle preview e autosave locale.
+5. Aggiungere test smoke browser minimo.
+
+## Guardrail UX
+
+- Niente pannelli impilati sopra il testo.
+- Niente UI da gestionale: menu compatti e contenuto dominante.
+- Markdown resta sorgente primaria.
+- Preview pulita, senza immagini demo o ornamenti inutili.
+- Stile fantasy/SRD originale: non copiare trade dress, loghi, font o asset proprietari di editori terzi.
+
+## Verifica Minima
+
+Prima di chiudere ogni tranche:
+
+```bash
+npm run test:editor-ui
+npm run test:preview-visual
+npm run check
+```

@@ -29,6 +29,8 @@ public: false
 - Obiettivo: leggibilita da manuale fantasy, densita informativa alta, statblock scansionabili, tabelle robuste e callout distinti.
 - Identita originale: verderame, lacca scura, oro spento e carta calda sono i token base del progetto.
 - Evita di inseguire una replica: nessun logo ufficiale, nessuna cornice identificabile, nessuna imitazione diretta di copertine o pagine del publisher ufficiale.
+- Due colonne, tabelle compatte e blocchi regole non spezzabili sono pattern editoriali generici ammessi; non importare font embedded, border image o stylesheet PHB/Homebrewery.
+- Il tema `modern-5-5` puo suggerire un impianto piu moderno e pulito, ma deve restare originale: niente trade dress 2024 ufficiale, niente marchi, niente layout riconoscibili.
 - I componenti devono sembrare parte della stessa suite: label coerenti, bordi sottili, spaziature compatte e tipografia stabile.
 
 ## Preview VS Code

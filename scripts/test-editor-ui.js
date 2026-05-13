@@ -90,9 +90,52 @@ try {
   await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 15"));
 
   await assertEqual(await evalInPage("document.querySelectorAll('.component-card').length"), 15, "component palette count");
+  await click("button[data-workspace-view='write']");
+  await assertEqual(await evalInPage("document.querySelector('.app-shell')?.dataset.workspaceView"), "write", "workspace write mode");
+  await assertEqual(await evalInPage("getComputedStyle(document.querySelector('.component-panel')).display"), "none", "write mode hides component panel");
+  await assertEqual(await evalInPage("getComputedStyle(document.querySelector('.editor-panel')).display !== 'none'"), true, "write mode keeps markdown visible");
+  await click("button[data-workspace-view='components']");
+  await assertEqual(await evalInPage("document.querySelector('.app-shell')?.dataset.workspaceView"), "components", "workspace components mode");
+  await assertEqual(await evalInPage("getComputedStyle(document.querySelector('.preview-panel')).display"), "none", "components mode hides preview panel");
+  await assertEqual(await evalInPage("getComputedStyle(document.querySelector('.editor-panel')).display !== 'none'"), true, "components mode keeps markdown visible");
+  await click("button[data-workspace-view='all']");
+  await assertEqual(await evalInPage("document.querySelector('.app-shell')?.dataset.workspaceView"), "all", "workspace all mode");
   await assertEqual(await evalInPage("document.querySelector('#validation-panel strong')?.textContent"), "Schema ok", "initial schema status");
   await assertEqual(await evalInPage("document.querySelector('#author-check-panel strong')?.textContent"), "Author check", "initial author check status");
   await assertIncludes(await evalInPage("document.querySelector('#guide-status')?.textContent"), "schema ok", "author flow schema status");
+  await assertIncludes(await evalInPage("document.querySelector('#recovery-panel')?.textContent"), "Nessuna bozza locale", "initial recovery status");
+  await click("#guide-export-html");
+  await waitFor(() => evalInPage("document.querySelector('#export-panel')?.textContent.includes('dist/nuova-avventura.html')"), 12000);
+  await assertIncludes(await evalInPage("document.querySelector('#export-panel')?.textContent"), "Export HTML pronto", "guided HTML export status");
+  await assertEqual(await exportedFileExists("nuova-avventura.html"), true, "guided HTML export file");
+  await evalInPage(`
+    {
+      const input = document.querySelector('#markdown-input');
+      input.value += '\\n\\n## Recovery Test\\n';
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+  `);
+  await waitFor(() => evalInPage("document.querySelector('#recovery-panel')?.textContent.includes('Bozza autosalvata')"));
+  await assertEqual(await evalInPage("!document.querySelector('#discard-draft')?.hidden"), true, "discard draft visible");
+  await click("#discard-draft");
+  await waitFor(() => evalInPage("document.querySelector('#modal-dialog')?.open"));
+  await click("#modal-confirm");
+  await waitFor(() => evalInPage("document.querySelector('#recovery-panel')?.textContent.includes('Nessuna bozza locale')"));
+  await assertIncludes(await textareaValue(), "# Nuova Avventura", "discard draft restores starter");
+  await assertEqual(await evalInPage("localStorage.getItem('rpg-text-editor:draft')"), null, "draft storage cleared");
+  await assertEqual(await evalInPage("document.querySelectorAll('#document-outline button[data-line]').length"), 2, "initial outline count");
+  await assertIncludes(await evalInPage("document.querySelector('#document-outline')?.textContent"), "Scena iniziale", "initial outline heading");
+  await evalInPage(`
+    Array.from(document.querySelectorAll('#document-outline button[data-line]'))
+      .find((button) => button.textContent.includes('Scena iniziale'))
+      .click()
+  `);
+  await assertIncludes(await evalInPage(`
+    {
+      const input = document.querySelector('#markdown-input');
+      input.value.slice(input.selectionStart, input.selectionEnd);
+    }
+  `), "## Scena iniziale", "outline focuses markdown heading");
   await waitFor(() => evalInPage("document.querySelector('#preview')?.contentDocument?.querySelector('h1[data-source-line]')"));
   await evalInPage(`
     {
@@ -142,6 +185,9 @@ try {
   await assertEqual(await evalInPage("document.querySelector('#preview')?.dataset.viewport"), "mobile", "preview mobile viewport");
   await assertEqual(await evalInPage("document.querySelector('#preview')?.dataset.width"), "mobile", "preview mobile width");
   await assertEqual(await evalInPage("document.querySelector('#preview')?.dataset.sync"), "off", "preview sync toggle");
+  await fill("#preview-zoom", "1.25");
+  await assertEqual(await evalInPage("document.querySelector('#preview')?.dataset.zoom"), "1.25", "preview zoom dataset");
+  await waitFor(() => evalInPage("document.querySelector('#preview')?.contentDocument?.documentElement?.style.getPropertyValue('--rpg-preview-zoom') === '1.25'"));
   await evalInPage(`
     {
       const sync = document.querySelector('#preview-sync');
@@ -180,12 +226,18 @@ try {
   await assertIncludes(await textareaValue(), "| Voce | Dettaglio |", "toolbar table insert");
   await click("[data-action='callout']");
   await assertIncludes(await textareaValue(), "::: note Nota", "toolbar callout insert");
-  await click("[data-action='image']");
-  await assertIncludes(await textareaValue(), "::: image Immagine", "toolbar image insert");
   await click("[data-action='include']");
   await assertIncludes(await textareaValue(), '<rpg-include src="content/monsters/custode-ossa.html"></rpg-include>', "toolbar include insert");
+  await click("[data-action='pagebreak']");
+  await assertIncludes(await textareaValue(), "::pagebreak", "toolbar pagebreak insert");
+  await waitFor(() => evalInPage("document.querySelector('#preview-page-indicator')?.textContent === '1/2'"));
+  await click("#preview-page-next");
+  await assertEqual(await evalInPage("document.querySelector('#preview-page-indicator')?.textContent"), "2/2", "preview next page");
+  await assertEqual(await evalInPage("document.querySelector('#preview')?.contentDocument?.querySelectorAll('.page-break').length"), 1, "preview pagebreak marker");
   await click("[data-snippet='scene']");
   await assertIncludes(await textareaValue(), "## Nuova scena", "quick snippet scene insert");
+  await waitFor(() => evalInPage("document.querySelector('#document-outline')?.textContent.includes('Nuova scena')"));
+  await assertIncludes(await evalInPage("document.querySelector('#document-outline')?.textContent"), "Nuova scena", "outline updates after snippet");
   await click("[data-snippet='encounter']");
   await assertIncludes(await textareaValue(), "::: encounter Incontro", "quick snippet encounter insert");
   await click("[data-snippet='table']");
@@ -419,6 +471,11 @@ async function removeUserDataDir(path) {
 
 async function documentExists(filename) {
   const response = await fetch(`${baseUrl}/api/documents/${encodeURIComponent(filename)}`);
+  return response.ok;
+}
+
+async function exportedFileExists(filename) {
+  const response = await fetch(`${baseUrl}/dist/${encodeURIComponent(filename)}`);
   return response.ok;
 }
 

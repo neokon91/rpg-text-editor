@@ -66,3 +66,20 @@ export async function checkDocument({ filename, content }) {
   if (!response.ok) throw new Error("Check documento non riuscito");
   return response.json();
 }
+
+export async function exportDocument({ filename, content, format }) {
+  const response = await fetch("/api/export-document", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ filename, content, format })
+  });
+
+  if (!response.ok) {
+    const payload = await response.json().catch(() => ({}));
+    const error = new Error(payload.message || "Export documento non riuscito");
+    error.log = payload.log || "";
+    throw error;
+  }
+
+  return response.json();
+}

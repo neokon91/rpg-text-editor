@@ -2,11 +2,11 @@
 .treasure,
 .encounter {
   position: relative;
-  margin: 1.4rem 0;
-  padding: 1rem 1.05rem 0.95rem 1.15rem;
+  margin: 0.95rem 0;
+  padding: 0.72rem 0.78rem 0.76rem 0.86rem;
   border: 1px solid rgba(122, 87, 35, 0.35);
-  border-left-width: 6px;
-  border-radius: 3px;
+  border-left-width: 5px;
+  border-radius: 0;
   background:
     linear-gradient(90deg, rgba(255, 255, 255, 0.76), rgba(255, 255, 255, 0.44)),
     radial-gradient(circle at 95% 12%, rgba(54, 113, 107, 0.13), transparent 24%),
@@ -50,7 +50,7 @@
   border: 1px solid rgba(122, 87, 35, 0.18);
   border-radius: 3px;
   font-family: var(--font-heading);
-  font-size: 0.76rem;
+  font-size: 0.66rem;
   font-weight: 700;
   letter-spacing: 0;
   text-transform: uppercase;

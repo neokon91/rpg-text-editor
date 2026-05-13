@@ -7,25 +7,160 @@
     <link rel="stylesheet" href="/editor/styles.css">
   </head>
   <body>
-    <div class="app-shell">
+    <div class="app-shell" data-workspace-view="write">
       <header class="topbar">
-        <div>
+        <div class="topbar__brand">
           <h1>RPG Text Editor</h1>
-          <p>Editor Markdown con componenti TTRPG guidati da schema.</p>
+          <p>Scrivi, controlla ed esporta documenti TTRPG.</p>
         </div>
-        <div class="topbar__actions" aria-label="Azioni documento">
-          <button id="new-document" type="button">Nuovo</button>
-          <select id="document-picker" aria-label="Documenti salvati">
-            <option value="">Apri documento</option>
-          </select>
-          <button id="copy-markdown" type="button">Copia Markdown</button>
-          <button id="download-markdown" type="button">Scarica .md</button>
-          <button id="check-document" type="button">Check</button>
-          <button id="save-document" type="button">Salva</button>
-          <button id="save-copy" type="button">Salva nuovo</button>
-          <button id="rename-document" type="button">Rinomina</button>
-          <button id="delete-document" type="button">Elimina</button>
-        </div>
+
+        <nav class="topbar__menus" aria-label="Menu editor">
+          <details class="topbar-menu">
+            <summary>File</summary>
+            <div class="topbar-menu__panel topbar-menu__panel--wide">
+              <select id="document-picker" aria-label="Documenti salvati">
+                <option value="">Apri documento</option>
+              </select>
+              <button id="new-document" type="button">Nuovo</button>
+              <button id="save-document" type="button" class="primary-action">Salva</button>
+              <button id="save-copy" type="button">Salva nuovo</button>
+              <button id="rename-document" type="button">Rinomina</button>
+              <button id="copy-markdown" type="button">Copia Markdown</button>
+              <button id="download-markdown" type="button">Scarica .md</button>
+              <button id="delete-document" type="button">Elimina</button>
+            </div>
+          </details>
+
+          <details class="topbar-menu">
+            <summary>Documento</summary>
+            <div class="topbar-menu__panel topbar-menu__panel--metadata">
+              <div class="document-state">
+                <span id="current-document">Nessun file aperto</span>
+                <span id="dirty-state">Non salvato in docs</span>
+              </div>
+              <div id="recovery-panel" class="recovery-panel" aria-live="polite">
+                <strong>Autosave</strong>
+                <span>Nessuna bozza locale da recuperare.</span>
+                <button id="discard-draft" type="button" hidden>Scarta bozza</button>
+              </div>
+              <div class="metadata-panel" aria-label="Metadati documento">
+                <label>
+                  <span>Titolo</span>
+                  <input id="meta-title" data-meta="title" type="text">
+                </label>
+                <label>
+                  <span>Slug</span>
+                  <input id="meta-slug" data-meta="slug" type="text">
+                </label>
+                <label class="metadata-wide">
+                  <span>Summary</span>
+                  <input id="meta-summary" data-meta="summary" type="text">
+                </label>
+                <label>
+                  <span>Categoria</span>
+                  <input id="meta-category" data-meta="category" type="text">
+                </label>
+                <label>
+                  <span>Tags</span>
+                  <input id="meta-tags" data-meta="tags" type="text">
+                </label>
+                <label>
+                  <span>Autore</span>
+                  <input id="meta-author" data-meta="author" type="text">
+                </label>
+                <label>
+                  <span>Tema</span>
+                  <select id="meta-theme" data-meta="theme">
+                    <option value="classic-parchment">classic-parchment</option>
+                    <option value="dark-arcane">dark-arcane</option>
+                    <option value="clean-guild">clean-guild</option>
+                    <option value="modern-5-5">modern-5-5</option>
+                    <option value="printer-friendly">printer-friendly</option>
+                  </select>
+                </label>
+                <label>
+                  <span>Carta</span>
+                  <select id="meta-paper" data-meta="paper">
+                    <option value="A4">A4</option>
+                    <option value="Letter">Letter</option>
+                  </select>
+                </label>
+                <label>
+                  <span>Pubblico</span>
+                  <select id="meta-public" data-meta="public">
+                    <option value="true">true</option>
+                    <option value="false">false</option>
+                  </select>
+                </label>
+              </div>
+            </div>
+          </details>
+
+          <details class="topbar-menu">
+            <summary>Inserisci</summary>
+            <div class="topbar-menu__panel topbar-menu__panel--insert">
+              <div class="editor-toolbar" aria-label="Toolbar Markdown">
+                <button type="button" data-action="heading">H2</button>
+                <button type="button" data-action="bold">B</button>
+                <button type="button" data-action="italic">I</button>
+                <button type="button" data-action="list">Lista</button>
+                <button type="button" data-action="table">Tabella</button>
+                <button type="button" data-action="readaloud">Readaloud</button>
+                <button type="button" data-action="callout">Callout</button>
+                <button type="button" data-action="include">Include</button>
+                <button type="button" data-action="pagebreak">Pagina</button>
+              </div>
+              <div class="quick-snippets" aria-label="Snippet rapidi">
+                <div class="snippet-group">
+                  <span>Struttura</span>
+                  <button type="button" data-snippet="scene">Scena</button>
+                  <button type="button" data-snippet="pagebreak">Pagina</button>
+                </div>
+                <div class="snippet-group">
+                  <span>Tavolo</span>
+                  <button type="button" data-snippet="readaloud">Readaloud</button>
+                  <button type="button" data-snippet="note">Nota</button>
+                </div>
+                <div class="snippet-group">
+                  <span>Gioco</span>
+                  <button type="button" data-snippet="encounter">Incontro</button>
+                  <button type="button" data-snippet="treasure">Tesoro</button>
+                  <button type="button" data-snippet="table">Tabella</button>
+                </div>
+              </div>
+            </div>
+          </details>
+
+          <details class="topbar-menu">
+            <summary>Vista</summary>
+            <div class="topbar-menu__panel">
+              <div class="workspace-mode" aria-label="Vista workspace">
+                <button type="button" data-workspace-view="write" aria-pressed="true">Editor + Preview</button>
+                <button type="button" data-workspace-view="focus" aria-pressed="false">Solo editor</button>
+                <button type="button" data-workspace-view="components" aria-pressed="false">Componenti</button>
+                <button type="button" data-workspace-view="all" aria-pressed="false">Tutto</button>
+              </div>
+              <nav id="document-outline" class="document-outline" aria-label="Navigatore documento"></nav>
+            </div>
+          </details>
+
+          <details class="topbar-menu">
+            <summary>Export</summary>
+            <div class="topbar-menu__panel">
+              <button id="check-document" type="button">Check</button>
+              <button id="guide-save" type="button">Salva</button>
+              <button id="guide-check" type="button">Check guidato</button>
+              <button id="guide-export" type="button">Esporta .md</button>
+              <button id="guide-export-html" type="button">HTML</button>
+              <button id="guide-export-pdf" type="button">PDF</button>
+              <span id="guide-status">Bozza pronta per la scrittura.</span>
+              <div id="export-panel" class="export-panel" aria-live="polite">
+                <strong>Export</strong>
+                <span>Markdown libero, HTML/PDF dopo check guidato.</span>
+              </div>
+            </div>
+          </details>
+        </nav>
       </header>
 
       <main class="workspace">
@@ -65,95 +200,6 @@
             <h2>Markdown</h2>
             <span id="save-state" class="save-state">Bozza locale</span>
           </div>
-          <div class="document-state">
-            <span id="current-document">Nessun file aperto</span>
-            <span id="dirty-state">Non salvato in docs</span>
-          </div>
-          <div class="author-flow" aria-label="Workflow autore">
-            <button id="guide-save" type="button">1 Salva</button>
-            <button id="guide-check" type="button">2 Check</button>
-            <button id="guide-export" type="button">3 Esporta .md</button>
-            <span id="guide-status">Bozza pronta per la scrittura.</span>
-          </div>
-          <div class="metadata-panel" aria-label="Metadati documento">
-            <label>
-              <span>Titolo</span>
-              <input id="meta-title" data-meta="title" type="text">
-            </label>
-            <label>
-              <span>Slug</span>
-              <input id="meta-slug" data-meta="slug" type="text">
-            </label>
-            <label class="metadata-wide">
-              <span>Summary</span>
-              <input id="meta-summary" data-meta="summary" type="text">
-            </label>
-            <label>
-              <span>Categoria</span>
-              <input id="meta-category" data-meta="category" type="text">
-            </label>
-            <label>
-              <span>Tags</span>
-              <input id="meta-tags" data-meta="tags" type="text">
-            </label>
-            <label>
-              <span>Autore</span>
-              <input id="meta-author" data-meta="author" type="text">
-            </label>
-            <label>
-              <span>Tema</span>
-              <select id="meta-theme" data-meta="theme">
-                <option value="classic-parchment">classic-parchment</option>
-                <option value="dark-arcane">dark-arcane</option>
-                <option value="clean-guild">clean-guild</option>
-                <option value="printer-friendly">printer-friendly</option>
-              </select>
-            </label>
-            <label>
-              <span>Carta</span>
-              <select id="meta-paper" data-meta="paper">
-                <option value="A4">A4</option>
-                <option value="Letter">Letter</option>
-              </select>
-            </label>
-            <label>
-              <span>Pubblico</span>
-              <select id="meta-public" data-meta="public">
-                <option value="true">true</option>
-                <option value="false">false</option>
-              </select>
-            </label>
-          </div>
-          <div class="editor-toolbar" aria-label="Toolbar Markdown">
-            <button type="button" data-action="heading">H2</button>
-            <button type="button" data-action="bold">B</button>
-            <button type="button" data-action="italic">I</button>
-            <button type="button" data-action="list">Lista</button>
-            <button type="button" data-action="table">Tabella</button>
-            <button type="button" data-action="readaloud">Readaloud</button>
-            <button type="button" data-action="callout">Callout</button>
-            <button type="button" data-action="image">Immagine</button>
-            <button type="button" data-action="include">Include</button>
-            <button type="button" data-action="pagebreak">Pagina</button>
-          </div>
-          <div class="quick-snippets" aria-label="Snippet rapidi">
-            <div class="snippet-group">
-              <span>Struttura</span>
-              <button type="button" data-snippet="scene">Scena</button>
-              <button type="button" data-snippet="pagebreak">Pagina</button>
-            </div>
-            <div class="snippet-group">
-              <span>Tavolo</span>
-              <button type="button" data-snippet="readaloud">Readaloud</button>
-              <button type="button" data-snippet="note">Nota</button>
-            </div>
-            <div class="snippet-group">
-              <span>Gioco</span>
-              <button type="button" data-snippet="encounter">Incontro</button>
-              <button type="button" data-snippet="treasure">Tesoro</button>
-              <button type="button" data-snippet="table">Tabella</button>
-            </div>
-          </div>
           <textarea id="markdown-input" spellcheck="true"></textarea>
         </section>
 
@@ -179,6 +225,21 @@
                 <option value="mobile">Mobile</option>
               </select>
             </label>
+            <label>
+              <span>Zoom</span>
+              <select id="preview-zoom">
+                <option value="0.75">75%</option>
+                <option value="0.9">90%</option>
+                <option value="1">100%</option>
+                <option value="1.1">110%</option>
+                <option value="1.25">125%</option>
+              </select>
+            </label>
+            <div class="preview-page-controls" aria-label="Navigazione pagine preview">
+              <button id="preview-page-prev" type="button" aria-label="Pagina precedente">‹</button>
+              <span id="preview-page-indicator">1/1</span>
+              <button id="preview-page-next" type="button" aria-label="Pagina successiva">›</button>
+            </div>
             <label class="preview-sync-toggle">
               <input id="preview-sync" type="checkbox" checked>
               <span>Sync</span>

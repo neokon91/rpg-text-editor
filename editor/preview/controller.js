@@ -6,6 +6,7 @@ import { countWords } from "/editor/markdown/editor-actions.js";
 
 const previewViewportKey = "rpg-text-editor:preview-viewport";
 const previewWidthKey = "rpg-text-editor:preview-width";
+const previewZoomKey = "rpg-text-editor:preview-zoom";
 const previewSyncKey = "rpg-text-editor:preview-sync";
 
 export function createPreviewController({
@@ -14,6 +15,10 @@ export function createPreviewController({
   validationPanel,
   previewViewport,
   previewWidth,
+  previewZoom,
+  previewPagePrev,
+  previewPageNext,
+  previewPageIndicator,
   previewSync,
   previewMeta,
   sourceInput,
@@ -23,10 +28,15 @@ export function createPreviewController({
   onDiagnostics
 }) {
   let syncFrame = 0;
+  let currentPage = 0;
+  let pageAnchors = [0];
 
   restorePreviewControls();
   previewViewport?.addEventListener("change", applyPreviewControls);
   previewWidth?.addEventListener("change", applyPreviewControls);
+  previewZoom?.addEventListener("change", applyPreviewControls);
+  previewPagePrev?.addEventListener("click", () => goToPage(currentPage - 1));
+  previewPageNext?.addEventListener("click", () => goToPage(currentPage + 1));
   previewSync?.addEventListener("change", applyPreviewControls);
   sourceInput?.addEventListener("scroll", syncPreviewToEditor);
   preview.addEventListener("load", bindPreviewInteractions);
@@ -45,6 +55,7 @@ export function createPreviewController({
     wordCount.textContent = `${countWords(body)} parole`;
     previewMeta.textContent = `Tema: ${metadata.theme || "classic-parchment"} · Carta: ${metadata.paper || "A4"}`;
     applyPreviewControls();
+    updatePageControls();
     const diagnostics = renderComponentValidation(markdown, schema, validationPanel, onSelectLine);
     onDiagnostics?.(diagnostics);
     return diagnostics;
@@ -53,10 +64,13 @@ export function createPreviewController({
   function applyPreviewControls() {
     preview.dataset.viewport = previewViewport?.value || "desktop";
     preview.dataset.width = previewWidth?.value || "fit";
+    preview.dataset.zoom = previewZoom?.value || "1";
     preview.dataset.sync = previewSync?.checked ? "on" : "off";
     localStorage.setItem(previewViewportKey, preview.dataset.viewport);
     localStorage.setItem(previewWidthKey, preview.dataset.width);
+    localStorage.setItem(previewZoomKey, preview.dataset.zoom);
     localStorage.setItem(previewSyncKey, preview.dataset.sync);
+    applyFrameZoom();
   }
 
   function handlePreviewMessage(event) {
@@ -68,6 +82,8 @@ export function createPreviewController({
   function bindPreviewInteractions() {
     const document = preview.contentDocument;
     if (!document) return;
+    applyFrameZoom();
+    updatePageControls();
 
     document.addEventListener("click", (event) => {
       const target = event.target.closest("[data-source-line]");
@@ -76,6 +92,35 @@ export function createPreviewController({
       event.preventDefault();
       onSelectLine?.(Number(target.dataset.sourceLine));
     });
+  }
+
+  function updatePageControls() {
+    const document = preview.contentDocument;
+    const breaks = document ? [...document.querySelectorAll(".page-break")] : [];
+    pageAnchors = [0, ...breaks.map((element) => Math.max(0, element.offsetTop + element.offsetHeight))];
+    currentPage = Math.min(currentPage, pageAnchors.length - 1);
+    renderPageIndicator();
+  }
+
+  function renderPageIndicator() {
+    if (!previewPageIndicator) return;
+    previewPageIndicator.textContent = `${currentPage + 1}/${pageAnchors.length}`;
+    if (previewPagePrev) previewPagePrev.disabled = currentPage <= 0;
+    if (previewPageNext) previewPageNext.disabled = currentPage >= pageAnchors.length - 1;
+  }
+
+  function goToPage(index) {
+    updatePageControls();
+    currentPage = Math.max(0, Math.min(index, pageAnchors.length - 1));
+    const document = preview.contentDocument;
+    document?.defaultView?.scrollTo({ top: pageAnchors[currentPage], behavior: "smooth" });
+    renderPageIndicator();
+  }
+
+  function applyFrameZoom() {
+    const document = preview.contentDocument;
+    if (!document) return;
+    document.documentElement.style.setProperty("--rpg-preview-zoom", previewZoom?.value || "1");
   }
 
   function syncPreviewToEditor() {
@@ -108,9 +153,11 @@ export function createPreviewController({
   function restorePreviewControls() {
     const storedViewport = localStorage.getItem(previewViewportKey);
     const storedWidth = localStorage.getItem(previewWidthKey);
+    const storedZoom = localStorage.getItem(previewZoomKey);
     const storedSync = localStorage.getItem(previewSyncKey);
     if (previewViewport && storedViewport) previewViewport.value = storedViewport;
     if (previewWidth && storedWidth) previewWidth.value = storedWidth;
+    if (previewZoom && storedZoom) previewZoom.value = storedZoom;
     if (previewSync && storedSync) previewSync.checked = storedSync !== "off";
   }
 

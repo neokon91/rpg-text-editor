@@ -1,10 +1,10 @@
 .rules-card {
   position: relative;
-  margin: 1.4rem 0;
-  padding: 1rem 1.1rem 1.05rem;
+  margin: 0.95rem 0;
+  padding: 0.72rem 0.78rem 0.76rem;
   border: 1px solid rgba(122, 87, 35, 0.35);
-  border-top: 5px solid var(--color-verdigris);
-  border-radius: 3px;
+  border-top: 4px solid var(--color-verdigris);
+  border-radius: 0;
   background:
     linear-gradient(90deg, rgba(255, 255, 255, 0.66), rgba(255, 255, 255, 0.42)),
     radial-gradient(circle at 100% 0, rgba(54, 113, 107, 0.13), transparent 23%),
@@ -25,7 +25,7 @@
 
 .rules-card h3,
 .random-table h3 {
-  margin: 0 0 0.45rem;
+  margin: 0 0 0.32rem;
   color: var(--color-plum);
 }
 
@@ -39,7 +39,7 @@
   border-radius: 3px;
   color: var(--color-verdigris);
   font-family: var(--font-heading);
-  font-size: 0.74rem;
+  font-size: 0.66rem;
   font-weight: 700;
   letter-spacing: 0;
   text-transform: uppercase;
@@ -81,11 +81,11 @@
 
 .random-table {
   position: relative;
-  margin: 1.5rem 0;
-  padding: 0.9rem 1rem 1rem;
+  margin: 1rem 0;
+  padding: 0.68rem 0.74rem 0.76rem;
   border: 1px solid rgba(122, 87, 35, 0.35);
   border-left: 6px solid var(--color-verdigris);
-  border-radius: 3px;
+  border-radius: 0;
   background:
     linear-gradient(90deg, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.42)),
     radial-gradient(circle at 95% 8%, rgba(54, 113, 107, 0.16), transparent 24%),
@@ -94,13 +94,13 @@
 }
 
 .table-compact {
-  margin: 0.7rem 0 0;
-  font-size: 0.9rem;
+  margin: 0.5rem 0 0;
+  font-size: 0.78rem;
 }
 
 .table-compact th,
 .table-compact td {
-  padding: 0.45rem 0.55rem;
+  padding: 0.3rem 0.38rem;
 }
 
 .stats-grid small {

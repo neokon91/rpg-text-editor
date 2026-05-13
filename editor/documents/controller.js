@@ -4,6 +4,7 @@ import { deleteDocument, getDocument, listDocuments, renameDocument, saveDocumen
 export function createDocumentController({
   documentPicker,
   storageKey,
+  draftMetaKey,
   getMarkdown,
   setMarkdown,
   getCurrentDocument,
@@ -49,6 +50,7 @@ export function createDocumentController({
     setCurrentDocument(result.filename);
     setLastSavedContent(markdown);
     localStorage.removeItem(storageKey);
+    localStorage.removeItem(draftMetaKey);
     setDirty(false);
     await refreshPicker(result.filename);
   }
@@ -71,6 +73,7 @@ export function createDocumentController({
     setCurrentDocument(result.filename);
     setLastSavedContent(markdown);
     localStorage.removeItem(storageKey);
+    localStorage.removeItem(draftMetaKey);
     setDirty(false);
     await refreshPicker(result.filename);
   }
@@ -96,6 +99,7 @@ export function createDocumentController({
     setCurrentDocument(document.filename);
     setLastSavedContent(document.content);
     localStorage.removeItem(storageKey);
+    localStorage.removeItem(draftMetaKey);
     syncMetadataForm();
     setDirty(false);
     renderPreview();
@@ -107,6 +111,11 @@ export function createDocumentController({
     setCurrentDocument("");
     setLastSavedContent(markdown);
     localStorage.setItem(storageKey, markdown);
+    localStorage.setItem(draftMetaKey, JSON.stringify({
+      currentDocument: "",
+      title: slugifyDocumentName(markdown),
+      updatedAt: new Date().toISOString()
+    }));
     syncMetadataForm();
     setDirty(true);
     renderPreview();
@@ -158,6 +167,7 @@ export function createDocumentController({
     setCurrentDocument("");
     setLastSavedContent("");
     localStorage.removeItem(storageKey);
+    localStorage.removeItem(draftMetaKey);
     syncMetadataForm();
     setDirty(false);
     renderPreview();
