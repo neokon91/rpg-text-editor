@@ -230,6 +230,44 @@ button:disabled {
   min-height: 15px;
 }
 
+.external-pack-controls {
+  display: grid;
+  gap: 5px;
+}
+
+.external-pack-import {
+  display: grid;
+  gap: 4px;
+  color: #695d4d;
+  font-size: 12px;
+}
+
+.external-pack-import input {
+  width: 100%;
+  min-height: 0;
+  font-size: 12px;
+}
+
+.external-pack-list {
+  display: grid;
+  gap: 4px;
+}
+
+.external-pack-list span {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  color: #695d4d;
+  font-size: 12px;
+}
+
+.external-pack-list button {
+  min-height: 24px;
+  padding: 0 7px;
+  font-size: 12px;
+}
+
 .component-palette-scroll {
   min-height: 0;
   overflow: auto;

@@ -58,4 +58,4 @@ Limite noto: `facing/flow` sono modalita preparatorie; lo spread diventera piena
 - Renderer multipagina reale per spread affiancato/flusso.
 - Sync fine su scroll continuo e blocchi lunghi.
 - Palette componenti con sottopreset e gruppi piu ricchi.
-- Pack esterni non versionati importabili dalla UI.
+- Validazione UX piu ricca per pack esterni e collisioni.

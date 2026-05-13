@@ -28,6 +28,7 @@ public: false
 - Toolbar preview con pagina corrente/totale, prev/next, input pagina, fit page/fill width e modalita single/facing/flow.
 - Sync editor-preview base con toggle, scroll preview dalla linea cursore e click preview verso sorgente.
 - Toggle plugin pack manifest nella UI React, con scelta persistente.
+- Import di plugin pack JSON esterni non versionati, con persistenza locale.
 - Palette componenti generata da schema, con ricerca e gruppi.
 - Inserimento componenti al cursore CodeMirror.
 - Form guidati generati da schema per campi e liste, con preset, rimozione righe e validazione inline dei campi richiesti.
@@ -48,7 +49,7 @@ public: false
 1. Renderer multipagina reale: rendere `single/facing/flow` basati su pagine separate, non solo marker `::pagebreak` navigabili.
 2. Sync editor-preview fine: scroll continuo piu preciso tra linee intermedie e blocchi lunghi.
 3. Palette componenti piu ricca: sottopreset, gruppi rapidi e preset estendibili da schema/plugin.
-4. Caricamento plugin pack esterni non versionati nella UI React.
+4. Validazione UX piu ricca per pack esterni: anteprima componenti, collisioni guidate e reset storage.
 5. Comandi editor da tastiera e toolbar Markdown piu completa.
 6. Test UI per open/save, component insertion, sync preview e export PDF.
 

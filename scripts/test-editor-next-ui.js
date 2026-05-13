@@ -106,6 +106,11 @@ try {
   await assertEqual(await evalInPage("document.body.textContent.includes('Fazione')"), false, "plugin pack component hidden");
   await evalInPage("document.querySelector('.pack-toggles input[type=\"checkbox\"]').click()");
   await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 15"));
+  await importExternalPack();
+  await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 16"));
+  await assertEqual(await evalInPage("document.body.textContent.includes('Reliquia esterna')"), true, "external pack component visible");
+  await clickButtonByAriaLabel("Rimuovi pack External Test Pack");
+  await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 15"));
 
   await clickButton("Check");
   await waitFor(() => evalInPage("document.body.textContent.includes('Check completo ok')"));
@@ -210,6 +215,37 @@ async function clickButtonByAriaLabel(label) {
       const button = document.querySelector(\`button[aria-label="${label}"]\`);
       if (!button) throw new Error('Button not found: ${label}');
       button.click();
+    }
+  `);
+}
+
+async function importExternalPack() {
+  await evalInPage(`
+    {
+      const input = document.querySelector('.external-pack-import input[type="file"]');
+      if (!input) throw new Error('External pack input not found');
+      const pack = {
+        id: 'external-test-pack',
+        name: 'External Test Pack',
+        version: '0.1.0',
+        compatibility: 'rpg-text-editor>=0.1.0',
+        components: [{
+          id: 'external-relic',
+          label: 'Reliquia esterna',
+          group: 'Test',
+          description: 'Componente caricato da JSON esterno.',
+          container: 'external-relic',
+          default_label: 'Reliquia',
+          fields: [
+            { key: 'name', label: 'Nome', type: 'text', required: true, default: 'Specchio di prova' }
+          ]
+        }]
+      };
+      const file = new File([JSON.stringify(pack)], 'external-test-pack.json', { type: 'application/json' });
+      const transfer = new DataTransfer();
+      transfer.items.add(file);
+      input.files = transfer.files;
+      input.dispatchEvent(new Event('change', { bubbles: true }));
     }
   `);
 }

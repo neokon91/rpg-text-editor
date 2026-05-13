@@ -72,7 +72,7 @@ public: false
 - [x] Form componenti generati da schema nella UI React, con preset, rimozione righe lista e validazione inline.
 - [x] Renderer build allineato ai plugin pack.
 - [x] UI React per attivare/disattivare pack dichiarati nel manifest.
-- [ ] UI React per caricare pack esterni non versionati.
+- [x] UI React per caricare pack esterni non versionati.
 - [x] Documentazione dedicata per creare nuovi pack.
 
 ## Validazione e QA
@@ -103,5 +103,5 @@ public: false
 ## Prossimi passi consigliati
 
 1. Rendere lo spread `facing/flow` fisicamente multipagina quando il renderer verra spezzato in pagine reali.
-2. Aggiungere caricamento pack esterni non versionati.
-3. Poi palette componenti con sottopreset e workspace persistenti.
+2. Aggiungere palette componenti con sottopreset.
+3. Poi workspace persistenti e rifiniture responsive dei pannelli.

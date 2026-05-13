@@ -17,6 +17,7 @@ import { clearDraft, loadDraft, saveDraft } from "./storage/localDrafts.js";
 import "./styles.css";
 
 const enabledPacksStorageKey = "rpg-text-editor:enabled-packs";
+const externalPacksStorageKey = "rpg-text-editor:external-packs";
 
 const starterDocument = `---
 title: Nuova Avventura
@@ -46,6 +47,7 @@ function App() {
   const [markdown, setMarkdown] = useState(() => loadDraft() || starterDocument);
   const [componentManifest, setComponentManifest] = useState(null);
   const [enabledPacks, setEnabledPacks] = useState(() => new Set());
+  const [externalPacks, setExternalPacks] = useState(() => loadExternalPacks());
   const [schema, setSchema] = useState({ components: [] });
   const [schemaState, setSchemaState] = useState("Caricamento schema");
   const [previewVisible, setPreviewVisible] = useState(true);
@@ -88,7 +90,7 @@ function App() {
     let cancelled = false;
     async function loadSchema() {
       try {
-        const loadedSchema = await loadComponentSchema(componentManifest, enabledPacks);
+        const loadedSchema = await loadComponentSchema(componentManifest, enabledPacks, externalPacks);
         if (cancelled) return;
         setSchema(loadedSchema);
         setSchemaState(`${loadedSchema.components.length} componenti`);
@@ -102,7 +104,7 @@ function App() {
     return () => {
       cancelled = true;
     };
-  }, [componentManifest, enabledPacks]);
+  }, [componentManifest, enabledPacks, externalPacks]);
 
   useEffect(() => {
     saveDraft(markdown);
@@ -186,6 +188,30 @@ function App() {
       saveEnabledPacks(enabledPacksStorageKey, next);
       return next;
     });
+    setExportOutputs([]);
+  }
+
+  function importExternalPack(pack) {
+    const normalized = normalizeExternalPack(pack);
+    setExternalPacks((current) => {
+      const next = [
+        ...current.filter((item) => item.id !== normalized.id),
+        normalized
+      ];
+      saveExternalPacks(next);
+      return next;
+    });
+    setStatus(`Pack esterno caricato: ${normalized.name}`);
+    setExportOutputs([]);
+  }
+
+  function removeExternalPack(packId) {
+    setExternalPacks((current) => {
+      const next = current.filter((pack) => pack.id !== packId);
+      saveExternalPacks(next);
+      return next;
+    });
+    setStatus("Pack esterno rimosso");
     setExportOutputs([]);
   }
 
@@ -352,7 +378,10 @@ function App() {
           schema={schema}
           packs={componentManifest?.packs || []}
           enabledPackIds={enabledPacks}
+          externalPacks={externalPacks}
           onTogglePack={togglePack}
+          onImportExternalPack={importExternalPack}
+          onRemoveExternalPack={removeExternalPack}
           onInsert={insertMarkdown}
         />
         <MarkdownEditor
@@ -391,3 +420,33 @@ function collectDiagnostics(markdown, schema) {
 }
 
 createRoot(document.querySelector("#root")).render(<App />);
+
+function loadExternalPacks() {
+  try {
+    const stored = JSON.parse(localStorage.getItem(externalPacksStorageKey) || "[]");
+    if (!Array.isArray(stored)) return [];
+    return stored.map(normalizeExternalPack);
+  } catch {
+    localStorage.removeItem(externalPacksStorageKey);
+    return [];
+  }
+}
+
+function saveExternalPacks(packs) {
+  localStorage.setItem(externalPacksStorageKey, JSON.stringify(packs));
+}
+
+function normalizeExternalPack(pack) {
+  if (!pack || typeof pack !== "object") throw new Error("Pack esterno non valido.");
+  if (!pack.id || !pack.name || !Array.isArray(pack.components)) {
+    throw new Error("Il pack richiede id, name e components.");
+  }
+  return {
+    id: String(pack.id),
+    name: String(pack.name),
+    schema: {
+      ...pack,
+      components: pack.components
+    }
+  };
+}

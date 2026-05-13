@@ -6,9 +6,19 @@ import {
   validateComponentValues
 } from "./componentMarkdown.js";
 
-export function ComponentPalette({ schema, packs = [], enabledPackIds = new Set(), onTogglePack, onInsert }) {
+export function ComponentPalette({
+  schema,
+  packs = [],
+  enabledPackIds = new Set(),
+  externalPacks = [],
+  onTogglePack,
+  onImportExternalPack,
+  onRemoveExternalPack,
+  onInsert
+}) {
   const [query, setQuery] = useState("");
   const [selectedId, setSelectedId] = useState("");
+  const [packError, setPackError] = useState("");
   const selectedComponent = useMemo(
     () => (schema.components || []).find((component) => component.id === selectedId) || null,
     [schema, selectedId]
@@ -59,6 +69,13 @@ export function ComponentPalette({ schema, packs = [], enabledPackIds = new Set(
             ))}
           </div>
         ) : null}
+        <ExternalPackControls
+          packs={externalPacks}
+          error={packError}
+          onError={setPackError}
+          onImport={onImportExternalPack}
+          onRemove={onRemoveExternalPack}
+        />
       </header>
       <div className="component-palette-scroll">
         {groupedComponents.map(([group, components]) => (
@@ -93,6 +110,43 @@ export function ComponentPalette({ schema, packs = [], enabledPackIds = new Set(
         />
       ) : null}
     </aside>
+  );
+}
+
+function ExternalPackControls({ packs, error, onError, onImport, onRemove }) {
+  async function handleFile(event) {
+    const [file] = event.target.files || [];
+    if (!file) return;
+
+    try {
+      const pack = JSON.parse(await file.text());
+      onImport?.(pack);
+      onError("");
+    } catch (caught) {
+      onError(caught.message || "Pack JSON non valido.");
+    } finally {
+      event.target.value = "";
+    }
+  }
+
+  return (
+    <div className="external-pack-controls">
+      <label className="external-pack-import">
+        <span>Importa pack JSON</span>
+        <input type="file" accept="application/json,.json" onChange={handleFile} />
+      </label>
+      {packs.length ? (
+        <div className="external-pack-list">
+          {packs.map((pack) => (
+            <span key={pack.id}>
+              {pack.name}
+              <button type="button" aria-label={`Rimuovi pack ${pack.name}`} onClick={() => onRemove?.(pack.id)}>Rimuovi</button>
+            </span>
+          ))}
+        </div>
+      ) : null}
+      {error ? <small className="inline-error">{error}</small> : null}
+    </div>
   );
 }
 
