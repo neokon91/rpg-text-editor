@@ -75,6 +75,7 @@ public: false
 - [x] UI React per attivare/disattivare pack dichiarati nel manifest.
 - [x] UI React per caricare pack esterni non versionati.
 - [x] Validazione locale pack esterni per campi minimi e collisioni `id`/`container`.
+- [x] Anteprima componenti inclusi nei pack esterni importati.
 - [x] Documentazione dedicata per creare nuovi pack.
 
 ## Validazione e QA
@@ -104,6 +105,6 @@ public: false
 
 ## Prossimi passi consigliati
 
-1. Aggiungere palette componenti con sottopreset.
+1. Aggiungere palette componenti con sottopreset e gruppi rapidi.
 2. Migliorare paginazione automatica oltre agli split manuali `::pagebreak`.
 3. Poi workspace persistenti e rifiniture responsive dei pannelli.

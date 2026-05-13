@@ -118,6 +118,7 @@ try {
   await importExternalPack();
   await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 16"));
   await assertEqual(await evalInPage("document.body.textContent.includes('Reliquia esterna')"), true, "external pack component visible");
+  await assertEqual(await evalInPage("document.querySelector('.external-pack-components')?.textContent.includes('external-relic')"), true, "external pack component preview");
   await clickButtonByAriaLabel("Rimuovi pack External Test Pack");
   await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 15"));
 

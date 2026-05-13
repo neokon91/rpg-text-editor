@@ -58,4 +58,4 @@ Limite noto: la paginazione e ancora manuale tramite `::pagebreak`; lo step succ
 - Paginazione automatica o assistita oltre agli split manuali.
 - Sync fine su scroll continuo e blocchi lunghi.
 - Palette componenti con sottopreset e gruppi piu ricchi.
-- Anteprima componenti dei pack esterni e gestione storage dedicata.
+- Sottopreset e gruppi rapidi nella palette componenti.

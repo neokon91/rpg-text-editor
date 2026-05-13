@@ -140,7 +140,7 @@ npm run editor
 
 Poi apri l'editor, usa i toggle sotto la ricerca componenti e verifica che le card del pack compaiano o spariscano.
 
-Per provare un pack non versionato, usa `Importa pack JSON` nella palette componenti. Il pack viene salvato nel `localStorage` del browser e puo essere rimosso dalla stessa sezione. Se dichiara `id` o `container` in collisione con core o altri pack attivi, la palette mostra l'errore prima di salvare il pack.
+Per provare un pack non versionato, usa `Importa pack JSON` nella palette componenti. Il pack viene salvato nel `localStorage` del browser, mostra una piccola anteprima dei componenti inclusi e puo essere rimosso dalla stessa sezione. Se dichiara `id` o `container` in collisione con core o altri pack attivi, la palette mostra l'errore prima di salvare il pack.
 
 ## Versionare un pack
 

@@ -48,6 +48,7 @@ Vite + React + CodeMirror 6 + iframe preview
 - Sync editor-preview base implementato: toggle `Sync`, preview segue la linea cursore e il click preview seleziona la sorgente.
 - Plugin pack manifest attivabili/disattivabili dalla palette componenti, con scelta persistente.
 - Pack JSON esterni importabili e rimovibili dalla palette componenti, con persistenza locale e validazione collisioni.
+- Anteprima componenti dei pack esterni importati visibile nella palette.
 
 ## File Da Conoscere
 
@@ -66,7 +67,7 @@ Vite + React + CodeMirror 6 + iframe preview
 
 Proseguire con palette avanzata o paginazione automatica:
 
-1. Palette avanzata: sottopreset, gruppi rapidi e anteprima componenti dei pack esterni.
+1. Palette avanzata: sottopreset e gruppi rapidi.
 2. Oppure paginazione automatica: stimare overflow e suggerire/gestire page break oltre agli split manuali.
 3. Mantenere `npm run test:editor-next-ui` come smoke minimo per ogni tranche.
 

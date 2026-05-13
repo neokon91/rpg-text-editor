@@ -30,6 +30,7 @@ public: false
 - Sync editor-preview base con toggle, scroll preview dalla linea cursore e click preview verso sorgente.
 - Toggle plugin pack manifest nella UI React, con scelta persistente.
 - Import di plugin pack JSON esterni non versionati, con persistenza locale e validazione collisioni.
+- Anteprima componenti inclusi nei pack esterni importati.
 - Palette componenti generata da schema, con ricerca e gruppi.
 - Inserimento componenti al cursore CodeMirror.
 - Form guidati generati da schema per campi e liste, con preset, rimozione righe e validazione inline dei campi richiesti.
@@ -50,7 +51,7 @@ public: false
 1. Paginazione automatica piu evoluta oltre agli split manuali `::pagebreak`.
 2. Sync editor-preview fine: scroll continuo piu preciso tra linee intermedie e blocchi lunghi.
 3. Palette componenti piu ricca: sottopreset, gruppi rapidi e preset estendibili da schema/plugin.
-4. Anteprima componenti dei pack esterni e reset storage dedicato.
+4. Sottopreset e gruppi rapidi nella palette componenti.
 5. Comandi editor da tastiera e toolbar Markdown piu completa.
 6. Test UI per open/save, component insertion, sync preview e export PDF.
 

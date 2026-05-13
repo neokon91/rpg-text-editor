@@ -138,10 +138,21 @@ function ExternalPackControls({ packs, error, onError, onImport, onRemove }) {
       {packs.length ? (
         <div className="external-pack-list">
           {packs.map((pack) => (
-            <span key={pack.id}>
-              {pack.name}
-              <button type="button" aria-label={`Rimuovi pack ${pack.name}`} onClick={() => onRemove?.(pack.id)}>Rimuovi</button>
-            </span>
+            <section key={pack.id} className="external-pack-item">
+              <header>
+                <span>{pack.name}</span>
+                <button type="button" aria-label={`Rimuovi pack ${pack.name}`} onClick={() => onRemove?.(pack.id)}>Rimuovi</button>
+              </header>
+              <small>{pack.schema.components.length} componenti</small>
+              <div className="external-pack-components">
+                {pack.schema.components.map((component) => (
+                  <span key={component.id} title={component.description}>
+                    {component.label}
+                    <small>{component.container}</small>
+                  </span>
+                ))}
+              </div>
+            </section>
           ))}
         </div>
       ) : null}

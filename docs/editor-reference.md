@@ -43,6 +43,7 @@ Il server apre `editor-next/` su `http://127.0.0.1:5173/editor-next/` e combina 
 - Palette componenti generata da schema con ricerca, gruppi e inserimento al cursore.
 - Toggle plugin pack dichiarati nel manifest, con scelta persistente in `localStorage`.
 - Import pack JSON esterni non versionati dalla palette, con rimozione, persistenza locale e validazione collisioni prima del salvataggio.
+- Anteprima dei componenti inclusi nei pack esterni importati.
 - Form componenti per campi e liste dichiarati nello schema, con preset, rimozione righe e validazione inline dei campi richiesti.
 - Navigatore documento da heading Markdown con salto alla riga.
 - Form frontmatter compatto nel pannello documento.
@@ -58,7 +59,7 @@ Il server apre `editor-next/` su `http://127.0.0.1:5173/editor-next/` e combina 
 
 - Paginazione automatica piu evoluta oltre agli split manuali `::pagebreak`.
 - Sync editor-preview piu fine su linee intermedie e scroll continuo, oltre al sync base gia disponibile.
-- Anteprima componenti dei pack esterni e reset storage dedicato.
+- Sottopreset e gruppi rapidi nella palette componenti.
 - Palette componenti con sottopreset e gruppi piu ricchi.
 - Rename/delete documento, se confermati come parte del flusso editor.
 - Test UI piu ampi per save/open e component insertion.
