@@ -205,6 +205,8 @@ try {
   await reloadPage();
   await waitFor(() => evalInPage("document.readyState === 'complete'"));
   await waitFor(() => evalInPage("document.querySelector('.preview-overflow')?.textContent.includes('Overflow')"));
+  await evalInPage("document.querySelector('.preview-overflow').click()");
+  await waitFor(() => evalInPage("Number(window.localStorage.getItem('rpg-text-editor-next:selected-line')) > 1"));
 
   const errors = await evalInPage("Array.from(window.__editorNextErrors || [])");
   if (errors.length) throw new Error(`Errori console browser: ${errors.join("; ")}`);

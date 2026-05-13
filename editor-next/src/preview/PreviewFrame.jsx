@@ -131,9 +131,15 @@ export function PreviewFrame({
     onZoomChange(String(clampZoom(nextZoom)));
   }
 
+  function selectFirstOverflow() {
+    if (!firstOverflow) return;
+    goToPage(firstOverflow.page);
+    if (firstOverflow.line) onSelectLine(firstOverflow.line);
+  }
+
   const canGoBack = pageState.current > 1;
   const canGoForward = pageState.current < pageState.total;
-  const firstOverflowPage = overflowPages[0];
+  const firstOverflow = overflowPages[0];
 
   return (
     <section className="preview-pane" aria-label="Anteprima" data-spread={spread}>
@@ -162,7 +168,7 @@ export function PreviewFrame({
         </label>
         <button type="button" disabled={!canGoForward} onClick={() => goToPage(pageState.current + 1)} aria-label="Pagina successiva">›</button>
         {overflowPages.length ? (
-          <button type="button" className="preview-overflow" onClick={() => goToPage(firstOverflowPage)}>
+          <button type="button" className="preview-overflow" onClick={selectFirstOverflow}>
             Overflow {overflowPages.length}
           </button>
         ) : null}
@@ -183,17 +189,28 @@ function readOverflowPages(doc) {
   const spread = doc.body?.dataset.spread;
   if (spread === "flow") return [];
   return [...doc.querySelectorAll(".page-shell")]
-    .filter((page) => {
+    .map((page) => {
       const style = doc.defaultView?.getComputedStyle(page);
       const pageLimit = parseFloat(style?.height || "0") || parseFloat(style?.minHeight || "0") || page.clientHeight;
       const pageRect = page.getBoundingClientRect();
-      const clippedNode = [...page.querySelectorAll("[data-source-line]")].some((node) => {
+      const pageBottom = pageRect.top + pageLimit;
+      const clippedNode = [...page.querySelectorAll("[data-source-line]")].find((node) => {
         const rect = node.getBoundingClientRect();
-        return rect.bottom > pageRect.bottom - 4 || rect.right > pageRect.right - 4;
+        return rect.bottom > pageBottom - 4 || rect.right > pageRect.right - 4;
       });
-      return page.scrollHeight > pageLimit + 4 || page.scrollWidth > page.clientWidth + 4 || clippedNode;
+      const hasOverflow = page.scrollHeight > pageLimit + 4 || page.scrollWidth > page.clientWidth + 4 || clippedNode;
+      if (!hasOverflow) return null;
+      return {
+        page: Number(page.dataset.previewPage) || 1,
+        line: Number(clippedNode?.dataset.sourceLine) || firstSourceLine(page)
+      };
     })
-    .map((page) => Number(page.dataset.previewPage) || 1);
+    .filter(Boolean);
+}
+
+function firstSourceLine(page) {
+  const source = page.querySelector("[data-source-line]");
+  return Number(source?.dataset.sourceLine) || 1;
 }
 
 function findSourceTarget(targets, line) {

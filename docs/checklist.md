@@ -64,7 +64,7 @@ public: false
 - [x] Workspace persistente per collasso pannelli frontmatter/outline e riga outline selezionata.
 - [x] Prima toolbar pagina/spread nella UI React: pagina corrente/totale, prev/next, input pagina, fit page/fill width e modalita single/facing/flow.
 - [x] Preview multipagina reale basata su `::pagebreak`, con una `page-shell` per pagina.
-- [x] Indicatore overflow pagine nella toolbar preview, con salto alla prima pagina da spezzare.
+- [x] Indicatore overflow pagine nella toolbar preview, con salto alla prima pagina e selezione della riga da spezzare.
 - [x] Tema originale `modern-5-5` per resa 5.5-compatible piu moderna e pulita.
 
 ## Componenti e schema
@@ -111,5 +111,5 @@ public: false
 
 ## Prossimi passi consigliati
 
-1. Suggerire o inserire page break assistiti partendo dall'indicatore overflow.
+1. Inserire `::pagebreak` assistiti partendo dalla riga overflow selezionata.
 2. Rifinire responsive dei pannelli e palette con sottopreset.

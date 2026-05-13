@@ -38,7 +38,7 @@ Il server apre `editor-next/` su `http://127.0.0.1:5173/editor-next/` e combina 
 - Preview live con `styles/main.css`, `page-shell`, tema e carta da frontmatter.
 - Controlli preview: desktop/mobile, zoom, toggle preview, fit/fill, pagina corrente/totale, prev/next, input pagina e modalita single/facing/flow.
 - Preview multipagina reale: ogni `::pagebreak` crea una nuova `page-shell` navigabile.
-- Indicatore overflow nella toolbar preview quando una pagina manuale supera il box pagina, con salto alla prima pagina da spezzare.
+- Indicatore overflow nella toolbar preview quando una pagina manuale supera il box pagina, con salto alla prima pagina e selezione della riga da spezzare.
 - Sync preview: toggle `Sync`, scroll preview dalla linea cursore, range sorgente sui blocchi multi-linea e click su preview verso la linea sorgente.
 - Snippet rapidi: scena, readaloud, incontro, tabella e page break.
 - Palette componenti generata da schema con ricerca, gruppi e inserimento al cursore.
@@ -62,7 +62,7 @@ Il server apre `editor-next/` su `http://127.0.0.1:5173/editor-next/` e combina 
 
 ## Mancanze Verso Homebrewery
 
-- Inserimento o suggerimento assistito di page break oltre al solo indicatore overflow.
+- Inserimento assistito di `::pagebreak` dalla riga overflow selezionata.
 - Palette componenti con sottopreset e gruppi piu ricchi.
 - Rename/delete documento, se confermati come parte del flusso editor.
 - Test UI piu ampi per save/open e component insertion.
