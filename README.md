@@ -22,7 +22,7 @@ npm run check:components
 npm run check:documents
 npm run check:schema-artifacts
 npm run test:rendering
-npm run test:editor-ui
+npm run test:editor-next-ui
 npm run check
 npm run generate:schema-artifacts
 npm run new -- adventure "La Torre Sommersa"
@@ -30,6 +30,7 @@ npm run preview
 npm run preview:expanded
 npm run preview:watch
 npm run editor
+npm run editor:next:build
 ```
 
 - `npm run build` genera `dist/santuario-sepolto.html`.
@@ -48,38 +49,39 @@ npm run editor
 - `npm run check:documents` valida i blocchi `:::` in `docs/` contro lo schema componenti.
 - `npm run check:schema-artifacts` verifica che reference e snippet generati siano aggiornati.
 - `npm run test:rendering` costruisce una fixture HTML e verifica il rendering strutturato di componenti core e plugin pack.
-- `npm run test:editor-ui` avvia editor e browser headless, poi verifica palette, toolbar, dialog, rename/delete e validazione.
+- `npm run test:editor-next-ui` avvia il nuovo editor e browser headless, poi verifica preview, check ed export HTML.
 - `npm run check` esegue controlli legali/editoriali, asset, include, componenti, documenti, artefatti schema e rendering.
 - `npm run generate:schema-artifacts` rigenera `docs/reference.md` e `.vscode/rpg.schema.code-snippets` dallo schema componenti.
 - `npm run new -- adventure "Titolo"` crea un nuovo documento da template. Tipi disponibili: `adventure`, `bestiary`, `item`, `reference`.
 - `npm run preview` serve la cartella `dist` su `http://127.0.0.1:8081`.
 - `npm run preview:expanded` rigenera `dist/site/` e serve una preview navigabile con `<rpg-include>` gia espansi.
 - `npm run preview:watch` mantiene la preview espansa aggiornata mentre modifichi sorgenti, stili, template e asset.
-- `npm run editor` avvia la nuova UI locale su `http://127.0.0.1:8082` con editor Markdown, preview e componenti guidati da schema.
+- `npm run editor` avvia la UI React/CodeMirror su `http://127.0.0.1:5173/editor-next/` con API locali per documenti, check ed export.
+- `npm run editor:next:build` genera la build statica di `editor-next`.
 
 ## Authoring in VS Code
 
-Per il flusso pratico completo vedi `docs/authoring.md`. Per creare pack componenti vedi `docs/plugin-packs.md`. Per lo stato della UI vedi `docs/editor-reference.md`; per priorita e QA usa `docs/checklist.md`.
+Per il flusso pratico completo vedi `docs/authoring.md`. Per creare pack componenti vedi `docs/plugin-packs.md`. Per lo stato della UI vedi `docs/editor-reference.md`; per il gap Homebrewery vedi `docs/homebrewery-gap.md`; per priorita e QA usa `docs/checklist.md`.
 
 ## Editor UI
 
-La prima UI locale vive in `editor/` e si avvia con:
+La UI locale vive in `editor-next/` e si avvia con:
 
 ```sh
 npm run editor
 ```
 
-L'editor mantiene il Markdown come sorgente primaria, salva bozze in `localStorage` e inserisce blocchi `:::` compatibili con la build. La palette componenti non usa un registry JavaScript hardcoded: viene generata dal manifest `schemas/components.json`, che aggrega lo schema core in `schemas/core/components.json` e i plugin pack abilitati. Il pannello preview segnala in tempo reale componenti sconosciuti, campi obbligatori mancanti, chiavi non previste e liste malformate.
+L'editor mantiene il Markdown come sorgente primaria, usa CodeMirror 6, salva bozze in `localStorage` e mostra una preview live in iframe con `styles/main.css`, `page-shell`, tema e formato carta del frontmatter. Il server locale integra le API per aprire documenti da `docs/`, salvare la bozza corrente, eseguire check guidati ed esportare HTML/PDF in `dist/`.
 
-Il pannello Markdown include un form per i metadati principali del frontmatter e una toolbar rapida per heading, enfasi, liste, tabelle, readaloud, callout, immagini, include e page break. Ogni controllo aggiorna il sorgente Markdown visibile, senza introdurre un formato proprietario. La preview usa un iframe con `styles/main.css`, `page-shell`, tema e formato carta del frontmatter, cosi resta molto piu vicina alla resa HTML/PDF finale.
+I moduli condivisi vivono in `packages/`:
 
-Dal server locale dell'editor puoi aprire documenti Markdown esistenti da `docs/` e salvare la bozza corrente direttamente come file `.md` in `docs/`. Il salvataggio usa lo `slug` del frontmatter, il primo H1 o un fallback normalizzato. L'editor tiene traccia del file corrente, segnala modifiche non salvate, chiede conferma prima di cambiare documento e distingue tra overwrite del file aperto e creazione di una nuova copia.
+- `packages/components`: renderer, validazione e loader schema;
+- `packages/documents`: frontmatter, shell preview e API client;
+- `packages/markdown`: outline, azioni editor e utilita Markdown.
 
-I plugin pack vivono in `schemas/plugins/<pack-id>/pack.json` e dichiarano nome, versione, compatibilita e componenti esportati. `npm run check:components` valida campi obbligatori e collisioni di `id`/`container`.
+La vecchia shell vanilla `editor/` e stata rimossa: `editor-next/` e l'unica UI applicativa.
 
-Nel pannello componenti dell'editor puoi attivare o disattivare i pack dichiarati nel manifest. La scelta resta locale in `localStorage`: build, check e artefatti generati continuano a usare il manifest versionato.
-
-Puoi anche caricare un `pack.json` esterno dal pannello componenti per provarlo nella sessione corrente dell'editor. Il file viene letto dal browser, resta non versionato e non modifica `schemas/components.json`; per renderlo stabile va aggiunto al manifest e validato con `npm run check:components`.
+I plugin pack vivono in `schemas/plugins/<pack-id>/pack.json` e dichiarano nome, versione, compatibilita e componenti esportati. `npm run check:components` valida campi obbligatori e collisioni di `id`/`container`. La palette componenti nella UI React e il prossimo blocco di lavoro: lo schema e gia pronto, ma l'inserimento guidato in `editor-next` non e ancora stato riportato.
 
 `npm run generate:schema-artifacts` usa lo stesso manifest per rigenerare la reference componenti e gli snippet rapidi in `.vscode/rpg.schema.code-snippets`. `npm run check:schema-artifacts` fallisce se questi file non sono allineati allo schema.
 

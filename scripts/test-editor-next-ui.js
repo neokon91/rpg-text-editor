@@ -1,0 +1,226 @@
+import { mkdtemp, rm } from "node:fs/promises";
+import { existsSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { spawn } from "node:child_process";
+
+const root = new URL("..", import.meta.url).pathname;
+const editorPort = 8193;
+const cdpPort = 9231;
+const baseUrl = `http://127.0.0.1:${editorPort}`;
+
+let server;
+let browser;
+let userDataDir;
+let cdp;
+
+class CdpConnection {
+  constructor(url) {
+    this.url = url;
+    this.id = 0;
+    this.pending = new Map();
+  }
+
+  open() {
+    return new Promise((resolve, reject) => {
+      this.socket = new WebSocket(this.url);
+      this.socket.addEventListener("open", resolve, { once: true });
+      this.socket.addEventListener("error", reject, { once: true });
+      this.socket.addEventListener("message", (event) => this.handleMessage(event));
+      this.socket.addEventListener("close", () => this.rejectPending(new Error("Connessione CDP chiusa.")));
+    });
+  }
+
+  send(method, params = {}) {
+    const id = ++this.id;
+    const payload = { id, method, params };
+    if (this.sessionId && !method.startsWith("Target.")) payload.sessionId = this.sessionId;
+
+    return new Promise((resolve, reject) => {
+      this.pending.set(id, { resolve, reject });
+      this.socket.send(JSON.stringify(payload));
+    });
+  }
+
+  handleMessage(event) {
+    const message = JSON.parse(event.data);
+    if (!message.id || !this.pending.has(message.id)) return;
+
+    const pending = this.pending.get(message.id);
+    this.pending.delete(message.id);
+    if (message.error) {
+      pending.reject(new Error(message.error.message));
+    } else {
+      pending.resolve(message.result || {});
+    }
+  }
+
+  rejectPending(error) {
+    for (const pending of this.pending.values()) {
+      pending.reject(error);
+    }
+    this.pending.clear();
+  }
+
+  close() {
+    this.socket?.close();
+  }
+}
+
+try {
+  server = spawn(process.execPath, ["scripts/serve-editor-next.js"], {
+    cwd: root,
+    env: { ...process.env, PORT: String(editorPort) },
+    stdio: ["ignore", "pipe", "pipe"]
+  });
+  await waitForServer();
+
+  userDataDir = await mkdtemp(join(tmpdir(), "rpg-editor-next-ui-"));
+  browser = spawn(findBrowser(), [
+    "--headless=new",
+    "--no-sandbox",
+    "--disable-gpu",
+    "--disable-dev-shm-usage",
+    `--remote-debugging-port=${cdpPort}`,
+    `--user-data-dir=${userDataDir}`,
+    "about:blank"
+  ], { stdio: "ignore" });
+
+  cdp = await openTarget();
+  await cdp.send("Runtime.enable");
+  await cdp.send("Page.enable");
+  await cdp.send("Page.navigate", { url: `${baseUrl}/editor-next/` });
+  await waitFor(() => evalInPage("document.readyState === 'complete'"));
+  await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.querySelector('.page-shell h1')?.textContent.toLowerCase().includes('nuova avventura')"));
+  await waitFor(() => evalInPage("document.querySelector('select')?.options.length > 1"));
+  await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 15"));
+
+  await clickButton("Check");
+  await waitFor(() => evalInPage("document.body.textContent.includes('Check completo ok')"));
+
+  const exportResult = await fetchJson(`${baseUrl}/api/export-document`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      filename: "nuova-avventura.md",
+      format: "html",
+      content: await evalInPage("window.localStorage.getItem('rpg-text-editor-next:draft')")
+    })
+  });
+  await assertEqual(exportResult.outputs?.[0]?.path, "dist/nuova-avventura.html", "export api output path");
+  await assertEqual(await exportedFileExists("nuova-avventura.html"), true, "exported html exists");
+  await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 15"));
+
+  await clickButton("Scena");
+  await waitFor(() => evalInPage("document.body.textContent.includes('Nuova scena')"));
+
+  await assertEqual(await evalInPage("document.body.textContent.includes('Nuova scena')"), true, "outline shows inserted scene");
+
+  const errors = await evalInPage("Array.from(window.__editorNextErrors || [])");
+  if (errors.length) throw new Error(`Errori console browser: ${errors.join("; ")}`);
+
+  console.log("Editor Next UI smoke test: ok");
+} finally {
+  cdp?.close();
+  browser?.kill();
+  server?.kill();
+  if (userDataDir) await rm(userDataDir, { recursive: true, force: true });
+}
+
+async function openTarget() {
+  await waitFor(async () => {
+    try {
+      const response = await fetch(`http://127.0.0.1:${cdpPort}/json/version`);
+      return response.ok;
+    } catch {
+      return false;
+    }
+  });
+
+  const version = await fetchJson(`http://127.0.0.1:${cdpPort}/json/version`);
+  const connection = new CdpConnection(version.webSocketDebuggerUrl);
+  await connection.open();
+  const { targetId } = await connection.send("Target.createTarget", { url: "about:blank" });
+  const { sessionId } = await connection.send("Target.attachToTarget", { targetId, flatten: true });
+  connection.sessionId = sessionId;
+  await connection.send("Runtime.evaluate", {
+    expression: `
+      window.__editorNextErrors = [];
+      window.addEventListener('error', (event) => window.__editorNextErrors.push(event.message));
+      window.addEventListener('unhandledrejection', (event) => window.__editorNextErrors.push(String(event.reason)));
+    `
+  });
+  return connection;
+}
+
+async function evalInPage(expression) {
+  const result = await cdp.send("Runtime.evaluate", {
+    expression,
+    awaitPromise: true,
+    returnByValue: true
+  });
+  if (result.exceptionDetails) throw new Error(result.exceptionDetails.text || "Valutazione browser fallita");
+  return result.result?.value;
+}
+
+async function clickButton(label) {
+  await evalInPage(`
+    {
+      const button = Array.from(document.querySelectorAll('button'))
+        .find((item) => item.textContent.trim() === ${JSON.stringify(label)});
+      if (!button) throw new Error('Button not found: ${label}');
+      button.click();
+    }
+  `);
+}
+
+
+async function exportedFileExists(filename) {
+  const response = await fetch(`${baseUrl}/dist/${encodeURIComponent(filename)}`);
+  return response.ok;
+}
+
+async function waitForServer() {
+  await waitFor(async () => {
+    try {
+      const response = await fetch(`${baseUrl}/editor-next/`);
+      return response.ok;
+    } catch {
+      return false;
+    }
+  });
+}
+
+async function waitFor(predicate, timeout = 8000) {
+  const started = Date.now();
+  while (Date.now() - started < timeout) {
+    if (await predicate()) return;
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  }
+  throw new Error("Timeout durante il test UI Editor Next.");
+}
+
+async function assertEqual(actual, expected, label) {
+  if (actual !== expected) throw new Error(`${label}: atteso ${expected}, ricevuto ${actual}`);
+}
+
+async function fetchJson(url, options) {
+  const response = await fetch(url, options);
+  if (!response.ok) throw new Error(`HTTP ${response.status}: ${url}`);
+  return response.json();
+}
+
+function findBrowser() {
+  const candidates = [
+    "/Applications/Brave Browser.app/Contents/MacOS/Brave Browser",
+    "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+    "/Applications/Chromium.app/Contents/MacOS/Chromium",
+    "chromium",
+    "google-chrome",
+    "brave-browser"
+  ];
+
+  const browser = candidates.find((candidate) => existsSync(candidate) || !candidate.startsWith("/"));
+  if (!browser) throw new Error("Nessun browser Chromium/Brave trovato per i test UI.");
+  return browser;
+}

@@ -125,20 +125,17 @@ hook: Suono | Un anello vibra quando qualcuno mente.
 
 La validazione segnala una lista malformata se manca il separatore `|`.
 
-## Prova rapida nella UI
+## Prova rapida
 
-1. Avvia l'editor.
+La UI React non ha ancora la palette componenti completa. Per ora valida il pack da CLI e usa gli snippet/reference generati.
 
 ```sh
-npm run editor
+npm run check:components
+npm run generate:schema-artifacts
+npm run check:schema-artifacts
 ```
 
-2. Nel pannello Componenti usa `Pack esterno` e seleziona il tuo `pack.json`.
-3. Controlla che i componenti appaiano nella palette.
-4. Inserisci un componente e verifica preview e diagnostiche.
-5. Usa `Rimuovi esterni` per tornare ai soli pack versionati.
-
-Il caricamento esterno e solo locale alla sessione editor: non modifica il manifest e non entra nella build.
+Quando la palette React sara completata, questa sezione tornera a includere caricamento pack esterno e inserimento guidato.
 
 ## Versionare un pack
 
@@ -175,7 +172,7 @@ npm run check:schema-artifacts
 
 ```sh
 npm run test:rendering
-npm run test:editor-ui
+npm run test:editor-next-ui
 npm run check
 ```
 

@@ -25,26 +25,26 @@ public: false
 
 ## Editor UI
 
-- [x] Editor locale avviabile con `npm run editor`.
+- [x] Editor React/CodeMirror avviabile con `npm run editor`.
 - [x] Markdown sempre visibile come sorgente.
-- [x] Form frontmatter.
-- [x] Toolbar Markdown base.
-- [x] Palette componenti da schema.
-- [x] Toggle plugin pack.
+- [x] Form frontmatter nella UI React.
+- [x] Snippet Markdown base.
+- [x] Palette componenti da schema nella UI React.
+- [ ] Toggle plugin pack nella UI React.
 - [x] Import documenti da `docs/`.
 - [x] Salvataggio con file corrente.
 - [x] Dirty state.
-- [x] Autosave locale esplicito con pannello recovery e scarto bozza.
+- [x] Autosave locale.
 - [x] Export HTML/PDF guidato dal workflow autore locale.
 - [x] Overwrite esplicito.
 - [x] Salva nuovo con nome unico.
 - [x] Conferma prima di perdere modifiche non salvate.
-- [x] Rename documento.
-- [x] Delete documento.
-- [x] Conferme custom non native.
-- [x] Toolbar estesa per tabelle, immagini, callout e include.
+- [ ] Rename documento nella UI React.
+- [ ] Delete documento nella UI React.
+- [ ] Conferme custom non native.
+- [ ] Toolbar estesa per tabelle, immagini, callout e include nella UI React.
 - [x] Navigatore documento da heading Markdown con salto alla riga sorgente.
-- [x] Viste workspace persistenti `Tutto`, `Scrivi` e `Componenti`, mantenendo Markdown visibile.
+- [ ] Palette/componenti e preview come workspace persistenti.
 
 ## Preview
 
@@ -53,10 +53,11 @@ public: false
 - [x] Preview con `styles/main.css`.
 - [x] Preview con `page-shell`.
 - [x] Tema e carta letti dal frontmatter.
-- [x] Verifica visuale automatizzata stabile via browser.
+- [x] Smoke test automatizzato via browser per editor React.
 - [x] Controllo layout PDF/pagine integrato nel flusso editor.
 - [x] Markdown Preview VS Code allineata ai token visuali del template.
-- [x] Preview locale con zoom persistente, navigazione pagina e marker `::pagebreak` visibile.
+- [x] Preview locale con zoom persistente e marker `::pagebreak` visibile.
+- [ ] Navigazione pagina/spread nella UI React.
 - [x] Tema originale `modern-5-5` per resa 5.5-compatible piu moderna e pulita.
 
 ## Componenti e schema
@@ -65,10 +66,10 @@ public: false
 - [x] Manifest aggregatore.
 - [x] Plugin pack `fantasy-classic`.
 - [x] Validazione collisioni `id` e `container`.
-- [x] Palette generata da schema.
-- [x] Form componenti generati da schema.
+- [x] Palette generata da schema nella UI React.
+- [x] Form componenti base generati da schema nella UI React.
 - [x] Renderer build allineato ai plugin pack.
-- [x] UI per caricare pack esterni non versionati.
+- [ ] UI React per caricare pack esterni non versionati.
 - [x] Documentazione dedicata per creare nuovi pack.
 
 ## Validazione e QA

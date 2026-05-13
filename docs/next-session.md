@@ -30,39 +30,37 @@ Vite + React + CodeMirror 6 + iframe preview
 - React solo per shell, menu, pannelli e stato.
 - Preview iframe usando il renderer/CSS gia presenti.
 - Storage statico iniziale: `localStorage`/download-import Markdown.
-- Integrazione futura in una sottocartella `/editor/` del sito reference come app statica.
+- Integrazione futura nel sito reference come app statica.
 
 ## Stato Attuale
 
 - Il repo ha molte modifiche non committate e preesistenti. Non fare revert automatici.
 - Ultimo check completo eseguito con successo: `npm run check`.
-- Server locale puo essere avviato con `npm run editor` su `http://127.0.0.1:8082/`.
-- L'editor vanilla attuale e stato refactorizzato ma resta UX insufficiente; usarlo come riferimento funzionale, non come base UI definitiva.
+- Server locale corrente: `npm run editor` su `http://127.0.0.1:5173/editor-next/`.
+- La shell vanilla `editor/` e stata rimossa; `editor-next/` e l'unica UI applicativa.
+- Tranche Homebrewery-like avviata in `editor-next/` con Vite, React, CodeMirror 6, preview iframe e autosave locale separato.
+- `editor-next` ora usa un server integrato Vite + API locali con `npm run editor:next`, include apertura documenti, salvataggio, check guidato ed export HTML/PDF.
+- Build statica: `npm run editor:next:build`; smoke dedicato: `npm run test:editor-next-ui`.
 
 ## File Da Conoscere
 
-- `editor/index.html`
-- `editor/app.js`
-- `editor/markdown/editor-actions.js`
-- `editor/preview/controller.js`
-- `editor/documents/preview-shell.js`
-- `editor/components/preview.js`
-- `editor/documents/api.js`
-- `scripts/serve-editor.js`
+- `packages/markdown/editor-actions.js`
+- `packages/documents/preview-shell.js`
+- `packages/components/preview.js`
+- `packages/documents/api.js`
+- `scripts/serve-editor-next.js`
 - `scripts/editor-server/*`
 - `styles/preview.css`
 - `styles/core/*`
-- `scripts/test-editor-ui.js`
-- `scripts/test-preview-visual.js`
+- `scripts/test-editor-next-ui.js`
 
 ## Primo Task Consigliato
 
-Creare una nuova app editor moderna senza cancellare subito la vanilla:
+Continuare la nuova app editor moderna:
 
 ```text
 editor-next/
   index.html
-  package/build config se necessario
   src/
     App.jsx
     editor/MarkdownEditor.jsx
@@ -73,11 +71,11 @@ editor-next/
 
 Poi:
 
-1. Installare/configurare Vite + React + CodeMirror 6.
-2. Montare layout split editor/preview a piena altezza.
-3. Collegare CodeMirror a preview iframe usando il renderer esistente.
-4. Implementare toggle preview e autosave locale.
-5. Aggiungere test smoke browser minimo.
+1. Raffinare form componenti: rimozione righe lista, preset avanzati e validazione inline.
+2. Aggiungere sync preview/editor bidirezionale piu robusto.
+3. Portare rename/delete o decidere se lasciarli fuori dal flusso Next.
+4. Rifinire test UI per coprire save/open, frontmatter edit e component insertion da `editor-next`.
+5. Spezzare il bundle CodeMirror se il peso diventa un problema reale.
 
 ## Guardrail UX
 
@@ -92,7 +90,6 @@ Poi:
 Prima di chiudere ogni tranche:
 
 ```bash
-npm run test:editor-ui
-npm run test:preview-visual
+npm run test:editor-next-ui
 npm run check
 ```

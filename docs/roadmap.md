@@ -28,7 +28,7 @@ RPG Text Editor deve diventare un ambiente di scrittura Markdown per contenuti T
 
 ## Fase 1 - UI editor Markdown
 
-- Fatto: UI locale con editor Markdown, preview e palette componenti.
+- Fatto: UI locale React/CodeMirror con editor Markdown e preview.
 - Fatto: inserimento guidato di blocchi `:::`.
 - Fatto: form frontmatter e toolbar Markdown rapida.
 - Fatto: preview editor basata sugli stessi CSS, tema e `page-shell` della build finale.
@@ -41,8 +41,8 @@ RPG Text Editor deve diventare un ambiente di scrittura Markdown per contenuti T
 
 - Fatto: descrivere componenti come dati.
 - Fatto: modellare campi, liste ripetibili e valori di default.
-- Fatto: generare palette e form dalla definizione schema.
-- Fatto: evitare registry hardcoded in UI per i componenti disponibili.
+- Prossimo: riportare palette e form componenti nella UI React dalla definizione schema.
+- Prossimo: evitare registry hardcoded in UI per i componenti disponibili.
 - Allineare progressivamente schema UI e renderer Node.
 
 Componenti prioritari:
