@@ -55,3 +55,14 @@ export async function deleteDocument(filename) {
 
   return response.json();
 }
+
+export async function checkDocument({ filename, content }) {
+  const response = await fetch("/api/check-document", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ filename, content })
+  });
+
+  if (!response.ok) throw new Error("Check documento non riuscito");
+  return response.json();
+}

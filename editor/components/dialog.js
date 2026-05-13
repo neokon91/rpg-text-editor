@@ -1,10 +1,16 @@
-export function renderComponentList({ schema, searchInput, listElement, onSelect }) {
+export function renderComponentList({ schema, searchInput, groupFilter, listElement, onSelect }) {
   const query = searchInput.value.trim().toLowerCase();
+  const selectedGroup = groupFilter?.value || "";
   const components = schema.components.filter((component) => {
     const haystack = [component.label, component.group, component.description, component.id].join(" ").toLowerCase();
-    return haystack.includes(query);
+    return haystack.includes(query) && (!selectedGroup || component.group === selectedGroup);
   });
   const groups = groupBy(components, "group");
+
+  if (!components.length) {
+    listElement.innerHTML = '<p class="pack-empty">Nessun componente trovato.</p>';
+    return;
+  }
 
   listElement.replaceChildren(...Object.entries(groups).map(([group, groupComponents]) => {
     const section = document.createElement("section");
@@ -25,6 +31,34 @@ export function renderComponentList({ schema, searchInput, listElement, onSelect
     }
 
     return section;
+  }));
+}
+
+export function renderGroupFilter({ schema, groupFilter }) {
+  if (!groupFilter) return;
+  const selected = groupFilter.value;
+  const groups = [...new Set(schema.components.map((component) => component.group || "Altro"))].sort();
+  groupFilter.replaceChildren(new Option("Tutti", ""), ...groups.map((group) => new Option(group, group)));
+  groupFilter.value = groups.includes(selected) ? selected : "";
+}
+
+export function renderRecentComponents({ schema, recentIds, listElement, onSelect }) {
+  if (!listElement) return;
+  const componentsById = new Map(schema.components.map((component) => [component.id, component]));
+  const recent = recentIds.map((id) => componentsById.get(id)).filter(Boolean).slice(0, 5);
+
+  if (!recent.length) {
+    listElement.innerHTML = '<p class="pack-empty">Nessun componente ancora usato.</p>';
+    return;
+  }
+
+  listElement.replaceChildren(...recent.map((component) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = component.label;
+    button.title = component.description;
+    button.addEventListener("click", () => onSelect(component));
+    return button;
   }));
 }
 

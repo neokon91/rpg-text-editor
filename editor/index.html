@@ -20,6 +20,7 @@
           </select>
           <button id="copy-markdown" type="button">Copia Markdown</button>
           <button id="download-markdown" type="button">Scarica .md</button>
+          <button id="check-document" type="button">Check</button>
           <button id="save-document" type="button">Salva</button>
           <button id="save-copy" type="button">Salva nuovo</button>
           <button id="rename-document" type="button">Rinomina</button>
@@ -31,7 +32,12 @@
         <aside class="component-panel" aria-label="Componenti">
           <div class="panel-header">
             <h2>Componenti</h2>
-            <input id="component-search" type="search" placeholder="Cerca" autocomplete="off">
+            <div class="component-tools">
+              <input id="component-search" type="search" placeholder="Cerca" autocomplete="off">
+              <select id="component-filter" aria-label="Filtra componenti">
+                <option value="">Tutti</option>
+              </select>
+            </div>
           </div>
           <div class="component-scroll">
             <section class="pack-panel" aria-label="Plugin pack">
@@ -46,6 +52,10 @@
                 <p id="external-pack-status" class="pack-empty">Nessun pack esterno caricato.</p>
               </div>
             </section>
+            <section class="recent-panel" aria-label="Ultimi componenti usati">
+              <h3>Ultimi usati</h3>
+              <div id="recent-components" class="recent-components"></div>
+            </section>
             <div id="component-list" class="component-list"></div>
           </div>
         </aside>
@@ -58,6 +68,12 @@
           <div class="document-state">
             <span id="current-document">Nessun file aperto</span>
             <span id="dirty-state">Non salvato in docs</span>
+          </div>
+          <div class="author-flow" aria-label="Workflow autore">
+            <button id="guide-save" type="button">1 Salva</button>
+            <button id="guide-check" type="button">2 Check</button>
+            <button id="guide-export" type="button">3 Esporta .md</button>
+            <span id="guide-status">Bozza pronta per la scrittura.</span>
           </div>
           <div class="metadata-panel" aria-label="Metadati documento">
             <label>
@@ -120,6 +136,24 @@
             <button type="button" data-action="include">Include</button>
             <button type="button" data-action="pagebreak">Pagina</button>
           </div>
+          <div class="quick-snippets" aria-label="Snippet rapidi">
+            <div class="snippet-group">
+              <span>Struttura</span>
+              <button type="button" data-snippet="scene">Scena</button>
+              <button type="button" data-snippet="pagebreak">Pagina</button>
+            </div>
+            <div class="snippet-group">
+              <span>Tavolo</span>
+              <button type="button" data-snippet="readaloud">Readaloud</button>
+              <button type="button" data-snippet="note">Nota</button>
+            </div>
+            <div class="snippet-group">
+              <span>Gioco</span>
+              <button type="button" data-snippet="encounter">Incontro</button>
+              <button type="button" data-snippet="treasure">Tesoro</button>
+              <button type="button" data-snippet="table">Tabella</button>
+            </div>
+          </div>
           <textarea id="markdown-input" spellcheck="true"></textarea>
         </section>
 
@@ -128,9 +162,35 @@
             <h2>Preview</h2>
             <span id="word-count" class="save-state">0 parole</span>
           </div>
+          <div class="preview-controls" aria-label="Controlli anteprima">
+            <label>
+              <span>Vista</span>
+              <select id="preview-viewport">
+                <option value="desktop">Desktop</option>
+                <option value="mobile">Mobile</option>
+              </select>
+            </label>
+            <label>
+              <span>Larghezza</span>
+              <select id="preview-width">
+                <option value="fit">Adatta</option>
+                <option value="page">Pagina</option>
+                <option value="tablet">Tablet</option>
+                <option value="mobile">Mobile</option>
+              </select>
+            </label>
+            <label class="preview-sync-toggle">
+              <input id="preview-sync" type="checkbox" checked>
+              <span>Sync</span>
+            </label>
+            <span id="preview-meta" class="preview-meta">Tema: - · Carta: -</span>
+          </div>
           <div class="preview-stack">
             <aside id="validation-panel" class="validation-panel" aria-live="polite"></aside>
-            <iframe id="preview" class="preview-frame" title="Anteprima documento"></iframe>
+            <aside id="author-check-panel" class="validation-panel author-check-panel" aria-live="polite"></aside>
+            <div class="preview-stage">
+              <iframe id="preview" class="preview-frame" title="Anteprima documento"></iframe>
+            </div>
           </div>
         </section>
       </main>

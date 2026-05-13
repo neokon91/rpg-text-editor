@@ -91,6 +91,65 @@ try {
 
   await assertEqual(await evalInPage("document.querySelectorAll('.component-card').length"), 15, "component palette count");
   await assertEqual(await evalInPage("document.querySelector('#validation-panel strong')?.textContent"), "Schema ok", "initial schema status");
+  await assertEqual(await evalInPage("document.querySelector('#author-check-panel strong')?.textContent"), "Author check", "initial author check status");
+  await assertIncludes(await evalInPage("document.querySelector('#guide-status')?.textContent"), "schema ok", "author flow schema status");
+  await waitFor(() => evalInPage("document.querySelector('#preview')?.contentDocument?.querySelector('h1[data-source-line]')"));
+  await evalInPage(`
+    {
+      const frame = document.querySelector('#preview');
+      const line = Number(frame.contentDocument.querySelector('h1[data-source-line]').dataset.sourceLine);
+      window.dispatchEvent(new MessageEvent('message', {
+        source: frame.contentWindow,
+        data: { type: 'rpg-preview-source-line', line }
+      }));
+    }
+  `);
+  await waitFor(() => evalInPage(`
+    {
+      const input = document.querySelector('#markdown-input');
+      input.value.slice(input.selectionStart, input.selectionEnd).includes('# Nuova Avventura');
+    }
+  `));
+  await assertIncludes(await evalInPage(`
+    {
+      const input = document.querySelector('#markdown-input');
+      input.value.slice(input.selectionStart, input.selectionEnd);
+    }
+  `), "# Nuova Avventura", "preview click focuses markdown source");
+  await evalInPage(`
+    {
+      const input = document.querySelector('#markdown-input');
+      input.selectionStart = input.selectionEnd = input.value.length;
+    }
+  `);
+
+  await fill("#component-search", "Readaloud");
+  await assertEqual(await evalInPage("document.querySelectorAll('.component-card').length"), 1, "component search filters palette");
+  await fill("#component-search", "");
+  await fill("#component-filter", "Regole");
+  await assertEqual(await evalInPage("Array.from(document.querySelectorAll('.component-card')).every((button) => button.closest('.component-group')?.querySelector('h3')?.textContent === 'Regole')"), true, "component group filter");
+  await fill("#component-filter", "");
+
+  await fill("#preview-viewport", "mobile");
+  await fill("#preview-width", "mobile");
+  await evalInPage(`
+    {
+      const sync = document.querySelector('#preview-sync');
+      sync.checked = false;
+      sync.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+  `);
+  await assertEqual(await evalInPage("document.querySelector('#preview')?.dataset.viewport"), "mobile", "preview mobile viewport");
+  await assertEqual(await evalInPage("document.querySelector('#preview')?.dataset.width"), "mobile", "preview mobile width");
+  await assertEqual(await evalInPage("document.querySelector('#preview')?.dataset.sync"), "off", "preview sync toggle");
+  await evalInPage(`
+    {
+      const sync = document.querySelector('#preview-sync');
+      sync.checked = true;
+      sync.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+  `);
+  await assertIncludes(await evalInPage("document.querySelector('#preview-meta')?.textContent"), "Tema:", "preview theme paper signal");
 
   await loadExternalPack();
   await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 16"));
@@ -125,6 +184,12 @@ try {
   await assertIncludes(await textareaValue(), "::: image Immagine", "toolbar image insert");
   await click("[data-action='include']");
   await assertIncludes(await textareaValue(), '<rpg-include src="content/monsters/custode-ossa.html"></rpg-include>', "toolbar include insert");
+  await click("[data-snippet='scene']");
+  await assertIncludes(await textareaValue(), "## Nuova scena", "quick snippet scene insert");
+  await click("[data-snippet='encounter']");
+  await assertIncludes(await textareaValue(), "::: encounter Incontro", "quick snippet encounter insert");
+  await click("[data-snippet='table']");
+  await assertIncludes(await textareaValue(), "::: random-table Tabella", "quick snippet table insert");
 
   await click("#new-document");
   await waitFor(() => evalInPage("document.querySelector('#modal-dialog')?.open"));
@@ -132,10 +197,50 @@ try {
   await click("#modal-cancel");
   await waitFor(() => evalInPage("!document.querySelector('#modal-dialog')?.open"));
 
-  await clickComponent("Readaloud");
-  await waitFor(() => evalInPage("document.querySelector('#component-dialog')?.open"));
-  await click("#insert-component");
+  await fill("#component-search", "");
+  await click("[data-snippet='readaloud']");
   await assertIncludes(await textareaValue(), "::: readaloud", "component insert");
+
+  await click("#new-document");
+  await waitFor(() => evalInPage("document.querySelector('#modal-dialog')?.open"));
+  await click("#modal-confirm");
+  await waitFor(() => evalInPage("!document.querySelector('#modal-dialog')?.open"));
+
+  await evalInPage(`
+    {
+      const input = document.querySelector('#markdown-input');
+      input.value += '\\n\\n::: unknown-widget Test\\nbody: Broken\\n:::';
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+  `);
+  await assertIncludes(await textareaValue(), "::: unknown-widget", "diagnostic fixture inserted");
+  await evalInPage("document.querySelector('#check-document').click()");
+  await waitFor(() => evalInPage("document.querySelector('#validation-panel')?.textContent.includes('Componente sconosciuto')"));
+  await waitFor(() => evalInPage("!document.querySelector('#author-check-panel')?.textContent.includes('in corso')"));
+  await assertIncludes(await evalInPage("document.querySelector('#validation-panel')?.textContent"), "Componente sconosciuto", "diagnostic message");
+  await click(".validation-panel button");
+  await assertIncludes(await evalInPage(`
+    {
+      const input = document.querySelector('#markdown-input');
+      input.value.slice(input.selectionStart, input.selectionEnd);
+    }
+  `), "::: unknown-widget", "diagnostic focuses markdown line");
+
+  await evalInPage(`
+    {
+      const input = document.querySelector('#markdown-input');
+      input.value += '\\n\\nUn controllo difficile richiede CD 31.\\n';
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+  `);
+  await waitFor(() => evalInPage("document.querySelector('#author-check-panel')?.textContent.includes('Markdown e cambiato')"));
+  await assertIncludes(await evalInPage("document.querySelector('#author-check-panel')?.textContent"), "Markdown e cambiato", "author check marked stale");
+  await click("#check-document");
+  await waitFor(() => evalInPage("document.querySelector('#author-check-panel')?.textContent.includes('CD 31 fuori scala')"));
+  await assertIncludes(await evalInPage("document.querySelector('#author-check-panel')?.textContent"), "Usa CD tra 5 e 30", "author check fix hint");
+  await click("#guide-export");
+  await waitFor(() => evalInPage("document.querySelector('#save-state')?.textContent.includes('Export bloccato')"));
+  await assertIncludes(await evalInPage("document.querySelector('#save-state')?.textContent"), "Export bloccato", "guided export blocks errors");
 
   const errors = await evalInPage("Array.from(window.__editorUiTestErrors || [])");
   if (errors.length) throw new Error(`Errori console browser: ${errors.join('; ')}`);
@@ -146,7 +251,7 @@ try {
   cdp?.close();
   browser?.kill();
   server?.kill();
-  if (userDataDir) await rm(userDataDir, { recursive: true, force: true });
+  if (userDataDir) await removeUserDataDir(userDataDir);
 }
 
 async function openEditorTarget() {
@@ -187,7 +292,12 @@ async function evalInPage(expression) {
 }
 
 async function click(selector) {
-  await evalInPage(`document.querySelector(${JSON.stringify(selector)}).click()`);
+  await evalInPage(`
+    {
+      const element = document.querySelector(${JSON.stringify(selector)});
+      element.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+    }
+  `);
 }
 
 async function fill(selector, value) {
@@ -291,6 +401,18 @@ async function cleanupTempDocuments() {
       await fetch(`${baseUrl}/api/documents/${encodeURIComponent(filename)}`, { method: "DELETE" });
     } catch {
       // Best-effort cleanup.
+    }
+  }
+}
+
+async function removeUserDataDir(path) {
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    try {
+      await rm(path, { recursive: true, force: true });
+      return;
+    } catch (error) {
+      if (attempt === 4) throw error;
+      await new Promise((resolve) => setTimeout(resolve, 150));
     }
   }
 }

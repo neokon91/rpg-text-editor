@@ -2,13 +2,17 @@ import {
   componentToMarkdown,
   openComponentDialog,
   renderComponentList,
-  renderPackList
+  renderGroupFilter,
+  renderPackList,
+  renderRecentComponents
 } from "/editor/components/dialog.js";
 import { fetchJson, loadComponentSchema, loadEnabledPacks, manifestUrl, saveEnabledPacks } from "/editor/components/schema.js";
 
 export function createComponentController({
   componentList,
   componentSearch,
+  componentFilter,
+  recentComponents,
   dialog,
   dialogTitle,
   dialogDescription,
@@ -17,16 +21,18 @@ export function createComponentController({
   packList,
   externalPackInput,
   clearExternalPacksButton,
-  externalPackStatus,
-  enabledPacksKey,
-  onInsert,
-  onSchemaChange
+    externalPackStatus,
+    enabledPacksKey,
+    onInsert,
+    onRemember,
+    onSchemaChange
 }) {
   let schema;
   let manifest;
   let enabledPacks = new Set();
   let externalPacks = [];
   let selectedComponent;
+  let recentIds = loadRecentComponents();
 
   async function init() {
     manifest = await fetchJson(manifestUrl, "Manifest componenti non caricato");
@@ -35,9 +41,12 @@ export function createComponentController({
 
     renderPacks();
     renderExternalPackStatus();
+    renderFilters();
     renderComponents();
+    renderRecent();
 
     componentSearch.addEventListener("input", renderComponents);
+    componentFilter?.addEventListener("change", renderComponents);
     insertButton.addEventListener("click", insertSelectedComponent);
     externalPackInput.addEventListener("change", loadExternalPack);
     clearExternalPacksButton.addEventListener("click", clearExternalPacks);
@@ -47,7 +56,21 @@ export function createComponentController({
     renderComponentList({
       schema,
       searchInput: componentSearch,
+      groupFilter: componentFilter,
       listElement: componentList,
+      onSelect: showDialog
+    });
+  }
+
+  function renderFilters() {
+    renderGroupFilter({ schema, groupFilter: componentFilter });
+  }
+
+  function renderRecent() {
+    renderRecentComponents({
+      schema,
+      recentIds,
+      listElement: recentComponents,
       onSelect: showDialog
     });
   }
@@ -70,7 +93,9 @@ export function createComponentController({
 
     saveEnabledPacks(enabledPacksKey, enabledPacks);
     schema = await loadComponentSchema(manifest, enabledPacks, externalPacks);
+    renderFilters();
     renderComponents();
+    renderRecent();
     onSchemaChange?.(schema);
   }
 
@@ -89,7 +114,9 @@ export function createComponentController({
       externalPacks = nextExternalPacks;
       schema = nextSchema;
       renderExternalPackStatus();
+      renderFilters();
       renderComponents();
+      renderRecent();
       onSchemaChange?.(schema);
     } catch (error) {
       externalPackStatus.textContent = `Pack non caricato: ${error.message}`;
@@ -103,7 +130,9 @@ export function createComponentController({
     externalPacks = [];
     schema = await loadComponentSchema(manifest, enabledPacks, externalPacks);
     renderExternalPackStatus();
+    renderFilters();
     renderComponents();
+    renderRecent();
     onSchemaChange?.(schema);
   }
 
@@ -143,7 +172,23 @@ export function createComponentController({
     if (!selectedComponent) return;
 
     onInsert(componentToMarkdown(selectedComponent, dialog.querySelector("form")));
+    rememberComponent(selectedComponent.id);
     dialog.close();
+  }
+
+  function rememberComponent(componentId) {
+    recentIds = [componentId, ...recentIds.filter((id) => id !== componentId)].slice(0, 5);
+    localStorage.setItem(`${enabledPacksKey}:recent-components`, JSON.stringify(recentIds));
+    renderRecent();
+    onRemember?.(componentId);
+  }
+
+  function loadRecentComponents() {
+    try {
+      return JSON.parse(localStorage.getItem(`${enabledPacksKey}:recent-components`) || "[]");
+    } catch {
+      return [];
+    }
   }
 
   return {

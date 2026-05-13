@@ -1,7 +1,7 @@
 export function parseFrontmatter(markdown) {
-  if (!markdown.startsWith("---\n")) return { metadata: {}, body: markdown };
+  if (!markdown.startsWith("---\n")) return { metadata: {}, body: markdown, bodyStartLine: 1 };
   const end = markdown.indexOf("\n---", 4);
-  if (end === -1) return { metadata: {}, body: markdown };
+  if (end === -1) return { metadata: {}, body: markdown, bodyStartLine: 1 };
 
   const raw = markdown.slice(4, end).trim();
   const metadata = {};
@@ -11,7 +11,13 @@ export function parseFrontmatter(markdown) {
     metadata[line.slice(0, index).trim()] = line.slice(index + 1).trim().replace(/^["']|["']$/g, "");
   }
 
-  return { metadata, body: markdown.slice(end + 4).trimStart() };
+  const bodyWithLeadingWhitespace = markdown.slice(end + 4);
+  const leadingBreaks = bodyWithLeadingWhitespace.match(/^\s*/)?.[0].split(/\r?\n/).length - 1 || 0;
+  return {
+    metadata,
+    body: bodyWithLeadingWhitespace.trimStart(),
+    bodyStartLine: markdown.slice(0, end + 4).split(/\r?\n/).length + leadingBreaks
+  };
 }
 
 export function serializeFrontmatter(metadata) {

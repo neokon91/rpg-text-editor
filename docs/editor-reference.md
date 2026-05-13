@@ -68,6 +68,12 @@ La toolbar Markdown copre:
 - include riusabile;
 - page break.
 
+La barra `Snippet rapidi` offre inserimenti one-click per blocchi frequenti, ispirata al pattern a gruppi di Homebrewery ma basata sui componenti originali del progetto:
+
+- struttura: scena e page break;
+- tavolo: readaloud e nota;
+- gioco: incontro, tesoro e tabella.
+
 La palette componenti e generata da `schemas/components.json`, schema core e plugin pack abilitati.
 
 ## Plugin pack
@@ -87,6 +93,22 @@ La preview usa un iframe con:
 
 Questo mantiene la preview piu vicina all'output HTML/PDF finale senza applicare gli stili del documento alla UI dell'editor.
 
+La direzione UX e avvicinare l'esperienza a un editor visuale tipo Homebrewery, senza copiarne trade dress o asset: Markdown sempre visibile, preview live sempre utile, snippet componenti rapidi, controlli pagina e export nel flusso locale.
+
+Comportamenti di composizione attesi:
+
+- scrivere nel Markdown aggiorna la preview;
+- scorrere il Markdown mantiene la preview orientata sulla sezione corrispondente quando `Sync` e attivo;
+- cliccare un elemento renderizzato nella preview seleziona la riga sorgente nel Markdown;
+- i controlli preview mantengono espliciti vista, larghezza, tema e carta.
+
+Benchmark Homebrewery da adattare senza copiarne trade dress:
+
+- controlli preview persistenti per zoom/spread/sync;
+- live scroll attivabile, non imposto;
+- snippet organizzati per gruppi e accessibili in un solo click;
+- page navigation e print/export come strumenti centrali del flusso.
+
 ## Validazione
 
 La validazione live segnala:
@@ -101,6 +123,8 @@ La stessa famiglia di controlli e disponibile da CLI con:
 ```sh
 npm run check
 ```
+
+Il pulsante `Check` dell'editor esegue anche controlli autore sulla bozza corrente: frontmatter, titolo H1, termini sensibili, include e CD fuori scala. Il risultato e legato al contenuto controllato; se il Markdown cambia, l'author check diventa da rifare.
 
 ## Limiti noti
 

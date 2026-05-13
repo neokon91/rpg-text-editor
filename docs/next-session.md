@@ -45,6 +45,10 @@ Rendere l'editor locale il flusso autore primario, cosi VS Code resta utile per 
 
 ## Direzione UX
 
+- Direzione Homebrewery-like, ma con identita originale: scrittura Markdown a sinistra, preview editoriale viva a destra, snippet rapidi e export/check nel flusso.
+- Priorita di composizione: scroll sync editor/preview, click dalla preview alla riga Markdown, navigatore documento, snippet rapidi con anteprima.
+- Priorita pagina/export: confini pagina visibili, segnali overflow/page break, export PDF/HTML guidato dopo check.
+- Pattern Homebrewery da adattare: split editor/preview con sync opzionale, toolbar preview persistente, snippet bar per gruppi, navigazione pagina/print integrata.
 - Diagnostic panel piu utile: errori cliccabili, severita visiva, suggerimento di fix.
 - Workflow autore chiaro: nuovo documento, salvataggio, stato dirty, export/check come azioni guidate.
 - Preview piu fedele e controllabile: desktop/mobile/page width, refresh stabile, segnale tema/carta.
