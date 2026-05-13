@@ -92,6 +92,7 @@ try {
   await cdp.send("Page.navigate", { url: `${baseUrl}/editor-next/` });
   await waitFor(() => evalInPage("document.readyState === 'complete'"));
   await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.querySelector('.page-shell h1')?.textContent.toLowerCase().includes('nuova avventura')"));
+  await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.querySelector('p[data-source-end-line]')?.dataset.sourceEndLine"));
   await clickTopbarButton("Nascondi preview");
   await waitFor(() => evalInPage("window.localStorage.getItem('rpg-text-editor-next:preview-visible') === 'false' && !document.querySelector('iframe')"));
   await reloadPage();

@@ -95,16 +95,17 @@ export function PreviewFrame({
   function scrollToSourceLine(line) {
     const doc = frame.current?.contentDocument;
     if (!doc) return;
-    const targets = [...doc.querySelectorAll("[data-source-line]")];
-    const target = targets
-      .map((node) => ({ node, line: Number(node.dataset.sourceLine) || 0 }))
-      .filter((item) => item.line > 0)
-      .reduce((best, item) => {
-        if (!best) return item;
-        return Math.abs(item.line - line) < Math.abs(best.line - line) ? item : best;
-      }, null);
+    const targetLine = Number(line) || 0;
+    const targets = [...doc.querySelectorAll("[data-source-line]")]
+      .map((node) => {
+        const start = Number(node.dataset.sourceLine) || 0;
+        const end = Math.max(Number(node.dataset.sourceEndLine) || start, start);
+        return { node, start, end };
+      })
+      .filter((item) => item.start > 0);
+    const target = findSourceTarget(targets, targetLine);
     if (!target) return;
-    target.node.scrollIntoView({ block: "center", behavior: "smooth" });
+    scrollTargetIntoView(doc, target, targetLine);
   }
 
   function fitPreview(mode) {
@@ -165,6 +166,31 @@ export function PreviewFrame({
       />
     </section>
   );
+}
+
+function findSourceTarget(targets, line) {
+  const containing = targets.find((item) => item.start <= line && item.end >= line);
+  if (containing) return containing;
+  return targets.reduce((best, item) => {
+    if (!best) return item;
+    const itemDistance = Math.min(Math.abs(item.start - line), Math.abs(item.end - line));
+    const bestDistance = Math.min(Math.abs(best.start - line), Math.abs(best.end - line));
+    return itemDistance < bestDistance ? item : best;
+  }, null);
+}
+
+function scrollTargetIntoView(doc, target, line) {
+  const win = doc.defaultView;
+  if (!win) {
+    target.node.scrollIntoView({ block: "center", behavior: "smooth" });
+    return;
+  }
+
+  const rect = target.node.getBoundingClientRect();
+  const range = Math.max(target.end - target.start, 1);
+  const ratio = target.start <= line && line <= target.end ? (line - target.start) / range : 0.5;
+  const targetTop = rect.top + win.scrollY + rect.height * ratio;
+  win.scrollTo({ top: Math.max(targetTop - win.innerHeight / 2, 0), behavior: "smooth" });
 }
 
 function clampZoom(value) {

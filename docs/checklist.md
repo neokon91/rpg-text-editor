@@ -58,6 +58,7 @@ public: false
 - [x] Smoke test automatizzato via browser per editor React.
 - [x] Controllo layout PDF/pagine integrato nel flusso editor.
 - [x] Markdown Preview VS Code allineata ai token visuali del template.
+- [x] Sync editor-preview piu fine su blocchi multi-linea tramite range sorgente.
 - [x] Preview locale con zoom persistente e marker `::pagebreak` visibile.
 - [x] Workspace persistente per visibilita preview, zoom, viewport, spread, sync e filtro gruppo componenti.
 - [x] Workspace persistente per collasso pannelli frontmatter/outline e riga outline selezionata.
@@ -110,4 +111,4 @@ public: false
 ## Prossimi passi consigliati
 
 1. Migliorare paginazione automatica oltre agli split manuali `::pagebreak`.
-2. Migliorare sync fine editor-preview e rifiniture responsive dei pannelli.
+2. Rifinire responsive dei pannelli e palette con sottopreset.

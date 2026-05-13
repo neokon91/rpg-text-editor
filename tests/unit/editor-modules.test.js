@@ -7,6 +7,7 @@ import {
   defaultComponentValues,
   validateComponentValues
 } from "../../editor-next/src/components/componentMarkdown.js";
+import { renderMarkdown } from "../../packages/components/preview.js";
 import { parseMarkdownOutline } from "../../packages/markdown/outline.js";
 
 test("parseMarkdownOutline ignores fenced headings and strips inline HTML", () => {
@@ -93,4 +94,22 @@ test("component form values support presets, list removal and required diagnosti
   const presetValues = applyComponentPreset(component, sparseValues, "d4");
   assert.equal(presetValues.fields.name, "Eventi d4");
   assert.equal(presetValues.lists.length, 2);
+});
+
+test("renderMarkdown marks multi-line source ranges for preview sync", () => {
+  const html = renderMarkdown(`# Titolo
+
+Riga uno del paragrafo
+riga due del paragrafo
+
+- primo
+- secondo
+
+| Nome | Valore |
+| --- | --- |
+| A | B |`, { components: [] });
+
+  assert.match(html, /<p data-source-line="3" data-source-end-line="4">/);
+  assert.match(html, /<ul data-source-line="6" data-source-end-line="7">/);
+  assert.match(html, /<table class="table-compact" data-source-line="9" data-source-end-line="11">/);
 });

@@ -14,7 +14,7 @@ export function renderMarkdown(markdown, schema, options = {}) {
       const [, name, label] = container;
       const inner = [];
       while (++i < lines.length && lines[i].trim() !== ":::") inner.push(lines[i]);
-      out.push(renderContainer(name, label, inner.join("\n"), schema, sourceLine));
+      out.push(renderContainer(name, label, inner.join("\n"), schema, sourceLine, startLine + i));
       continue;
     }
 
@@ -42,7 +42,7 @@ export function renderMarkdown(markdown, schema, options = {}) {
         i += 1;
       }
       i -= 1;
-      out.push(`<ul data-source-line="${sourceLine}">${items.map((item) => `<li>${renderInline(item)}</li>`).join("")}</ul>`);
+      out.push(`<ul ${sourceAttrs(sourceLine, startLine + i)}>${items.map((item) => `<li>${renderInline(item)}</li>`).join("")}</ul>`);
       continue;
     }
 
@@ -53,7 +53,7 @@ export function renderMarkdown(markdown, schema, options = {}) {
         i += 1;
       }
       i -= 1;
-      out.push(renderTable(table, sourceLine));
+      out.push(renderTable(table, sourceLine, startLine + i));
       continue;
     }
 
@@ -62,16 +62,16 @@ export function renderMarkdown(markdown, schema, options = {}) {
       paragraph.push(lines[i + 1].trim());
       i += 1;
     }
-    out.push(`<p data-source-line="${sourceLine}">${renderInline(paragraph.join(" "))}</p>`);
+    out.push(`<p ${sourceAttrs(sourceLine, startLine + i)}>${renderInline(paragraph.join(" "))}</p>`);
   }
 
   return out.join("\n");
 }
 
-function renderTable(lines, sourceLine) {
+function renderTable(lines, sourceLine, sourceEndLine = sourceLine) {
   const [header, , ...rows] = lines;
   return [
-    `<table class="table-compact" data-source-line="${sourceLine}">`,
+    `<table class="table-compact" ${sourceAttrs(sourceLine, sourceEndLine)}>`,
     `<thead><tr>${splitTableRow(header).map((cell) => `<th>${renderInline(cell)}</th>`).join("")}</tr></thead>`,
     `<tbody>${rows.map((row) => `<tr>${splitTableRow(row).map((cell) => `<td>${renderInline(cell)}</td>`).join("")}</tr>`).join("")}</tbody>`,
     "</table>"
@@ -86,25 +86,25 @@ function isTableStart(lines, index) {
   return lines[index]?.includes("|") && /^\s*\|?\s*:?-{3,}:?\s*(\|\s*:?-{3,}:?\s*)+\|?\s*$/.test(lines[index + 1] || "");
 }
 
-function renderContainer(name, label, markdown, schema, sourceLine) {
+function renderContainer(name, label, markdown, schema, sourceLine, sourceEndLine = sourceLine) {
   const data = parseBlockData(markdown);
   const component = schema.components.find((item) => item.container === name || item.id === name);
   const className = component?.container || name;
   const title = label || component?.default_label || component?.label || name;
 
   if (["monster", "spell", "magicitem", "npc", "location", "hazard"].includes(className)) {
-    return renderRulesComponent(className, title, data, schema, sourceLine);
+    return renderRulesComponent(className, title, data, schema, sourceLine, sourceEndLine);
   }
 
-  if (className === "random-table") return renderRandomTable(title, data, sourceLine);
-  if (className === "map" || className === "image") return renderMedia(className, title, data, sourceLine);
-  if (component) return renderSchemaComponent(component, title, data, schema, sourceLine);
+  if (className === "random-table") return renderRandomTable(title, data, sourceLine, sourceEndLine);
+  if (className === "map" || className === "image") return renderMedia(className, title, data, sourceLine, sourceEndLine);
+  if (component) return renderSchemaComponent(component, title, data, schema, sourceLine, sourceEndLine);
 
   const body = Array.isArray(data.body) ? data.body : [data.body].filter(Boolean);
-  return `<aside class="${escapeHtml(className)} no-break" data-source-line="${sourceLine}"><div class="${escapeHtml(className)}__label">${renderInline(title)}</div>${renderMarkdown(body.join("\n"), schema, { startLine: sourceLine })}</aside>`;
+  return `<aside class="${escapeHtml(className)} no-break" ${sourceAttrs(sourceLine, sourceEndLine)}><div class="${escapeHtml(className)}__label">${renderInline(title)}</div>${renderMarkdown(body.join("\n"), schema, { startLine: sourceLine })}</aside>`;
 }
 
-function renderSchemaComponent(component, label, data, schema, sourceLine) {
+function renderSchemaComponent(component, label, data, schema, sourceLine, sourceEndLine = sourceLine) {
   const className = component.container;
   const bodyKeys = new Set(["body"]);
   const lines = (component.fields || [])
@@ -116,7 +116,7 @@ function renderSchemaComponent(component, label, data, schema, sourceLine) {
     .join("");
 
   return `
-    <aside class="${escapeHtml(className)} rules-card no-break" data-source-line="${sourceLine}">
+    <aside class="${escapeHtml(className)} rules-card no-break" ${sourceAttrs(sourceLine, sourceEndLine)}>
       <div class="${escapeHtml(className)}__label rules-card__label">${renderInline(label)}</div>
       <h3>${renderInline(data.name || label)}</h3>
       ${lines}
@@ -126,7 +126,7 @@ function renderSchemaComponent(component, label, data, schema, sourceLine) {
   `;
 }
 
-function renderRulesComponent(className, label, data, schema, sourceLine) {
+function renderRulesComponent(className, label, data, schema, sourceLine, sourceEndLine = sourceLine) {
   const headingLevel = className === "monster" ? "h2" : "h3";
   const classes = className === "monster" ? "statblock monster no-break" : `${className} rules-card no-break`;
   const titleClass = className === "monster" ? "statblock__label" : `${className}__label rules-card__label`;
@@ -134,7 +134,7 @@ function renderRulesComponent(className, label, data, schema, sourceLine) {
   const meta = [data.meta, data.level, data.school, data.type, data.rarity, data.role, data.tags].filter(Boolean).join(", ");
 
   return `
-    <aside class="${classes}" data-source-line="${sourceLine}">
+    <aside class="${classes}" ${sourceAttrs(sourceLine, sourceEndLine)}>
       <div class="${titleClass}">${renderInline(label)}</div>
       <${headingLevel}>${renderInline(data.name || label)}</${headingLevel}>
       ${meta ? `<p><em>${renderInline(meta)}</em></p>` : ""}
@@ -153,13 +153,18 @@ function renderDataLines(data) {
     .join("");
 }
 
-function renderRandomTable(label, data, sourceLine) {
+function renderRandomTable(label, data, sourceLine, sourceEndLine = sourceLine) {
   const rows = (data.rows || []).map((row) => `<tr><td>${renderInline(row.name)}</td><td>${renderInline(row.text)}</td></tr>`).join("");
-  return `<aside class="random-table no-break" data-source-line="${sourceLine}"><div class="random-table__label">${renderInline(data.die || label)}</div><h3>${renderInline(data.name || "Tabella")}</h3><table class="table-compact"><tbody>${rows}</tbody></table></aside>`;
+  return `<aside class="random-table no-break" ${sourceAttrs(sourceLine, sourceEndLine)}><div class="random-table__label">${renderInline(data.die || label)}</div><h3>${renderInline(data.name || "Tabella")}</h3><table class="table-compact"><tbody>${rows}</tbody></table></aside>`;
 }
 
-function renderMedia(className, label, data, sourceLine) {
-  return `<figure class="rpg-${className} no-break" data-source-line="${sourceLine}"><img src="${escapeHtml(data.src || "")}" alt="${escapeHtml(data.alt || label)}"><figcaption>${renderInline(data.caption || label)}</figcaption></figure>`;
+function renderMedia(className, label, data, sourceLine, sourceEndLine = sourceLine) {
+  return `<figure class="rpg-${className} no-break" ${sourceAttrs(sourceLine, sourceEndLine)}><img src="${escapeHtml(data.src || "")}" alt="${escapeHtml(data.alt || label)}"><figcaption>${renderInline(data.caption || label)}</figcaption></figure>`;
+}
+
+function sourceAttrs(sourceLine, sourceEndLine = sourceLine) {
+  const end = Math.max(Number(sourceEndLine) || sourceLine, sourceLine);
+  return `data-source-line="${sourceLine}" data-source-end-line="${end}"`;
 }
 
 function parseBlockData(markdown) {
