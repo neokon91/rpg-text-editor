@@ -57,7 +57,7 @@ npm run editor
 
 ## Authoring in VS Code
 
-Per il flusso pratico completo vedi `docs/authoring.md`.
+Per il flusso pratico completo vedi `docs/authoring.md`. Per lo stato della UI vedi `docs/editor-reference.md`; per priorita e QA usa `docs/checklist.md`.
 
 ## Editor UI
 
