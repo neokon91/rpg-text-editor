@@ -28,6 +28,7 @@ public: false
 - Toolbar preview con pagina corrente/totale, prev/next, input pagina, fit page/fill width e modalita single/facing/flow.
 - Preview multipagina reale da `::pagebreak`, con pagine `page-shell` separate.
 - Indicatore overflow pagine nella toolbar preview, con salto alla prima pagina e selezione della riga da spezzare.
+- Inserimento assistito `::pagebreak` dalla riga overflow selezionata.
 - Sync editor-preview con toggle, scroll preview dalla linea cursore, range sorgente sui blocchi multi-linea e click preview verso sorgente.
 - Toggle plugin pack manifest nella UI React, con scelta persistente.
 - Import di plugin pack JSON esterni non versionati, con persistenza locale e validazione collisioni.
@@ -53,7 +54,7 @@ public: false
 
 ## Gap Prioritari
 
-1. Inserimento assistito di `::pagebreak` partendo dalla riga overflow selezionata.
+1. Migliorare la scelta automatica del punto di break e ridurre overflow residuo.
 2. Paginazione automatica piu evoluta oltre agli split manuali `::pagebreak`.
 3. Palette componenti piu ricca: sottopreset, gruppi rapidi e preset estendibili da schema/plugin.
 4. Rifiniture responsive dei pannelli laterali.

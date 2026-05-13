@@ -204,6 +204,15 @@ function App() {
     setExportOutputs([]);
   }
 
+  function insertPageBreakAtSelection() {
+    const targetLine = selectedLine || editorRef.current?.getCursorLine();
+    if (!targetLine) return;
+    setMarkdown((current) => insertPageBreakBeforeLine(current, targetLine));
+    setSelectedLine(targetLine);
+    setStatus(`Page break inserito prima della riga ${targetLine}`);
+    setExportOutputs([]);
+  }
+
   function togglePack(packId) {
     setEnabledPacks((current) => {
       const next = new Set(current);
@@ -411,6 +420,7 @@ function App() {
         onZoomChange={setZoom}
         onResetDraft={resetDraft}
         onInsertSnippet={insertSnippet}
+        onInsertPageBreakAtSelection={insertPageBreakAtSelection}
       />
       <section className="next-workspace">
         <ComponentPalette
@@ -475,6 +485,15 @@ function loadBooleanWorkspaceSetting(key, fallback) {
 function loadNumberWorkspaceSetting(key) {
   const value = Number(localStorage.getItem(`${workspaceStoragePrefix}:${key}`));
   return Number.isInteger(value) && value > 0 ? value : null;
+}
+
+function insertPageBreakBeforeLine(markdown, lineNumber) {
+  const lines = markdown.replace(/\r\n/g, "\n").split("\n");
+  const index = Math.max(0, Math.min(Number(lineNumber) - 1, lines.length));
+  const nearby = lines.slice(Math.max(0, index - 2), Math.min(lines.length, index + 2)).map((line) => line.trim());
+  if (nearby.includes("::pagebreak")) return markdown;
+  lines.splice(index, 0, "", "::pagebreak", "");
+  return lines.join("\n");
 }
 
 function loadExternalPacks() {
