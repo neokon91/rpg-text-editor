@@ -7,6 +7,7 @@ import {
   defaultComponentValues,
   validateComponentValues
 } from "../../editor-next/src/components/componentMarkdown.js";
+import { insertPageBreakBeforeLine } from "../../editor-next/src/editor/pageBreaks.js";
 import { renderMarkdown } from "../../packages/components/preview.js";
 import { parseMarkdownOutline } from "../../packages/markdown/outline.js";
 
@@ -112,4 +113,22 @@ riga due del paragrafo
   assert.match(html, /<p data-source-line="3" data-source-end-line="4">/);
   assert.match(html, /<ul data-source-line="6" data-source-end-line="7">/);
   assert.match(html, /<table class="table-compact" data-source-line="9" data-source-end-line="11">/);
+});
+
+test("insertPageBreakBeforeLine inserts before the current markdown block", () => {
+  const result = insertPageBreakBeforeLine(`# Titolo
+
+Paragrafo uno
+continua qui
+
+- voce uno
+- voce due`, 4);
+
+  assert.equal(result.line, 3);
+  assert.equal(result.inserted, true);
+  assert.match(result.markdown, /# Titolo\n\n::pagebreak\n\nParagrafo uno/);
+
+  const duplicate = insertPageBreakBeforeLine(result.markdown, 5);
+  assert.equal(duplicate.inserted, false);
+  assert.equal(duplicate.markdown, result.markdown);
 });

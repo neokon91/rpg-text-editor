@@ -50,11 +50,11 @@ Prima tranche preview implementata:
 5. Selettore `single`, `facing` e `flow`.
 6. Test UI su pagina, zoom e navigazione.
 
-Limite noto: la paginazione e ancora manuale tramite `::pagebreak`; la preview ora segnala le pagine in overflow, seleziona la riga sorgente da spezzare e offre inserimento assistito.
+Limite noto: la paginazione e ancora manuale tramite `::pagebreak`; la preview ora segnala le pagine in overflow, seleziona la riga sorgente da spezzare e offre inserimento assistito block-aware.
 
 ## Dopo La Preview
 
 - Sync editor-preview completato per toggle, click preview verso editor e range sorgente sui blocchi multi-linea.
-- Migliore scelta automatica del punto di break e riduzione overflow residuo.
+- Riduzione overflow residuo dopo l'inserimento assistito.
 - Palette componenti con sottopreset e gruppi piu ricchi.
 - Rifiniture responsive dei pannelli laterali.

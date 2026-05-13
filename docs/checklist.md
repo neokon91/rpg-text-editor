@@ -66,6 +66,7 @@ public: false
 - [x] Preview multipagina reale basata su `::pagebreak`, con una `page-shell` per pagina.
 - [x] Indicatore overflow pagine nella toolbar preview, con salto alla prima pagina e selezione della riga da spezzare.
 - [x] Inserimento assistito `::pagebreak` dalla riga overflow selezionata.
+- [x] Inserimento page break block-aware, evitando di spezzare paragrafi/liste/tabelle nel mezzo.
 - [x] Tema originale `modern-5-5` per resa 5.5-compatible piu moderna e pulita.
 
 ## Componenti e schema
@@ -112,5 +113,5 @@ public: false
 
 ## Prossimi passi consigliati
 
-1. Raffinare la scelta automatica del punto di break e ridurre overflow residuo dopo l'inserimento.
+1. Ridurre overflow residuo dopo l'inserimento assistito.
 2. Rifinire responsive dei pannelli e palette con sottopreset.

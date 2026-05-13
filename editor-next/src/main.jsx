@@ -10,6 +10,7 @@ import { countWords, downloadMarkdown } from "../../packages/markdown/editor-act
 import { slugifyDocumentName } from "../../scripts/lib/component-schema.js";
 import { ComponentPalette } from "./components/ComponentPalette.jsx";
 import { MarkdownEditor } from "./editor/MarkdownEditor.jsx";
+import { insertPageBreakBeforeLine } from "./editor/pageBreaks.js";
 import { DocumentOutline } from "./outline/DocumentOutline.jsx";
 import { PreviewFrame } from "./preview/PreviewFrame.jsx";
 import { TopMenu } from "./shell/TopMenu.jsx";
@@ -207,9 +208,16 @@ function App() {
   function insertPageBreakAtSelection() {
     const targetLine = selectedLine || editorRef.current?.getCursorLine();
     if (!targetLine) return;
-    setMarkdown((current) => insertPageBreakBeforeLine(current, targetLine));
-    setSelectedLine(targetLine);
-    setStatus(`Page break inserito prima della riga ${targetLine}`);
+    let insertedLine = targetLine;
+    let inserted = false;
+    setMarkdown((current) => {
+      const result = insertPageBreakBeforeLine(current, targetLine);
+      insertedLine = result.line;
+      inserted = result.inserted;
+      return result.markdown;
+    });
+    setSelectedLine(insertedLine);
+    setStatus(inserted ? `Page break inserito prima della riga ${insertedLine}` : `Page break gia vicino alla riga ${insertedLine}`);
     setExportOutputs([]);
   }
 
@@ -485,15 +493,6 @@ function loadBooleanWorkspaceSetting(key, fallback) {
 function loadNumberWorkspaceSetting(key) {
   const value = Number(localStorage.getItem(`${workspaceStoragePrefix}:${key}`));
   return Number.isInteger(value) && value > 0 ? value : null;
-}
-
-function insertPageBreakBeforeLine(markdown, lineNumber) {
-  const lines = markdown.replace(/\r\n/g, "\n").split("\n");
-  const index = Math.max(0, Math.min(Number(lineNumber) - 1, lines.length));
-  const nearby = lines.slice(Math.max(0, index - 2), Math.min(lines.length, index + 2)).map((line) => line.trim());
-  if (nearby.includes("::pagebreak")) return markdown;
-  lines.splice(index, 0, "", "::pagebreak", "");
-  return lines.join("\n");
 }
 
 function loadExternalPacks() {
