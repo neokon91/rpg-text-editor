@@ -5,14 +5,19 @@ import { defaultHighlightStyle, syntaxHighlighting } from "@codemirror/language"
 import { EditorState } from "@codemirror/state";
 import { drawSelection, dropCursor, EditorView, highlightActiveLine, keymap, lineNumbers } from "@codemirror/view";
 
-export const MarkdownEditor = forwardRef(function MarkdownEditor({ markdown, selectedLine, onChange }, ref) {
+export const MarkdownEditor = forwardRef(function MarkdownEditor({ markdown, selectedLine, onChange, onCursorLineChange }, ref) {
   const host = useRef(null);
   const view = useRef(null);
   const onChangeRef = useRef(onChange);
+  const onCursorLineChangeRef = useRef(onCursorLineChange);
 
   useEffect(() => {
     onChangeRef.current = onChange;
   }, [onChange]);
+
+  useEffect(() => {
+    onCursorLineChangeRef.current = onCursorLineChange;
+  }, [onCursorLineChange]);
 
   useImperativeHandle(ref, () => ({
     insertText(text) {
@@ -26,6 +31,11 @@ export const MarkdownEditor = forwardRef(function MarkdownEditor({ markdown, sel
         scrollIntoView: true
       });
       editor.focus();
+    },
+    getCursorLine() {
+      const editor = view.current;
+      if (!editor) return 1;
+      return editor.state.doc.lineAt(editor.state.selection.main.head).number;
     }
   }), []);
 
@@ -33,8 +43,11 @@ export const MarkdownEditor = forwardRef(function MarkdownEditor({ markdown, sel
     if (!host.current) return undefined;
 
     const updateListener = EditorView.updateListener.of((update) => {
-      if (!update.docChanged) return;
-      onChangeRef.current(update.state.doc.toString());
+      if (update.docChanged) onChangeRef.current(update.state.doc.toString());
+      if (update.selectionSet || update.docChanged) {
+        const line = update.state.doc.lineAt(update.state.selection.main.head).number;
+        onCursorLineChangeRef.current?.(line);
+      }
     });
 
     view.current = new EditorView({

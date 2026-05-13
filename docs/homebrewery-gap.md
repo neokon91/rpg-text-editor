@@ -26,6 +26,7 @@ public: false
 - Export HTML/PDF dal flusso locale.
 - Snippet rapidi per blocchi frequenti.
 - Toolbar preview con pagina corrente/totale, prev/next, input pagina, fit page/fill width e modalita single/facing/flow.
+- Sync editor-preview base con toggle, scroll preview dalla linea cursore e click preview verso sorgente.
 - Palette componenti generata da schema, con ricerca e gruppi.
 - Inserimento componenti al cursore CodeMirror.
 - Form guidati generati da schema per campi e liste, con preset, rimozione righe e validazione inline dei campi richiesti.
@@ -43,8 +44,8 @@ public: false
 
 ## Gap Prioritari
 
-1. Sync editor-preview bidirezionale: scroll opzionale e click su preview verso riga sorgente.
-2. Renderer multipagina reale: rendere `single/facing/flow` basati su pagine separate, non solo marker `::pagebreak` navigabili.
+1. Renderer multipagina reale: rendere `single/facing/flow` basati su pagine separate, non solo marker `::pagebreak` navigabili.
+2. Sync editor-preview fine: scroll continuo piu preciso tra linee intermedie e blocchi lunghi.
 3. Palette componenti piu ricca: sottopreset, gruppi rapidi e preset estendibili da schema/plugin.
 4. Gestione plugin pack nella UI React: attiva/disattiva pack e prova pack esterni.
 5. Comandi editor da tastiera e toolbar Markdown piu completa.

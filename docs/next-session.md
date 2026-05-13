@@ -44,6 +44,7 @@ Vite + React + CodeMirror 6 + iframe preview
 - Benchmark Homebrewery verificato in `docs/homebrewery-benchmark.md`: upstream e `naturalcrit/homebrewery`, V3 non e una codebase separata, e la priorita comparativa ora e la toolbar preview pagina/spread.
 - Form componenti gia portati oltre il base: preset schema-driven, rimozione righe lista e validazione inline dei campi richiesti.
 - Prima toolbar preview implementata: pagina corrente/totale, prev/next, input pagina, fit/fill e selettore single/facing/flow.
+- Sync editor-preview base implementato: toggle `Sync`, preview segue la linea cursore e il click preview seleziona la sorgente.
 
 ## File Da Conoscere
 
@@ -60,15 +61,13 @@ Vite + React + CodeMirror 6 + iframe preview
 
 ## Primo Task Consigliato
 
-Proseguire con il sync editor-preview bidirezionale:
+Proseguire con renderer multipagina reale o plugin pack UI:
 
-1. Mappare linee sorgente visibili nell'iframe e posizione editor corrente.
-2. Aggiungere toggle sync scroll.
-3. Da editor verso preview: scroll alla pagina/linea piu vicina.
-4. Da preview verso editor: il click su `[data-source-line]` esiste gia, va reso piu evidente e testato.
-5. Estendere `scripts/test-editor-next-ui.js` per sync e click preview.
+1. Renderer multipagina reale: spezzare la preview in pagine navigabili, preparando `single/facing/flow` veri.
+2. Oppure plugin pack UI: toggle pack installati da manifest e stato persistente.
+3. Mantenere `npm run test:editor-next-ui` come smoke minimo per ogni tranche.
 
-Poi: renderer multipagina reale per spread `facing/flow`, palette con sottopreset, plugin pack UI, rename/delete se confermati.
+Poi: sync fine su scroll continuo, palette con sottopreset, rename/delete se confermati.
 
 ## Guardrail UX
 

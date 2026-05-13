@@ -3,7 +3,16 @@ import { useCallback, useEffect, useRef, useState } from "react";
 const MIN_ZOOM = 0.4;
 const MAX_ZOOM = 1.6;
 
-export function PreviewFrame({ html, zoom, viewport, spread, onSelectLine, onZoomChange, onSpreadChange }) {
+export function PreviewFrame({
+  html,
+  zoom,
+  viewport,
+  spread,
+  syncSourceLine,
+  onSelectLine,
+  onZoomChange,
+  onSpreadChange
+}) {
   const frame = useRef(null);
   const removeScrollListener = useRef(null);
   const [pageState, setPageState] = useState({ current: 1, total: 1 });
@@ -53,6 +62,11 @@ export function PreviewFrame({ html, zoom, viewport, spread, onSelectLine, onZoo
   }, [html, spread]);
 
   useEffect(() => {
+    if (!syncSourceLine) return;
+    scrollToSourceLine(syncSourceLine);
+  }, [html, syncSourceLine]);
+
+  useEffect(() => {
     setPageInput(String(pageState.current));
   }, [pageState.current]);
 
@@ -68,6 +82,7 @@ export function PreviewFrame({ html, zoom, viewport, spread, onSelectLine, onZoo
     win?.addEventListener("scroll", updatePageState, { passive: true });
     removeScrollListener.current = () => win?.removeEventListener("scroll", updatePageState);
     updatePageState();
+    if (syncSourceLine) scrollToSourceLine(syncSourceLine);
   }
 
   function goToPage(nextPage) {
@@ -77,6 +92,21 @@ export function PreviewFrame({ html, zoom, viewport, spread, onSelectLine, onZoo
     if (!marker) return;
     frame.current?.contentWindow?.scrollTo({ top: Math.max(marker.top - 18, 0), behavior: "smooth" });
     setPageState({ current: page, total: Math.max(markers.length, 1) });
+  }
+
+  function scrollToSourceLine(line) {
+    const doc = frame.current?.contentDocument;
+    if (!doc) return;
+    const targets = [...doc.querySelectorAll("[data-source-line]")];
+    const target = targets
+      .map((node) => ({ node, line: Number(node.dataset.sourceLine) || 0 }))
+      .filter((item) => item.line > 0)
+      .reduce((best, item) => {
+        if (!best) return item;
+        return Math.abs(item.line - line) < Math.abs(best.line - line) ? item : best;
+      }, null);
+    if (!target) return;
+    target.node.scrollIntoView({ block: "center", behavior: "smooth" });
   }
 
   function fitPreview(mode) {

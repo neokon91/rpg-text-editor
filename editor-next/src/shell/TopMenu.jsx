@@ -21,6 +21,7 @@ export function TopMenu({
   isChecking,
   exportOutputs,
   previewVisible,
+  syncPreview,
   viewport,
   zoom,
   onOpenDocument,
@@ -31,6 +32,7 @@ export function TopMenu({
   onExport,
   onRefreshDocuments,
   onTogglePreview,
+  onToggleSyncPreview,
   onViewportChange,
   onZoomChange,
   onResetDraft,
@@ -96,6 +98,9 @@ export function TopMenu({
         </label>
         <button type="button" aria-pressed={previewVisible} onClick={onTogglePreview}>
           {previewVisible ? "Nascondi preview" : "Mostra preview"}
+        </button>
+        <button type="button" aria-pressed={syncPreview} onClick={onToggleSyncPreview}>
+          Sync
         </button>
         <button type="button" onClick={onResetDraft}>Nuovo</button>
       </nav>

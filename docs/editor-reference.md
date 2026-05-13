@@ -37,6 +37,7 @@ Il server apre `editor-next/` su `http://127.0.0.1:5173/editor-next/` e combina 
 - Export HTML/PDF in `dist/` tramite renderer ufficiale.
 - Preview live con `styles/main.css`, `page-shell`, tema e carta da frontmatter.
 - Controlli preview: desktop/mobile, zoom, toggle preview, fit/fill, pagina corrente/totale, prev/next, input pagina e modalita single/facing/flow.
+- Sync preview base: toggle `Sync`, scroll preview dalla linea cursore e click su preview verso la linea sorgente.
 - Snippet rapidi: scena, readaloud, incontro, tabella e page break.
 - Palette componenti generata da schema con ricerca, gruppi e inserimento al cursore.
 - Form componenti per campi e liste dichiarati nello schema, con preset, rimozione righe e validazione inline dei campi richiesti.
@@ -52,8 +53,8 @@ Il server apre `editor-next/` su `http://127.0.0.1:5173/editor-next/` e combina 
 
 ## Mancanze Verso Homebrewery
 
-- Sync editor-preview bidirezionale piu robusto.
 - Renderer multipagina reale per rendere `facing/flow` equivalenti al benchmark, oltre ai marker `::pagebreak` navigabili.
+- Sync editor-preview piu fine su linee intermedie e scroll continuo, oltre al sync base gia disponibile.
 - Supporto ai plugin pack esterni nella nuova UI.
 - Palette componenti con sottopreset e gruppi piu ricchi.
 - Rename/delete documento, se confermati come parte del flusso editor.

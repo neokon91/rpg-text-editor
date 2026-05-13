@@ -122,6 +122,17 @@ try {
   await waitFor(() => evalInPage("document.querySelector('.preview-toolbar input')?.value === '2'"));
   await clickButton("Fit");
   await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.documentElement.style.getPropertyValue('--rpg-preview-zoom') !== '1'"));
+  await clickButton("Sync");
+  await waitFor(() => evalInPage("Array.from(document.querySelectorAll('button[aria-pressed=\"true\"]')).some((button) => button.textContent.trim() === 'Sync')"));
+  await waitFor(() => evalInPage("document.querySelector('iframe')?.contentWindow?.scrollY > 0"));
+  await evalInPage(`
+    {
+      const heading = document.querySelector('iframe').contentDocument.querySelector('.page-shell h1');
+      if (!heading) throw new Error('Preview heading not found');
+      heading.click();
+    }
+  `);
+  await waitFor(() => evalInPage("document.querySelector('.cm-activeLine')?.textContent.includes('# Nuova Avventura')"));
 
   const errors = await evalInPage("Array.from(window.__editorNextErrors || [])");
   if (errors.length) throw new Error(`Errori console browser: ${errors.join("; ")}`);

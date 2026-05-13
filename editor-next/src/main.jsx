@@ -48,6 +48,8 @@ function App() {
   const [zoom, setZoom] = useState(() => localStorage.getItem("rpg-text-editor-next:zoom") || "1");
   const [viewport, setViewport] = useState(() => localStorage.getItem("rpg-text-editor-next:viewport") || "desktop");
   const [previewSpread, setPreviewSpread] = useState(() => localStorage.getItem("rpg-text-editor-next:preview-spread") || "single");
+  const [syncPreview, setSyncPreview] = useState(() => localStorage.getItem("rpg-text-editor-next:sync-preview") === "true");
+  const [cursorLine, setCursorLine] = useState(null);
   const [selectedLine, setSelectedLine] = useState(null);
   const [documents, setDocuments] = useState([]);
   const [currentDocument, setCurrentDocument] = useState("");
@@ -98,6 +100,10 @@ function App() {
   useEffect(() => {
     localStorage.setItem("rpg-text-editor-next:preview-spread", previewSpread);
   }, [previewSpread]);
+
+  useEffect(() => {
+    localStorage.setItem("rpg-text-editor-next:sync-preview", syncPreview ? "true" : "false");
+  }, [syncPreview]);
 
   const parsed = useMemo(() => parseFrontmatter(markdown), [markdown]);
   const previewHtml = useMemo(() => {
@@ -287,6 +293,7 @@ function App() {
         isChecking={isChecking}
         exportOutputs={exportOutputs}
         previewVisible={previewVisible}
+        syncPreview={syncPreview}
         viewport={viewport}
         zoom={zoom}
         onOpenDocument={openDocument}
@@ -297,6 +304,7 @@ function App() {
         onExport={exportChecked}
         onRefreshDocuments={refreshDocuments}
         onTogglePreview={() => setPreviewVisible((value) => !value)}
+        onToggleSyncPreview={() => setSyncPreview((value) => !value)}
         onViewportChange={setViewport}
         onZoomChange={setZoom}
         onResetDraft={resetDraft}
@@ -304,13 +312,20 @@ function App() {
       />
       <section className="next-workspace">
         <ComponentPalette schema={schema} onInsert={insertMarkdown} />
-        <MarkdownEditor ref={editorRef} markdown={markdown} selectedLine={selectedLine} onChange={updateMarkdown} />
+        <MarkdownEditor
+          ref={editorRef}
+          markdown={markdown}
+          selectedLine={selectedLine}
+          onChange={updateMarkdown}
+          onCursorLineChange={setCursorLine}
+        />
         {previewVisible ? (
           <PreviewFrame
             html={previewHtml}
             zoom={zoom}
             viewport={viewport}
             spread={previewSpread}
+            syncSourceLine={syncPreview ? cursorLine : null}
             onSelectLine={setSelectedLine}
             onZoomChange={setZoom}
             onSpreadChange={setPreviewSpread}

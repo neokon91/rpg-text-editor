@@ -45,6 +45,7 @@ public: false
 - [ ] Conferme custom non native.
 - [ ] Toolbar estesa per tabelle, immagini, callout e include nella UI React.
 - [x] Navigatore documento da heading Markdown con salto alla riga sorgente.
+- [x] Sync editor-preview base: toggle, scroll preview dalla linea cursore e click preview verso linea sorgente.
 - [ ] Palette/componenti e preview come workspace persistenti.
 
 ## Preview
@@ -101,5 +102,5 @@ public: false
 ## Prossimi passi consigliati
 
 1. Rendere lo spread `facing/flow` fisicamente multipagina quando il renderer verra spezzato in pagine reali.
-2. Procedere con sync editor-preview bidirezionale basato su pagina/linea.
-3. Poi plugin pack UI e palette componenti con sottopreset.
+2. Aggiungere plugin pack UI.
+3. Poi palette componenti con sottopreset e workspace persistenti.

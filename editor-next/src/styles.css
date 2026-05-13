@@ -44,6 +44,11 @@ button:hover {
   background: #e7f0ef;
 }
 
+button[aria-pressed="true"] {
+  color: #163f45;
+  font-weight: 700;
+}
+
 button:disabled {
   cursor: not-allowed;
   opacity: 0.45;

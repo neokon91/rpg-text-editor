@@ -54,7 +54,8 @@ Limite noto: `facing/flow` sono modalita preparatorie; lo spread diventera piena
 
 ## Dopo La Preview
 
-- Sync editor-preview bidirezionale basato su pagina/linea.
+- Sync editor-preview base completato: toggle, scroll preview dalla linea cursore e click preview verso editor.
 - Renderer multipagina reale per spread affiancato/flusso.
+- Sync fine su scroll continuo e blocchi lunghi.
 - Palette componenti con sottopreset e gruppi piu ricchi.
 - Pannello plugin pack nella UI.
