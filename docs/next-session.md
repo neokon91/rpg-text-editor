@@ -45,6 +45,7 @@ Vite + React + CodeMirror 6 + iframe preview
 - Form componenti gia portati oltre il base: preset schema-driven, rimozione righe lista e validazione inline dei campi richiesti.
 - Prima toolbar preview implementata: pagina corrente/totale, prev/next, input pagina, fit/fill e selettore single/facing/flow.
 - Preview multipagina reale implementata per `::pagebreak`: ogni pagina e una `page-shell` separata.
+- Indicatore overflow pagine implementato nella toolbar preview, con salto alla prima pagina da spezzare.
 - Sync editor-preview implementato: toggle `Sync`, preview segue la linea cursore anche su blocchi multi-linea e il click preview seleziona la sorgente.
 - Plugin pack manifest attivabili/disattivabili dalla palette componenti, con scelta persistente.
 - Pack JSON esterni importabili e rimovibili dalla palette componenti, con persistenza locale e validazione collisioni.
@@ -69,9 +70,9 @@ Vite + React + CodeMirror 6 + iframe preview
 
 ## Primo Task Consigliato
 
-Proseguire con paginazione automatica o palette avanzata:
+Proseguire con page break assistiti o palette avanzata:
 
-1. Paginazione automatica: stimare overflow e suggerire/gestire page break oltre agli split manuali.
+1. Page break assistiti: suggerire o inserire `::pagebreak` partendo dalla prima pagina in overflow.
 2. Oppure palette avanzata: sottopreset e gruppi piu ricchi.
 3. Mantenere `npm run test:editor-next-ui` come smoke minimo per ogni tranche.
 

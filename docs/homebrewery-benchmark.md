@@ -50,11 +50,11 @@ Prima tranche preview implementata:
 5. Selettore `single`, `facing` e `flow`.
 6. Test UI su pagina, zoom e navigazione.
 
-Limite noto: la paginazione e ancora manuale tramite `::pagebreak`; lo step successivo e stimare overflow o suggerire split automatici.
+Limite noto: la paginazione e ancora manuale tramite `::pagebreak`; la preview ora segnala le pagine in overflow e lo step successivo e suggerire o inserire split assistiti.
 
 ## Dopo La Preview
 
 - Sync editor-preview completato per toggle, click preview verso editor e range sorgente sui blocchi multi-linea.
-- Paginazione automatica o assistita oltre agli split manuali.
+- Suggerimento o inserimento assistito di page break oltre agli split manuali.
 - Palette componenti con sottopreset e gruppi piu ricchi.
 - Rifiniture responsive dei pannelli laterali.

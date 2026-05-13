@@ -610,6 +610,13 @@ button:disabled {
   padding: 0 8px;
 }
 
+.preview-toolbar .preview-overflow {
+  border-color: #a43d25;
+  background: #fff5f1;
+  color: #7d2d1a;
+  font-weight: 700;
+}
+
 .preview-toolbar label {
   display: flex;
   align-items: center;

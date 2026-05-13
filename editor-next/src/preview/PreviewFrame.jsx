@@ -17,6 +17,7 @@ export function PreviewFrame({
   const removeScrollListener = useRef(null);
   const [pageState, setPageState] = useState({ current: 1, total: 1 });
   const [pageInput, setPageInput] = useState("1");
+  const [overflowPages, setOverflowPages] = useState([]);
 
   useEffect(() => {
     function handleMessage(event) {
@@ -46,6 +47,7 @@ export function PreviewFrame({
     const nextState = { current, total: Math.max(markers.length, 1) };
     setPageState(nextState);
     setPageInput(String(nextState.current));
+    setOverflowPages(readOverflowPages(doc));
   }, [readPageMarkers]);
 
   useEffect(() => {
@@ -57,7 +59,8 @@ export function PreviewFrame({
   useEffect(() => {
     const body = frame.current?.contentDocument?.body;
     if (body) body.dataset.spread = spread;
-  }, [html, spread]);
+    updatePageState();
+  }, [html, spread, updatePageState]);
 
   useEffect(() => {
     if (!syncSourceLine) return;
@@ -80,6 +83,8 @@ export function PreviewFrame({
     win?.addEventListener("scroll", updatePageState, { passive: true });
     removeScrollListener.current = () => win?.removeEventListener("scroll", updatePageState);
     updatePageState();
+    win?.requestAnimationFrame(() => updatePageState());
+    win?.setTimeout(() => updatePageState(), 120);
     if (syncSourceLine) scrollToSourceLine(syncSourceLine);
   }
 
@@ -128,6 +133,7 @@ export function PreviewFrame({
 
   const canGoBack = pageState.current > 1;
   const canGoForward = pageState.current < pageState.total;
+  const firstOverflowPage = overflowPages[0];
 
   return (
     <section className="preview-pane" aria-label="Anteprima" data-spread={spread}>
@@ -155,6 +161,11 @@ export function PreviewFrame({
           <span>/ {pageState.total}</span>
         </label>
         <button type="button" disabled={!canGoForward} onClick={() => goToPage(pageState.current + 1)} aria-label="Pagina successiva">›</button>
+        {overflowPages.length ? (
+          <button type="button" className="preview-overflow" onClick={() => goToPage(firstOverflowPage)}>
+            Overflow {overflowPages.length}
+          </button>
+        ) : null}
       </div>
       <iframe
         ref={frame}
@@ -166,6 +177,23 @@ export function PreviewFrame({
       />
     </section>
   );
+}
+
+function readOverflowPages(doc) {
+  const spread = doc.body?.dataset.spread;
+  if (spread === "flow") return [];
+  return [...doc.querySelectorAll(".page-shell")]
+    .filter((page) => {
+      const style = doc.defaultView?.getComputedStyle(page);
+      const pageLimit = parseFloat(style?.height || "0") || parseFloat(style?.minHeight || "0") || page.clientHeight;
+      const pageRect = page.getBoundingClientRect();
+      const clippedNode = [...page.querySelectorAll("[data-source-line]")].some((node) => {
+        const rect = node.getBoundingClientRect();
+        return rect.bottom > pageRect.bottom - 4 || rect.right > pageRect.right - 4;
+      });
+      return page.scrollHeight > pageLimit + 4 || page.scrollWidth > page.clientWidth + 4 || clippedNode;
+    })
+    .map((page) => Number(page.dataset.previewPage) || 1);
 }
 
 function findSourceTarget(targets, line) {

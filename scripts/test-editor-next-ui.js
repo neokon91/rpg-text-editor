@@ -196,6 +196,15 @@ try {
   await reloadPage();
   await waitFor(() => evalInPage("document.readyState === 'complete'"));
   await waitFor(() => evalInPage("document.querySelector('.outline-item.is-active button[aria-current=\"location\"]')?.textContent.includes('Nuova Avventura')"));
+  await evalInPage(`
+    {
+      const body = Array.from({ length: 120 }, (_, index) => "Paragrafo overflow " + (index + 1) + " con testo di prova per saturare la pagina.").join("\\n\\n");
+      window.localStorage.setItem('rpg-text-editor-next:draft', "---\\ntitle: Overflow Test\\nslug: overflow-test\\nsummary: Test overflow\\ntheme: classic-parchment\\npaper: A4\\n---\\n\\n# Overflow Test\\n\\n" + body);
+    }
+  `);
+  await reloadPage();
+  await waitFor(() => evalInPage("document.readyState === 'complete'"));
+  await waitFor(() => evalInPage("document.querySelector('.preview-overflow')?.textContent.includes('Overflow')"));
 
   const errors = await evalInPage("Array.from(window.__editorNextErrors || [])");
   if (errors.length) throw new Error(`Errori console browser: ${errors.join("; ")}`);
@@ -205,7 +214,7 @@ try {
   cdp?.close();
   browser?.kill();
   server?.kill();
-  if (userDataDir) await rm(userDataDir, { recursive: true, force: true });
+  if (userDataDir) await rm(userDataDir, { recursive: true, force: true, maxRetries: 3, retryDelay: 100 });
 }
 
 async function openTarget() {
