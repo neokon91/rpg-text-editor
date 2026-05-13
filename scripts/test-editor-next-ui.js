@@ -106,6 +106,15 @@ try {
   await assertEqual(await evalInPage("document.body.textContent.includes('Fazione')"), false, "plugin pack component hidden");
   await evalInPage("document.querySelector('.pack-toggles input[type=\"checkbox\"]').click()");
   await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 15"));
+  await importExternalPack({
+    id: "bad-pack",
+    name: "Bad Pack",
+    componentId: "spell",
+    label: "Collisione",
+    container: "external-collision"
+  });
+  await waitFor(() => evalInPage("document.querySelector('.external-pack-controls .inline-error')?.textContent.includes('Component id duplicato: spell')"));
+  await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 15"));
   await importExternalPack();
   await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 16"));
   await assertEqual(await evalInPage("document.body.textContent.includes('Reliquia esterna')"), true, "external pack component visible");
@@ -219,28 +228,29 @@ async function clickButtonByAriaLabel(label) {
   `);
 }
 
-async function importExternalPack() {
+async function importExternalPack(options = {}) {
+  const pack = {
+    id: options.id || "external-test-pack",
+    name: options.name || "External Test Pack",
+    version: "0.1.0",
+    compatibility: "rpg-text-editor>=0.1.0",
+    components: [{
+      id: options.componentId || "external-relic",
+      label: options.label || "Reliquia esterna",
+      group: "Test",
+      description: "Componente caricato da JSON esterno.",
+      container: options.container || "external-relic",
+      default_label: "Reliquia",
+      fields: [
+        { key: "name", label: "Nome", type: "text", required: true, default: "Specchio di prova" }
+      ]
+    }]
+  };
   await evalInPage(`
     {
       const input = document.querySelector('.external-pack-import input[type="file"]');
       if (!input) throw new Error('External pack input not found');
-      const pack = {
-        id: 'external-test-pack',
-        name: 'External Test Pack',
-        version: '0.1.0',
-        compatibility: 'rpg-text-editor>=0.1.0',
-        components: [{
-          id: 'external-relic',
-          label: 'Reliquia esterna',
-          group: 'Test',
-          description: 'Componente caricato da JSON esterno.',
-          container: 'external-relic',
-          default_label: 'Reliquia',
-          fields: [
-            { key: 'name', label: 'Nome', type: 'text', required: true, default: 'Specchio di prova' }
-          ]
-        }]
-      };
+      const pack = ${JSON.stringify(pack)};
       const file = new File([JSON.stringify(pack)], 'external-test-pack.json', { type: 'application/json' });
       const transfer = new DataTransfer();
       transfer.items.add(file);

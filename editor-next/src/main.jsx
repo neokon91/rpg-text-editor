@@ -193,6 +193,11 @@ function App() {
 
   function importExternalPack(pack) {
     const normalized = normalizeExternalPack(pack);
+    validateExternalPack(normalized, {
+      manifest: componentManifest,
+      schema,
+      externalPacks
+    });
     setExternalPacks((current) => {
       const next = [
         ...current.filter((item) => item.id !== normalized.id),
@@ -449,4 +454,40 @@ function normalizeExternalPack(pack) {
       components: pack.components
     }
   };
+}
+
+function validateExternalPack(pack, { manifest, schema, externalPacks }) {
+  const manifestPackIds = new Set((manifest?.packs || []).map((item) => item.id));
+  if (manifestPackIds.has(pack.id)) throw new Error(`Pack id gia dichiarato nel manifest: ${pack.id}.`);
+
+  for (const component of pack.schema.components) {
+    validateExternalComponent(component);
+  }
+
+  const replacingIds = new Set([pack.id]);
+  const externalIds = new Set(externalPacks.map((item) => item.id));
+  if (externalIds.has(pack.id)) replacingIds.add(pack.id);
+
+  const existingComponents = (schema.components || []).filter((component) => !replacingIds.has(component.source));
+  const componentIds = new Set(existingComponents.map((component) => component.id));
+  const containers = new Set(existingComponents.map((component) => component.container));
+
+  for (const component of pack.schema.components) {
+    if (componentIds.has(component.id)) throw new Error(`Component id duplicato: ${component.id}.`);
+    if (containers.has(component.container)) throw new Error(`Container duplicato: ${component.container}.`);
+    componentIds.add(component.id);
+    containers.add(component.container);
+  }
+}
+
+function validateExternalComponent(component) {
+  for (const key of ["id", "label", "group", "description", "container", "fields"]) {
+    if (!component[key]) throw new Error(`Componente esterno senza campo obbligatorio: ${key}.`);
+  }
+  if (!Array.isArray(component.fields)) throw new Error(`${component.id}: fields deve essere un array.`);
+  for (const field of component.fields) {
+    if (!field.key || !field.label || !field.type) {
+      throw new Error(`${component.id}: ogni field richiede key, label e type.`);
+    }
+  }
 }

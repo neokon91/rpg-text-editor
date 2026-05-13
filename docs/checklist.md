@@ -73,6 +73,7 @@ public: false
 - [x] Renderer build allineato ai plugin pack.
 - [x] UI React per attivare/disattivare pack dichiarati nel manifest.
 - [x] UI React per caricare pack esterni non versionati.
+- [x] Validazione locale pack esterni per campi minimi e collisioni `id`/`container`.
 - [x] Documentazione dedicata per creare nuovi pack.
 
 ## Validazione e QA
