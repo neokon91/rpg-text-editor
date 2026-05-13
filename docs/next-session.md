@@ -52,6 +52,7 @@ Vite + React + CodeMirror 6 + iframe preview
 - Azioni preset rapide disponibili sulle card componenti.
 - Filtri rapidi per gruppo disponibili nella palette componenti.
 - Workspace locale persistente per preview visibile, zoom, viewport, spread, sync e filtro gruppo componenti.
+- Workspace locale persistente per collasso frontmatter/outline e riga outline selezionata.
 
 ## File Da Conoscere
 
@@ -68,13 +69,13 @@ Vite + React + CodeMirror 6 + iframe preview
 
 ## Primo Task Consigliato
 
-Proseguire con paginazione automatica o persistenza pannelli:
+Proseguire con paginazione automatica o sync fine:
 
 1. Paginazione automatica: stimare overflow e suggerire/gestire page break oltre agli split manuali.
-2. Oppure persistenza pannelli: ricordare collasso/visibilita dei pannelli e stato outline.
+2. Oppure sync fine: rendere piu preciso lo scroll continuo tra linee intermedie e blocchi lunghi.
 3. Mantenere `npm run test:editor-next-ui` come smoke minimo per ogni tranche.
 
-Poi: sync fine su scroll continuo, palette con sottopreset, rename/delete se confermati.
+Poi: palette con sottopreset, rename/delete se confermati.
 
 ## Guardrail UX
 

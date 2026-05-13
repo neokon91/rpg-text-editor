@@ -194,6 +194,11 @@ button:disabled {
   border-bottom: 1px solid #d8d0c2;
 }
 
+.side-panel-header div {
+  display: grid;
+  gap: 2px;
+}
+
 .side-panel-header strong {
   font-size: 13px;
   text-transform: uppercase;
@@ -210,6 +215,13 @@ button:disabled {
 .side-panel-header input {
   width: 100%;
   max-width: none;
+}
+
+.side-panel-header button {
+  min-height: 24px;
+  padding: 0 7px;
+  font-size: 12px;
+  justify-self: start;
 }
 
 .component-group-filter {
@@ -441,6 +453,11 @@ button:disabled {
   height: auto;
   padding: 7px 8px;
   text-align: left;
+}
+
+.outline-item.is-active button {
+  border-color: #1f6f78;
+  background: #dcecdf;
 }
 
 .outline-item.level-2 {

@@ -97,8 +97,21 @@ try {
   await reloadPage();
   await waitFor(() => evalInPage("document.readyState === 'complete'"));
   await waitFor(() => evalInPage("window.localStorage.getItem('rpg-text-editor-next:preview-visible') === 'false' && !document.querySelector('iframe')"));
+  await waitFor(() => evalInPage("Boolean(document.querySelector('.next-actions'))"));
   await clickTopbarButton("Mostra preview");
   await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.querySelector('.page-shell h1')?.textContent.toLowerCase().includes('nuova avventura')"));
+  await clickButton("Nascondi frontmatter");
+  await waitFor(() => evalInPage("window.localStorage.getItem('rpg-text-editor-next:frontmatter-panel') === 'false' && !document.querySelector('.metadata-fields')"));
+  await clickButton("Nascondi outline");
+  await waitFor(() => evalInPage("window.localStorage.getItem('rpg-text-editor-next:outline-panel') === 'false' && !document.querySelector('.outline-list')"));
+  await reloadPage();
+  await waitFor(() => evalInPage("document.readyState === 'complete'"));
+  await waitFor(() => evalInPage("!document.querySelector('.metadata-fields') && !document.querySelector('.outline-list')"));
+  await waitFor(() => evalInPage("Boolean(document.querySelector('.document-side'))"));
+  await clickButton("Mostra frontmatter");
+  await waitFor(() => evalInPage("Boolean(document.querySelector('.metadata-fields'))"));
+  await clickButton("Mostra outline");
+  await waitFor(() => evalInPage("Boolean(document.querySelector('.outline-list'))"));
   await waitFor(() => evalInPage("document.querySelector('select')?.options.length > 1"));
   await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 15"));
   await clickButton("Media");
@@ -178,6 +191,10 @@ try {
     }
   `);
   await waitFor(() => evalInPage("document.querySelector('.cm-activeLine')?.textContent.includes('# Nuova Avventura')"));
+  await waitFor(() => evalInPage("Number(window.localStorage.getItem('rpg-text-editor-next:selected-line')) > 0"));
+  await reloadPage();
+  await waitFor(() => evalInPage("document.readyState === 'complete'"));
+  await waitFor(() => evalInPage("document.querySelector('.outline-item.is-active button[aria-current=\"location\"]')?.textContent.includes('Nuova Avventura')"));
 
   const errors = await evalInPage("Array.from(window.__editorNextErrors || [])");
   if (errors.length) throw new Error(`Errori console browser: ${errors.join("; ")}`);

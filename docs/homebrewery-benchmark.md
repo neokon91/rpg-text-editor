@@ -58,4 +58,4 @@ Limite noto: la paginazione e ancora manuale tramite `::pagebreak`; lo step succ
 - Paginazione automatica o assistita oltre agli split manuali.
 - Sync fine su scroll continuo e blocchi lunghi.
 - Palette componenti con sottopreset e gruppi piu ricchi.
-- Workspace persistente per pannelli e stato outline.
+- Rifiniture responsive dei pannelli laterali.

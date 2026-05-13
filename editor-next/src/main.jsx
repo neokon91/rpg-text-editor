@@ -58,7 +58,11 @@ function App() {
   const [syncPreview, setSyncPreview] = useState(() => loadBooleanWorkspaceSetting("sync-preview", false));
   const [activeComponentGroup, setActiveComponentGroup] = useState(() => localStorage.getItem(`${workspaceStoragePrefix}:component-group`) || "all");
   const [cursorLine, setCursorLine] = useState(null);
-  const [selectedLine, setSelectedLine] = useState(null);
+  const [selectedLine, setSelectedLine] = useState(() => loadNumberWorkspaceSetting("selected-line"));
+  const [documentPanels, setDocumentPanels] = useState(() => ({
+    frontmatter: loadBooleanWorkspaceSetting("frontmatter-panel", true),
+    outline: loadBooleanWorkspaceSetting("outline-panel", true)
+  }));
   const [documents, setDocuments] = useState([]);
   const [currentDocument, setCurrentDocument] = useState("");
   const [lastSavedContent, setLastSavedContent] = useState("");
@@ -139,6 +143,19 @@ function App() {
   useEffect(() => {
     localStorage.setItem(`${workspaceStoragePrefix}:component-group`, activeComponentGroup);
   }, [activeComponentGroup]);
+
+  useEffect(() => {
+    if (selectedLine) {
+      localStorage.setItem(`${workspaceStoragePrefix}:selected-line`, String(selectedLine));
+    } else {
+      localStorage.removeItem(`${workspaceStoragePrefix}:selected-line`);
+    }
+  }, [selectedLine]);
+
+  useEffect(() => {
+    localStorage.setItem(`${workspaceStoragePrefix}:frontmatter-panel`, documentPanels.frontmatter ? "true" : "false");
+    localStorage.setItem(`${workspaceStoragePrefix}:outline-panel`, documentPanels.outline ? "true" : "false");
+  }, [documentPanels]);
 
   const parsed = useMemo(() => parseFrontmatter(markdown), [markdown]);
   const previewHtml = useMemo(() => {
@@ -235,6 +252,13 @@ function App() {
     const nextMetadata = { ...metadata, [key]: value };
     setMarkdown(`${serializeFrontmatter(nextMetadata)}\n\n${body}`);
     setExportOutputs([]);
+  }
+
+  function toggleDocumentPanel(panel) {
+    setDocumentPanels((current) => ({
+      ...current,
+      [panel]: !current[panel]
+    }));
   }
 
   async function refreshDocuments() {
@@ -423,8 +447,11 @@ function App() {
         <DocumentOutline
           markdown={markdown}
           metadata={parsed.metadata}
+          selectedLine={selectedLine}
+          panels={documentPanels}
           onMetadataChange={updateMetadata}
           onSelectLine={setSelectedLine}
+          onTogglePanel={toggleDocumentPanel}
         />
       </section>
     </main>
@@ -443,6 +470,11 @@ function loadBooleanWorkspaceSetting(key, fallback) {
   if (value === "true") return true;
   if (value === "false") return false;
   return fallback;
+}
+
+function loadNumberWorkspaceSetting(key) {
+  const value = Number(localStorage.getItem(`${workspaceStoragePrefix}:${key}`));
+  return Number.isInteger(value) && value > 0 ? value : null;
 }
 
 function loadExternalPacks() {

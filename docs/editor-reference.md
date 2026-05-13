@@ -48,6 +48,7 @@ Il server apre `editor-next/` su `http://127.0.0.1:5173/editor-next/` e combina 
 - Azioni preset rapide direttamente sulle card dei componenti.
 - Filtri rapidi per gruppo nella palette componenti.
 - Workspace locale persistente per preview visibile, zoom, viewport, spread, sync e filtro gruppo componenti.
+- Workspace locale persistente per collasso frontmatter/outline e riga outline selezionata.
 - Navigatore documento da heading Markdown con salto alla riga.
 - Form frontmatter compatto nel pannello documento.
 
@@ -62,7 +63,6 @@ Il server apre `editor-next/` su `http://127.0.0.1:5173/editor-next/` e combina 
 
 - Paginazione automatica piu evoluta oltre agli split manuali `::pagebreak`.
 - Sync editor-preview piu fine su linee intermedie e scroll continuo, oltre al sync base gia disponibile.
-- Workspace persistente per ricordare visibilita pannelli e stato outline.
 - Palette componenti con sottopreset e gruppi piu ricchi.
 - Rename/delete documento, se confermati come parte del flusso editor.
 - Test UI piu ampi per save/open e component insertion.
