@@ -3,10 +3,17 @@ export function insertPageBreakBeforeLine(markdown, lineNumber) {
   const blockLine = findBlockStartLine(lines, lineNumber);
   const index = blockLine - 1;
   const nearby = lines.slice(Math.max(0, index - 2), Math.min(lines.length, index + 2)).map((line) => line.trim());
-  if (nearby.includes("::pagebreak")) return { markdown, line: blockLine, inserted: false };
+  if (nearby.includes("::pagebreak")) return { markdown, line: blockLine, breakLine: blockLine, contentLine: blockLine, inserted: false };
   const insertion = index > 0 && !lines[index - 1].trim() ? ["::pagebreak", ""] : ["", "::pagebreak", ""];
   lines.splice(index, 0, ...insertion);
-  return { markdown: lines.join("\n"), line: blockLine, inserted: true };
+  const breakLine = index + insertion.indexOf("::pagebreak") + 1;
+  return {
+    markdown: lines.join("\n"),
+    line: blockLine,
+    breakLine,
+    contentLine: blockLine + insertion.length,
+    inserted: true
+  };
 }
 
 function findBlockStartLine(lines, lineNumber) {

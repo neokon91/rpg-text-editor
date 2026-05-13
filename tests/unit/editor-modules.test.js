@@ -125,10 +125,13 @@ continua qui
 - voce due`, 4);
 
   assert.equal(result.line, 3);
+  assert.equal(result.breakLine, 3);
+  assert.equal(result.contentLine, 5);
   assert.equal(result.inserted, true);
   assert.match(result.markdown, /# Titolo\n\n::pagebreak\n\nParagrafo uno/);
 
   const duplicate = insertPageBreakBeforeLine(result.markdown, 5);
   assert.equal(duplicate.inserted, false);
+  assert.equal(duplicate.breakLine, 5);
   assert.equal(duplicate.markdown, result.markdown);
 });

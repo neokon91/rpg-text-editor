@@ -208,16 +208,18 @@ function App() {
   function insertPageBreakAtSelection() {
     const targetLine = selectedLine || editorRef.current?.getCursorLine();
     if (!targetLine) return;
-    let insertedLine = targetLine;
+    let breakLine = targetLine;
+    let contentLine = targetLine;
     let inserted = false;
     setMarkdown((current) => {
       const result = insertPageBreakBeforeLine(current, targetLine);
-      insertedLine = result.line;
+      breakLine = result.breakLine;
+      contentLine = result.contentLine;
       inserted = result.inserted;
       return result.markdown;
     });
-    setSelectedLine(insertedLine);
-    setStatus(inserted ? `Page break inserito prima della riga ${insertedLine}` : `Page break gia vicino alla riga ${insertedLine}`);
+    setSelectedLine(breakLine);
+    setStatus(inserted ? `Page break inserito alla riga ${breakLine}; contenuto da riga ${contentLine}` : `Page break gia vicino alla riga ${breakLine}`);
     setExportOutputs([]);
   }
 

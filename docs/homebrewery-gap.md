@@ -28,7 +28,7 @@ public: false
 - Toolbar preview con pagina corrente/totale, prev/next, input pagina, fit page/fill width e modalita single/facing/flow.
 - Preview multipagina reale da `::pagebreak`, con pagine `page-shell` separate.
 - Indicatore overflow pagine nella toolbar preview, con salto alla prima pagina e selezione della riga da spezzare.
-- Inserimento assistito `::pagebreak` prima del blocco Markdown selezionato.
+- Inserimento assistito `::pagebreak` prima del blocco Markdown selezionato, con marker creato tracciato in editor.
 - Sync editor-preview con toggle, scroll preview dalla linea cursore, range sorgente sui blocchi multi-linea e click preview verso sorgente.
 - Toggle plugin pack manifest nella UI React, con scelta persistente.
 - Import di plugin pack JSON esterni non versionati, con persistenza locale e validazione collisioni.

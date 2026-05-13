@@ -39,7 +39,7 @@ Il server apre `editor-next/` su `http://127.0.0.1:5173/editor-next/` e combina 
 - Controlli preview: desktop/mobile, zoom, toggle preview, fit/fill, pagina corrente/totale, prev/next, input pagina e modalita single/facing/flow.
 - Preview multipagina reale: ogni `::pagebreak` crea una nuova `page-shell` navigabile.
 - Indicatore overflow nella toolbar preview quando una pagina manuale supera il box pagina, con salto alla prima pagina e selezione della riga da spezzare.
-- Comando `Break` per inserire `::pagebreak` prima del blocco Markdown selezionato, utile dopo il salto da overflow.
+- Comando `Break` per inserire `::pagebreak` prima del blocco Markdown selezionato, selezionando il marker creato e indicando la riga del contenuto spostato.
 - Sync preview: toggle `Sync`, scroll preview dalla linea cursore, range sorgente sui blocchi multi-linea e click su preview verso la linea sorgente.
 - Snippet rapidi: scena, readaloud, incontro, tabella e page break.
 - Palette componenti generata da schema con ricerca, gruppi e inserimento al cursore.

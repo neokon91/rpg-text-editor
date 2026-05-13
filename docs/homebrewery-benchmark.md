@@ -50,7 +50,7 @@ Prima tranche preview implementata:
 5. Selettore `single`, `facing` e `flow`.
 6. Test UI su pagina, zoom e navigazione.
 
-Limite noto: la paginazione e ancora manuale tramite `::pagebreak`; la preview ora segnala le pagine in overflow, seleziona la riga sorgente da spezzare e offre inserimento assistito block-aware.
+Limite noto: la paginazione e ancora manuale tramite `::pagebreak`; la preview ora segnala le pagine in overflow, seleziona la riga sorgente da spezzare e offre inserimento assistito block-aware con marker tracciato.
 
 ## Dopo La Preview
 
