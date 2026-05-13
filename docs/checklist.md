@@ -51,6 +51,7 @@ public: false
 - [x] Tema e carta letti dal frontmatter.
 - [x] Verifica visuale automatizzata stabile via browser.
 - [x] Controllo layout PDF/pagine integrato nel flusso editor.
+- [x] Markdown Preview VS Code allineata ai token visuali del template.
 
 ## Componenti e schema
 
@@ -87,7 +88,9 @@ public: false
 - [x] QA PDF disponibile.
 - [x] Pass visuale completo su PDF dopo redesign finale.
 - [x] Template ulteriormente raffinato verso qualita manuale fantasy professionale, con identita visuale originale.
+- [x] Guardrail visuali e licenza per output 5E-compatible originale.
 
 ## Prossimi passi consigliati
 
-1. Preparare commit e PR dell'incremento.
+1. Migliorare UX autore nell'editor locale e nei workflow VS Code.
+2. Rafforzare componenti/statblock verso una resa fantasy professionale originale.
