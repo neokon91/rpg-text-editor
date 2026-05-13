@@ -35,6 +35,7 @@ public: false
 - Inserimento componenti al cursore CodeMirror.
 - Form guidati generati da schema per campi e liste, con preset, rimozione righe e validazione inline dei campi richiesti.
 - Azioni preset rapide sulle card componenti.
+- Filtri rapidi per gruppo nella palette componenti.
 - Navigatore documento da heading Markdown con salto alla riga.
 - Frontmatter visuale compatto per titolo, slug, summary, tema e carta.
 - Tema editoriale originale, senza trade dress Homebrewery/PHB.
@@ -52,7 +53,7 @@ public: false
 1. Paginazione automatica piu evoluta oltre agli split manuali `::pagebreak`.
 2. Sync editor-preview fine: scroll continuo piu preciso tra linee intermedie e blocchi lunghi.
 3. Palette componenti piu ricca: sottopreset, gruppi rapidi e preset estendibili da schema/plugin.
-4. Gruppi rapidi e filtri migliori nella palette componenti.
+4. Workspace persistente per pannelli, filtri palette e stato outline.
 5. Comandi editor da tastiera e toolbar Markdown piu completa.
 6. Test UI per open/save, component insertion, sync preview e export PDF.
 

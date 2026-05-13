@@ -17,6 +17,7 @@ export function ComponentPalette({
   onInsert
 }) {
   const [query, setQuery] = useState("");
+  const [activeGroup, setActiveGroup] = useState("all");
   const [selectedId, setSelectedId] = useState("");
   const [packError, setPackError] = useState("");
   const selectedComponent = useMemo(
@@ -24,11 +25,17 @@ export function ComponentPalette({
     [schema, selectedId]
   );
   const [draftValues, setDraftValues] = useState(null);
+  const componentGroups = useMemo(() => {
+    const groups = new Set((schema.components || []).map((component) => component.group || "Componenti"));
+    return [...groups].sort((a, b) => a.localeCompare(b));
+  }, [schema]);
   const groupedComponents = useMemo(() => {
     const normalized = query.trim().toLowerCase();
     const groups = new Map();
 
     for (const component of schema.components || []) {
+      const group = component.group || "Componenti";
+      if (activeGroup !== "all" && group !== activeGroup) continue;
       const searchable = [
         component.label,
         component.id,
@@ -37,13 +44,12 @@ export function ComponentPalette({
         component.group
       ].join(" ").toLowerCase();
       if (normalized && !searchable.includes(normalized)) continue;
-      const group = component.group || "Componenti";
       if (!groups.has(group)) groups.set(group, []);
       groups.get(group).push(component);
     }
 
     return [...groups.entries()];
-  }, [schema, query]);
+  }, [schema, query, activeGroup]);
 
   return (
     <aside className="component-palette" aria-label="Componenti">
@@ -55,6 +61,14 @@ export function ComponentPalette({
           value={query}
           onChange={(event) => setQuery(event.target.value)}
         />
+        <div className="component-group-filter" aria-label="Filtra gruppi componenti">
+          <button type="button" aria-pressed={activeGroup === "all"} onClick={() => setActiveGroup("all")}>Tutti</button>
+          {componentGroups.map((group) => (
+            <button key={group} type="button" aria-pressed={activeGroup === group} onClick={() => setActiveGroup(group)}>
+              {group}
+            </button>
+          ))}
+        </div>
         {packs.length ? (
           <div className="pack-toggles" aria-label="Plugin pack">
             {packs.map((pack) => (

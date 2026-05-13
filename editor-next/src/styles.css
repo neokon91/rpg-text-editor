@@ -212,6 +212,18 @@ button:disabled {
   max-width: none;
 }
 
+.component-group-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.component-group-filter button {
+  min-height: 24px;
+  padding: 0 7px;
+  font-size: 12px;
+}
+
 .pack-toggles {
   display: grid;
   gap: 5px;

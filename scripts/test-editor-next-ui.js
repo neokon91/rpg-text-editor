@@ -94,6 +94,10 @@ try {
   await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.querySelector('.page-shell h1')?.textContent.toLowerCase().includes('nuova avventura')"));
   await waitFor(() => evalInPage("document.querySelector('select')?.options.length > 1"));
   await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 15"));
+  await clickButton("Media");
+  await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 2"));
+  await clickButton("Tutti");
+  await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 15"));
   await assertEqual(await evalInPage("document.body.textContent.includes('Fazione')"), true, "plugin pack component visible");
   await evalInPage(`
     {
@@ -139,8 +143,9 @@ try {
   await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 15"));
   await clickButton("Combattimento");
   await waitFor(() => evalInPage("window.localStorage.getItem('rpg-text-editor-next:draft')?.includes('Scheggia Astrale')"));
+  await waitFor(() => evalInPage("document.readyState === 'complete' && Boolean(document.querySelector('.next-actions'))"));
 
-  await clickButton("Scena");
+  await clickTopbarButton("Scena");
   await waitFor(() => evalInPage("document.body.textContent.includes('Nuova scena')"));
 
   await assertEqual(await evalInPage("document.body.textContent.includes('Nuova scena')"), true, "outline shows inserted scene");
@@ -219,6 +224,33 @@ async function clickButton(label) {
       button.click();
     }
   `);
+}
+
+async function clickTopbarButton(label) {
+  const result = await evalInPage(`
+    (() => {
+      const buttons = Array.from(document.querySelectorAll('.next-actions > button'));
+      const button = buttons
+        .find((item) => item.textContent.trim() === ${JSON.stringify(label)});
+      if (!button) {
+        return {
+          clicked: false,
+          labels: buttons.map((item) => item.textContent.trim()),
+          allLabels: Array.from(document.querySelectorAll('button')).map((item) => item.textContent.trim()),
+          hasTopbar: Boolean(document.querySelector('.next-actions')),
+          href: window.location.href,
+          readyState: document.readyState,
+          body: document.body.textContent.slice(0, 200),
+          errors: window.__editorNextErrors || []
+        };
+      }
+      button.click();
+      return { clicked: true, labels: buttons.map((item) => item.textContent.trim()) };
+    })()
+  `);
+  if (!result.clicked) {
+    throw new Error(`Topbar button ${label} not found. Topbar: ${result.hasTopbar}. URL: ${result.href}. Ready: ${result.readyState}. Body: ${result.body || "(empty)"}. Errors: ${result.errors.join("; ") || "(none)"}. Available: ${result.labels.join(", ") || "(none)"}. All buttons: ${result.allLabels.join(", ") || "(none)"}`);
+  }
 }
 
 async function clickButtonByAriaLabel(label) {
