@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   applyComponentPreset,
   buildComponentMarkdownFromValues,
@@ -11,13 +11,14 @@ export function ComponentPalette({
   packs = [],
   enabledPackIds = new Set(),
   externalPacks = [],
+  activeGroup = "all",
   onTogglePack,
   onImportExternalPack,
   onRemoveExternalPack,
+  onActiveGroupChange,
   onInsert
 }) {
   const [query, setQuery] = useState("");
-  const [activeGroup, setActiveGroup] = useState("all");
   const [selectedId, setSelectedId] = useState("");
   const [packError, setPackError] = useState("");
   const selectedComponent = useMemo(
@@ -29,6 +30,9 @@ export function ComponentPalette({
     const groups = new Set((schema.components || []).map((component) => component.group || "Componenti"));
     return [...groups].sort((a, b) => a.localeCompare(b));
   }, [schema]);
+  useEffect(() => {
+    if (componentGroups.length && activeGroup !== "all" && !componentGroups.includes(activeGroup)) onActiveGroupChange?.("all");
+  }, [activeGroup, componentGroups, onActiveGroupChange]);
   const groupedComponents = useMemo(() => {
     const normalized = query.trim().toLowerCase();
     const groups = new Map();
@@ -62,9 +66,9 @@ export function ComponentPalette({
           onChange={(event) => setQuery(event.target.value)}
         />
         <div className="component-group-filter" aria-label="Filtra gruppi componenti">
-          <button type="button" aria-pressed={activeGroup === "all"} onClick={() => setActiveGroup("all")}>Tutti</button>
+          <button type="button" aria-pressed={activeGroup === "all"} onClick={() => onActiveGroupChange?.("all")}>Tutti</button>
           {componentGroups.map((group) => (
-            <button key={group} type="button" aria-pressed={activeGroup === group} onClick={() => setActiveGroup(group)}>
+            <button key={group} type="button" aria-pressed={activeGroup === group} onClick={() => onActiveGroupChange?.(group)}>
               {group}
             </button>
           ))}

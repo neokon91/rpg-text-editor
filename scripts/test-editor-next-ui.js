@@ -92,9 +92,20 @@ try {
   await cdp.send("Page.navigate", { url: `${baseUrl}/editor-next/` });
   await waitFor(() => evalInPage("document.readyState === 'complete'"));
   await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.querySelector('.page-shell h1')?.textContent.toLowerCase().includes('nuova avventura')"));
+  await clickTopbarButton("Nascondi preview");
+  await waitFor(() => evalInPage("window.localStorage.getItem('rpg-text-editor-next:preview-visible') === 'false' && !document.querySelector('iframe')"));
+  await reloadPage();
+  await waitFor(() => evalInPage("document.readyState === 'complete'"));
+  await waitFor(() => evalInPage("window.localStorage.getItem('rpg-text-editor-next:preview-visible') === 'false' && !document.querySelector('iframe')"));
+  await clickTopbarButton("Mostra preview");
+  await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.querySelector('.page-shell h1')?.textContent.toLowerCase().includes('nuova avventura')"));
   await waitFor(() => evalInPage("document.querySelector('select')?.options.length > 1"));
   await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 15"));
   await clickButton("Media");
+  await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 2"));
+  await assertEqual(await evalInPage("window.localStorage.getItem('rpg-text-editor-next:component-group')"), "Media", "component group persisted");
+  await reloadPage();
+  await waitFor(() => evalInPage("document.readyState === 'complete'"));
   await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 2"));
   await clickButton("Tutti");
   await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 15"));
@@ -213,6 +224,10 @@ async function evalInPage(expression) {
   });
   if (result.exceptionDetails) throw new Error(result.exceptionDetails.text || "Valutazione browser fallita");
   return result.result?.value;
+}
+
+async function reloadPage() {
+  await cdp.send("Page.reload", { ignoreCache: true });
 }
 
 async function clickButton(label) {

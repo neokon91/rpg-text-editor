@@ -59,6 +59,7 @@ public: false
 - [x] Controllo layout PDF/pagine integrato nel flusso editor.
 - [x] Markdown Preview VS Code allineata ai token visuali del template.
 - [x] Preview locale con zoom persistente e marker `::pagebreak` visibile.
+- [x] Workspace persistente per visibilita preview, zoom, viewport, spread, sync e filtro gruppo componenti.
 - [x] Prima toolbar pagina/spread nella UI React: pagina corrente/totale, prev/next, input pagina, fit page/fill width e modalita single/facing/flow.
 - [x] Preview multipagina reale basata su `::pagebreak`, con una `page-shell` per pagina.
 - [x] Tema originale `modern-5-5` per resa 5.5-compatible piu moderna e pulita.
@@ -108,4 +109,4 @@ public: false
 ## Prossimi passi consigliati
 
 1. Migliorare paginazione automatica oltre agli split manuali `::pagebreak`.
-2. Aggiungere workspace persistenti e rifiniture responsive dei pannelli.
+2. Estendere il workspace persistente a pannelli e stato outline, poi rifinire il responsive.

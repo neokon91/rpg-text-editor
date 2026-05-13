@@ -18,6 +18,7 @@ import "./styles.css";
 
 const enabledPacksStorageKey = "rpg-text-editor:enabled-packs";
 const externalPacksStorageKey = "rpg-text-editor:external-packs";
+const workspaceStoragePrefix = "rpg-text-editor-next";
 
 const starterDocument = `---
 title: Nuova Avventura
@@ -50,11 +51,12 @@ function App() {
   const [externalPacks, setExternalPacks] = useState(() => loadExternalPacks());
   const [schema, setSchema] = useState({ components: [] });
   const [schemaState, setSchemaState] = useState("Caricamento schema");
-  const [previewVisible, setPreviewVisible] = useState(true);
-  const [zoom, setZoom] = useState(() => localStorage.getItem("rpg-text-editor-next:zoom") || "1");
-  const [viewport, setViewport] = useState(() => localStorage.getItem("rpg-text-editor-next:viewport") || "desktop");
-  const [previewSpread, setPreviewSpread] = useState(() => localStorage.getItem("rpg-text-editor-next:preview-spread") || "single");
-  const [syncPreview, setSyncPreview] = useState(() => localStorage.getItem("rpg-text-editor-next:sync-preview") === "true");
+  const [previewVisible, setPreviewVisible] = useState(() => loadBooleanWorkspaceSetting("preview-visible", true));
+  const [zoom, setZoom] = useState(() => localStorage.getItem(`${workspaceStoragePrefix}:zoom`) || "1");
+  const [viewport, setViewport] = useState(() => localStorage.getItem(`${workspaceStoragePrefix}:viewport`) || "desktop");
+  const [previewSpread, setPreviewSpread] = useState(() => localStorage.getItem(`${workspaceStoragePrefix}:preview-spread`) || "single");
+  const [syncPreview, setSyncPreview] = useState(() => loadBooleanWorkspaceSetting("sync-preview", false));
+  const [activeComponentGroup, setActiveComponentGroup] = useState(() => localStorage.getItem(`${workspaceStoragePrefix}:component-group`) || "all");
   const [cursorLine, setCursorLine] = useState(null);
   const [selectedLine, setSelectedLine] = useState(null);
   const [documents, setDocuments] = useState([]);
@@ -115,20 +117,28 @@ function App() {
   }, []);
 
   useEffect(() => {
-    localStorage.setItem("rpg-text-editor-next:zoom", zoom);
+    localStorage.setItem(`${workspaceStoragePrefix}:preview-visible`, previewVisible ? "true" : "false");
+  }, [previewVisible]);
+
+  useEffect(() => {
+    localStorage.setItem(`${workspaceStoragePrefix}:zoom`, zoom);
   }, [zoom]);
 
   useEffect(() => {
-    localStorage.setItem("rpg-text-editor-next:viewport", viewport);
+    localStorage.setItem(`${workspaceStoragePrefix}:viewport`, viewport);
   }, [viewport]);
 
   useEffect(() => {
-    localStorage.setItem("rpg-text-editor-next:preview-spread", previewSpread);
+    localStorage.setItem(`${workspaceStoragePrefix}:preview-spread`, previewSpread);
   }, [previewSpread]);
 
   useEffect(() => {
-    localStorage.setItem("rpg-text-editor-next:sync-preview", syncPreview ? "true" : "false");
+    localStorage.setItem(`${workspaceStoragePrefix}:sync-preview`, syncPreview ? "true" : "false");
   }, [syncPreview]);
+
+  useEffect(() => {
+    localStorage.setItem(`${workspaceStoragePrefix}:component-group`, activeComponentGroup);
+  }, [activeComponentGroup]);
 
   const parsed = useMemo(() => parseFrontmatter(markdown), [markdown]);
   const previewHtml = useMemo(() => {
@@ -384,9 +394,11 @@ function App() {
           packs={componentManifest?.packs || []}
           enabledPackIds={enabledPacks}
           externalPacks={externalPacks}
+          activeGroup={activeComponentGroup}
           onTogglePack={togglePack}
           onImportExternalPack={importExternalPack}
           onRemoveExternalPack={removeExternalPack}
+          onActiveGroupChange={setActiveComponentGroup}
           onInsert={insertMarkdown}
         />
         <MarkdownEditor
@@ -425,6 +437,13 @@ function collectDiagnostics(markdown, schema) {
 }
 
 createRoot(document.querySelector("#root")).render(<App />);
+
+function loadBooleanWorkspaceSetting(key, fallback) {
+  const value = localStorage.getItem(`${workspaceStoragePrefix}:${key}`);
+  if (value === "true") return true;
+  if (value === "false") return false;
+  return fallback;
+}
 
 function loadExternalPacks() {
   try {
