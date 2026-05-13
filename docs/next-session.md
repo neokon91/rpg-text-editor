@@ -55,6 +55,7 @@ Vite + React + CodeMirror 6 + iframe preview
 - Sottogruppi preset visibili sulle card componenti.
 - Preset dichiarati anche da plugin pack versionati.
 - Ricerca palette estesa a label, gruppi e valori dei preset.
+- Shortcut palette: `Ctrl/Cmd+K` focus ricerca, `Escape` pulisce filtro attivo.
 - Filtri rapidi per gruppo disponibili nella palette componenti.
 - Breakpoint desktop compatti per evitare overflow orizzontale dei pannelli.
 - Workspace locale persistente per preview visibile, zoom, viewport, spread, sync e filtro gruppo componenti.
@@ -78,7 +79,7 @@ Vite + React + CodeMirror 6 + iframe preview
 Proseguire con page break piu intelligenti o palette avanzata:
 
 1. Page break: ridurre overflow residuo dopo l'inserimento assistito.
-2. Oppure palette avanzata: categorie preset dedicate e comandi da tastiera.
+2. Oppure palette avanzata: categorie preset dedicate.
 3. Mantenere `npm run test:editor-next-ui` come smoke minimo per ogni tranche.
 
 Poi: rename/delete se confermati.

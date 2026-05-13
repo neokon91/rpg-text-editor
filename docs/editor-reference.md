@@ -51,6 +51,7 @@ Il server apre `editor-next/` su `http://127.0.0.1:5173/editor-next/` e combina 
 - Sottogruppi preset visibili sulle card componenti quando dichiarati nello schema.
 - Preset supportati anche nei plugin pack versionati.
 - Ricerca palette estesa a label, gruppi e valori dei preset.
+- Shortcut palette: `Ctrl/Cmd+K` porta il focus sulla ricerca componenti, `Escape` svuota il filtro attivo.
 - Filtri rapidi per gruppo nella palette componenti.
 - Breakpoint desktop compatti per mantenere palette, editor, preview e documento entro la viewport senza overflow orizzontale.
 - Workspace locale persistente per preview visibile, zoom, viewport, spread, sync e filtro gruppo componenti.

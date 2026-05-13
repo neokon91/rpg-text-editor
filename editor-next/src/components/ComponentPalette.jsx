@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   applyComponentPreset,
   buildComponentMarkdownFromValues,
@@ -21,6 +21,7 @@ export function ComponentPalette({
   const [query, setQuery] = useState("");
   const [selectedId, setSelectedId] = useState("");
   const [packError, setPackError] = useState("");
+  const searchRef = useRef(null);
   const selectedComponent = useMemo(
     () => (schema.components || []).find((component) => component.id === selectedId) || null,
     [schema, selectedId]
@@ -33,6 +34,24 @@ export function ComponentPalette({
   useEffect(() => {
     if (componentGroups.length && activeGroup !== "all" && !componentGroups.includes(activeGroup)) onActiveGroupChange?.("all");
   }, [activeGroup, componentGroups, onActiveGroupChange]);
+  useEffect(() => {
+    function handleShortcut(event) {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        searchRef.current?.focus();
+        searchRef.current?.select();
+        return;
+      }
+
+      if (event.key === "Escape" && document.activeElement === searchRef.current && query) {
+        event.preventDefault();
+        setQuery("");
+      }
+    }
+
+    window.addEventListener("keydown", handleShortcut);
+    return () => window.removeEventListener("keydown", handleShortcut);
+  }, [query]);
   const groupedComponents = useMemo(() => {
     const normalized = query.trim().toLowerCase();
     const groups = new Map();
@@ -61,6 +80,7 @@ export function ComponentPalette({
       <header className="side-panel-header">
         <strong>Componenti</strong>
         <input
+          ref={searchRef}
           type="search"
           placeholder="Cerca"
           value={query}

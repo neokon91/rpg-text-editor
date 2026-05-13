@@ -40,6 +40,7 @@ public: false
 - Sottogruppi preset visibili sulle card componenti.
 - Preset dichiarati anche da plugin pack versionati.
 - Ricerca palette estesa a label, gruppi e valori dei preset.
+- Shortcut palette: `Ctrl/Cmd+K` focus ricerca, `Escape` pulisce filtro attivo.
 - Filtri rapidi per gruppo nella palette componenti.
 - Breakpoint desktop compatti per evitare overflow orizzontale dei pannelli.
 - Workspace locale persistente per preview, zoom, viewport, spread, sync e filtro gruppo componenti.
@@ -60,7 +61,7 @@ public: false
 
 1. Ridurre overflow residuo dopo l'inserimento assistito.
 2. Paginazione automatica piu evoluta oltre agli split manuali `::pagebreak`.
-3. Palette componenti piu ricca: categorie preset dedicate e comandi da tastiera.
+3. Palette componenti piu ricca: categorie preset dedicate.
 4. Rifiniture responsive mobile dei pannelli laterali.
 5. Comandi editor da tastiera e toolbar Markdown piu completa.
 6. Test UI per open/save, component insertion, sync preview e export PDF.

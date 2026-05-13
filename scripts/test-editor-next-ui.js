@@ -116,6 +116,7 @@ try {
   await waitFor(() => evalInPage("Boolean(document.querySelector('.metadata-fields'))"));
   await clickButton("Mostra outline");
   await waitFor(() => evalInPage("Boolean(document.querySelector('.outline-list'))"));
+  await setViewport(1180, 820);
   await waitFor(() => evalInPage("document.querySelector('select')?.options.length > 1"));
   await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 15"));
   await waitFor(() => evalInPage("Array.from(document.querySelectorAll('.component-preset-group-label')).some((node) => node.textContent.trim() === 'Ruolo')"));
@@ -128,10 +129,12 @@ try {
   await clickButton("Tutti");
   await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 15"));
   await assertEqual(await evalInPage("document.body.textContent.includes('Fazione')"), true, "plugin pack component visible");
+  await dispatchDocumentKey("k", { ctrlKey: true });
+  await waitFor(() => evalInPage("document.activeElement === document.querySelector('.component-palette input[type=\"search\"]')"));
   await setComponentSearch("Congrega");
   await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 1 && document.body.textContent.includes('Fazione')"));
   await waitFor(() => evalInPage("document.querySelector('.component-form optgroup[label=\"Tono\"]') || Array.from(document.querySelectorAll('.component-preset-group-label')).some((node) => node.textContent.trim() === 'Tono')"));
-  await setComponentSearch("");
+  await dispatchDocumentKey("Escape");
   await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 15"));
   await waitFor(() => evalInPage("Array.from(document.querySelectorAll('.component-preset-group-label')).some((node) => node.textContent.trim() === 'Tono')"));
   const draftBeforePluginPreset = await evalInPage("window.localStorage.getItem('rpg-text-editor-next:draft')");
@@ -167,6 +170,7 @@ try {
   await assertEqual(await evalInPage("document.querySelector('.external-pack-components')?.textContent.includes('external-relic')"), true, "external pack component preview");
   await clickButtonByAriaLabel("Rimuovi pack External Test Pack");
   await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 15"));
+  await setViewport(800, 600);
 
   await clickButton("Check");
   await waitFor(() => evalInPage("document.body.textContent.includes('Check completo ok')"));
@@ -286,6 +290,21 @@ async function setViewport(width, height) {
     deviceScaleFactor: 1,
     mobile: false
   });
+}
+
+async function dispatchDocumentKey(key, options = {}) {
+  await evalInPage(`
+    {
+      const event = new KeyboardEvent('keydown', {
+        key: ${JSON.stringify(key)},
+        ctrlKey: ${Boolean(options.ctrlKey)},
+        metaKey: ${Boolean(options.metaKey)},
+        bubbles: true,
+        cancelable: true
+      });
+      window.dispatchEvent(event);
+    }
+  `);
 }
 
 async function clickButton(label) {
