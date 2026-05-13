@@ -2,6 +2,7 @@ export function renderPreviewDocument(metadata, content, options = {}) {
   const theme = metadata.theme || "classic-parchment";
   const paper = String(metadata.paper || "A4").toLowerCase();
   const title = metadata.title || "Anteprima";
+  const pages = splitPreviewPages(content);
   const documentClass = [
     "homebrew-document",
     `theme-${theme}`,
@@ -19,8 +20,23 @@ export function renderPreviewDocument(metadata, content, options = {}) {
       html, body { min-height: 100%; }
       body { background: #1c1510; padding: 24px; }
       body { zoom: var(--rpg-preview-zoom, 1); }
-      .page-shell { min-height: 260mm; }
-      body[data-spread="facing"] .page-shell { margin-inline: auto; }
+      .preview-pages {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 24px;
+      }
+      .page-shell {
+        min-height: 260mm;
+        margin: 0;
+        scroll-margin-top: 1.5rem;
+      }
+      body[data-spread="facing"] .preview-pages,
+      body[data-spread="flow"] .preview-pages {
+        flex-flow: row wrap;
+        align-items: flex-start;
+        justify-content: center;
+      }
       body[data-spread="flow"] .page-shell { min-height: auto; overflow: visible; }
       .page-break {
         height: auto;
@@ -41,6 +57,7 @@ export function renderPreviewDocument(metadata, content, options = {}) {
       }
       body.preview-mobile { padding: 0; }
       body.preview-mobile .page-shell { width: 390px; max-width: 100%; }
+      body.preview-mobile .preview-pages { gap: 0; }
       [data-source-line] { cursor: pointer; }
       [data-source-line]:hover { outline: 2px solid rgba(31, 111, 120, 0.35); outline-offset: 3px; }
       @media screen and (max-width: 760px) {
@@ -49,8 +66,10 @@ export function renderPreviewDocument(metadata, content, options = {}) {
     </style>
   </head>
   <body class="${escapeHtml(`${documentClass} ${options.viewport === "mobile" ? "preview-mobile" : ""}`.trim())}">
-    <main class="page-shell">
-${content}
+    <main class="preview-pages" aria-label="Pagine anteprima">
+${pages.map((page, index) => `      <section class="page-shell" data-preview-page="${index + 1}">
+${page}
+      </section>`).join("\n")}
     </main>
     <script>
       document.addEventListener("click", function(event) {
@@ -62,6 +81,13 @@ ${content}
     </script>
   </body>
 </html>`;
+}
+
+function splitPreviewPages(content) {
+  const pages = String(content)
+    .split(/<div class="page-break"[^>]*><\/div>/g)
+    .map((page) => page.trim());
+  return pages.length ? pages : [""];
 }
 
 function escapeHtml(value) {

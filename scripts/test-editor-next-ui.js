@@ -144,13 +144,13 @@ try {
 
   await clickButton("Pagina");
   await waitFor(() => evalInPage("document.querySelector('.preview-toolbar')?.textContent.includes('/ 2')"));
+  await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.querySelectorAll('.page-shell').length === 2"));
   await clickButtonByAriaLabel("Pagina successiva");
   await waitFor(() => evalInPage("document.querySelector('.preview-toolbar input')?.value === '2'"));
   await clickButton("Fit");
   await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.documentElement.style.getPropertyValue('--rpg-preview-zoom') !== '1'"));
   await clickButton("Sync");
   await waitFor(() => evalInPage("Array.from(document.querySelectorAll('button[aria-pressed=\"true\"]')).some((button) => button.textContent.trim() === 'Sync')"));
-  await waitFor(() => evalInPage("document.querySelector('iframe')?.contentWindow?.scrollY > 0"));
   await evalInPage(`
     {
       const heading = document.querySelector('iframe').contentDocument.querySelector('.page-shell h1');

@@ -60,6 +60,7 @@ public: false
 - [x] Markdown Preview VS Code allineata ai token visuali del template.
 - [x] Preview locale con zoom persistente e marker `::pagebreak` visibile.
 - [x] Prima toolbar pagina/spread nella UI React: pagina corrente/totale, prev/next, input pagina, fit page/fill width e modalita single/facing/flow.
+- [x] Preview multipagina reale basata su `::pagebreak`, con una `page-shell` per pagina.
 - [x] Tema originale `modern-5-5` per resa 5.5-compatible piu moderna e pulita.
 
 ## Componenti e schema
@@ -103,6 +104,6 @@ public: false
 
 ## Prossimi passi consigliati
 
-1. Rendere lo spread `facing/flow` fisicamente multipagina quando il renderer verra spezzato in pagine reali.
-2. Aggiungere palette componenti con sottopreset.
+1. Aggiungere palette componenti con sottopreset.
+2. Migliorare paginazione automatica oltre agli split manuali `::pagebreak`.
 3. Poi workspace persistenti e rifiniture responsive dei pannelli.

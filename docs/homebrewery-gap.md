@@ -26,6 +26,7 @@ public: false
 - Export HTML/PDF dal flusso locale.
 - Snippet rapidi per blocchi frequenti.
 - Toolbar preview con pagina corrente/totale, prev/next, input pagina, fit page/fill width e modalita single/facing/flow.
+- Preview multipagina reale da `::pagebreak`, con pagine `page-shell` separate.
 - Sync editor-preview base con toggle, scroll preview dalla linea cursore e click preview verso sorgente.
 - Toggle plugin pack manifest nella UI React, con scelta persistente.
 - Import di plugin pack JSON esterni non versionati, con persistenza locale e validazione collisioni.
@@ -46,7 +47,7 @@ public: false
 
 ## Gap Prioritari
 
-1. Renderer multipagina reale: rendere `single/facing/flow` basati su pagine separate, non solo marker `::pagebreak` navigabili.
+1. Paginazione automatica piu evoluta oltre agli split manuali `::pagebreak`.
 2. Sync editor-preview fine: scroll continuo piu preciso tra linee intermedie e blocchi lunghi.
 3. Palette componenti piu ricca: sottopreset, gruppi rapidi e preset estendibili da schema/plugin.
 4. Anteprima componenti dei pack esterni e reset storage dedicato.

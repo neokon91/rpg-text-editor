@@ -44,6 +44,7 @@ Vite + React + CodeMirror 6 + iframe preview
 - Benchmark Homebrewery verificato in `docs/homebrewery-benchmark.md`: upstream e `naturalcrit/homebrewery`, V3 non e una codebase separata, e la priorita comparativa ora e la toolbar preview pagina/spread.
 - Form componenti gia portati oltre il base: preset schema-driven, rimozione righe lista e validazione inline dei campi richiesti.
 - Prima toolbar preview implementata: pagina corrente/totale, prev/next, input pagina, fit/fill e selettore single/facing/flow.
+- Preview multipagina reale implementata per `::pagebreak`: ogni pagina e una `page-shell` separata.
 - Sync editor-preview base implementato: toggle `Sync`, preview segue la linea cursore e il click preview seleziona la sorgente.
 - Plugin pack manifest attivabili/disattivabili dalla palette componenti, con scelta persistente.
 - Pack JSON esterni importabili e rimovibili dalla palette componenti, con persistenza locale e validazione collisioni.
@@ -63,10 +64,10 @@ Vite + React + CodeMirror 6 + iframe preview
 
 ## Primo Task Consigliato
 
-Proseguire con renderer multipagina reale o palette avanzata:
+Proseguire con palette avanzata o paginazione automatica:
 
-1. Renderer multipagina reale: spezzare la preview in pagine navigabili, preparando `single/facing/flow` veri.
-2. Oppure palette avanzata: sottopreset, gruppi rapidi e anteprima componenti dei pack esterni.
+1. Palette avanzata: sottopreset, gruppi rapidi e anteprima componenti dei pack esterni.
+2. Oppure paginazione automatica: stimare overflow e suggerire/gestire page break oltre agli split manuali.
 3. Mantenere `npm run test:editor-next-ui` come smoke minimo per ogni tranche.
 
 Poi: sync fine su scroll continuo, palette con sottopreset, rename/delete se confermati.

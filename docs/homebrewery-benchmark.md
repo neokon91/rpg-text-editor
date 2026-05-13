@@ -43,19 +43,19 @@ public: false
 
 Prima tranche preview implementata:
 
-1. Marker pagina basati su `.page-shell` e `.page-break`.
+1. Pagine reali basate su `.page-shell`, generate da `::pagebreak`.
 2. Stato pagina corrente e totale pagine.
 3. Comandi pagina precedente/successiva.
 4. Zoom `fit page` e `fill width`, oltre allo zoom percentuale.
 5. Selettore `single`, `facing` e `flow`.
 6. Test UI su pagina, zoom e navigazione.
 
-Limite noto: `facing/flow` sono modalita preparatorie; lo spread diventera pienamente equivalente al benchmark quando il renderer produrra pagine separate.
+Limite noto: la paginazione e ancora manuale tramite `::pagebreak`; lo step successivo e stimare overflow o suggerire split automatici.
 
 ## Dopo La Preview
 
 - Sync editor-preview base completato: toggle, scroll preview dalla linea cursore e click preview verso editor.
-- Renderer multipagina reale per spread affiancato/flusso.
+- Paginazione automatica o assistita oltre agli split manuali.
 - Sync fine su scroll continuo e blocchi lunghi.
 - Palette componenti con sottopreset e gruppi piu ricchi.
 - Anteprima componenti dei pack esterni e gestione storage dedicata.

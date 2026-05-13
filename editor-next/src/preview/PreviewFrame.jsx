@@ -31,9 +31,7 @@ export function PreviewFrame({
   const readPageMarkers = useCallback(() => {
     const doc = frame.current?.contentDocument;
     if (!doc) return [];
-    const shell = doc.querySelector(".page-shell");
-    const breaks = [...doc.querySelectorAll(".page-break")];
-    return [shell, ...breaks].filter(Boolean).map((node, index) => ({
+    return [...doc.querySelectorAll(".page-shell")].map((node, index) => ({
       index: index + 1,
       top: node.offsetTop
     }));
