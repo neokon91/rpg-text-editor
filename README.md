@@ -22,6 +22,7 @@ npm run check:components
 npm run check:documents
 npm run check:schema-artifacts
 npm run test:rendering
+npm run test:editor-ui
 npm run check
 npm run generate:schema-artifacts
 npm run new -- adventure "La Torre Sommersa"
@@ -47,6 +48,7 @@ npm run editor
 - `npm run check:documents` valida i blocchi `:::` in `docs/` contro lo schema componenti.
 - `npm run check:schema-artifacts` verifica che reference e snippet generati siano aggiornati.
 - `npm run test:rendering` costruisce una fixture HTML e verifica il rendering strutturato di componenti core e plugin pack.
+- `npm run test:editor-ui` avvia editor e browser headless, poi verifica palette, toolbar, dialog, rename/delete e validazione.
 - `npm run check` esegue controlli legali/editoriali, asset, include, componenti, documenti, artefatti schema e rendering.
 - `npm run generate:schema-artifacts` rigenera `docs/reference.md` e `.vscode/rpg.schema.code-snippets` dallo schema componenti.
 - `npm run new -- adventure "Titolo"` crea un nuovo documento da template. Tipi disponibili: `adventure`, `bestiary`, `item`, `reference`.
@@ -57,7 +59,7 @@ npm run editor
 
 ## Authoring in VS Code
 
-Per il flusso pratico completo vedi `docs/authoring.md`. Per lo stato della UI vedi `docs/editor-reference.md`; per priorita e QA usa `docs/checklist.md`.
+Per il flusso pratico completo vedi `docs/authoring.md`. Per creare pack componenti vedi `docs/plugin-packs.md`. Per lo stato della UI vedi `docs/editor-reference.md`; per priorita e QA usa `docs/checklist.md`.
 
 ## Editor UI
 
@@ -69,13 +71,15 @@ npm run editor
 
 L'editor mantiene il Markdown come sorgente primaria, salva bozze in `localStorage` e inserisce blocchi `:::` compatibili con la build. La palette componenti non usa un registry JavaScript hardcoded: viene generata dal manifest `schemas/components.json`, che aggrega lo schema core in `schemas/core/components.json` e i plugin pack abilitati. Il pannello preview segnala in tempo reale componenti sconosciuti, campi obbligatori mancanti, chiavi non previste e liste malformate.
 
-Il pannello Markdown include un form per i metadati principali del frontmatter e una toolbar rapida per heading, enfasi, liste, readaloud e page break. Ogni controllo aggiorna il sorgente Markdown visibile, senza introdurre un formato proprietario. La preview usa un iframe con `styles/main.css`, `page-shell`, tema e formato carta del frontmatter, cosi resta molto piu vicina alla resa HTML/PDF finale.
+Il pannello Markdown include un form per i metadati principali del frontmatter e una toolbar rapida per heading, enfasi, liste, tabelle, readaloud, callout, immagini, include e page break. Ogni controllo aggiorna il sorgente Markdown visibile, senza introdurre un formato proprietario. La preview usa un iframe con `styles/main.css`, `page-shell`, tema e formato carta del frontmatter, cosi resta molto piu vicina alla resa HTML/PDF finale.
 
 Dal server locale dell'editor puoi aprire documenti Markdown esistenti da `docs/` e salvare la bozza corrente direttamente come file `.md` in `docs/`. Il salvataggio usa lo `slug` del frontmatter, il primo H1 o un fallback normalizzato. L'editor tiene traccia del file corrente, segnala modifiche non salvate, chiede conferma prima di cambiare documento e distingue tra overwrite del file aperto e creazione di una nuova copia.
 
 I plugin pack vivono in `schemas/plugins/<pack-id>/pack.json` e dichiarano nome, versione, compatibilita e componenti esportati. `npm run check:components` valida campi obbligatori e collisioni di `id`/`container`.
 
 Nel pannello componenti dell'editor puoi attivare o disattivare i pack dichiarati nel manifest. La scelta resta locale in `localStorage`: build, check e artefatti generati continuano a usare il manifest versionato.
+
+Puoi anche caricare un `pack.json` esterno dal pannello componenti per provarlo nella sessione corrente dell'editor. Il file viene letto dal browser, resta non versionato e non modifica `schemas/components.json`; per renderlo stabile va aggiunto al manifest e validato con `npm run check:components`.
 
 `npm run generate:schema-artifacts` usa lo stesso manifest per rigenerare la reference componenti e gli snippet rapidi in `.vscode/rpg.schema.code-snippets`. `npm run check:schema-artifacts` fallisce se questi file non sono allineati allo schema.
 

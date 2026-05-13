@@ -1,5 +1,5 @@
 import { createServer } from "node:http";
-import { readFile, readdir, stat, writeFile } from "node:fs/promises";
+import { readFile, readdir, rename, stat, unlink, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { basename, extname, join, normalize, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -64,6 +64,45 @@ async function handleDocumentsApi(request, response, url) {
     const filename = safeMarkdownFilename(decodeURIComponent(url.pathname.replace("/api/documents/", "")));
     const content = await readFile(join(docsDir, filename), "utf8");
     sendJson(response, { filename, content });
+    return;
+  }
+
+  if (request.method === "PUT" && url.pathname.startsWith("/api/documents/")) {
+    const filename = safeMarkdownFilename(decodeURIComponent(url.pathname.replace("/api/documents/", "")));
+    const payload = JSON.parse(await readRequestBody(request));
+    const nextFilename = safeMarkdownFilename(payload.filename || "");
+    const sourcePath = join(docsDir, filename);
+    const targetPath = join(docsDir, nextFilename);
+
+    if (!existsSync(sourcePath)) {
+      response.writeHead(404, { "content-type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({ error: "File not found", filename }));
+      return;
+    }
+
+    if (filename !== nextFilename && existsSync(targetPath)) {
+      response.writeHead(409, { "content-type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({ error: "File already exists", filename: nextFilename }));
+      return;
+    }
+
+    if (filename !== nextFilename) await rename(sourcePath, targetPath);
+    sendJson(response, { filename: nextFilename });
+    return;
+  }
+
+  if (request.method === "DELETE" && url.pathname.startsWith("/api/documents/")) {
+    const filename = safeMarkdownFilename(decodeURIComponent(url.pathname.replace("/api/documents/", "")));
+    const filePath = join(docsDir, filename);
+
+    if (!existsSync(filePath)) {
+      response.writeHead(404, { "content-type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({ error: "File not found", filename }));
+      return;
+    }
+
+    await unlink(filePath);
+    sendJson(response, { filename });
     return;
   }
 

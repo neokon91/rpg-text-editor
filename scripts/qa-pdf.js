@@ -7,12 +7,32 @@ import { spawn } from "node:child_process";
 const root = resolve(fileURLToPath(new URL("..", import.meta.url)));
 const pdfPath = join(root, "dist", "book", "santuario-sepolto-book.pdf");
 const qaDir = join(root, "dist", "qa", "pdf");
-const dpi = 150;
+const dpi = Number(process.env.PDF_QA_DPI || 96);
+const rasterPdf = process.env.PDF_QA_RASTER === "1";
 
 async function main() {
   await run(process.execPath, [join(root, "scripts", "build.js"), "--book", "--pdf"], root);
   await rm(qaDir, { recursive: true, force: true });
   await mkdir(qaDir, { recursive: true });
+
+  if (!rasterPdf) {
+    const manifest = analyzePdfStructure(await readFile(pdfPath), pdfPath);
+    const findings = analyzeStructuralManifest(manifest);
+    await writeFile(join(qaDir, "manifest.json"), `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
+    await writeFile(join(qaDir, "index.html"), renderStructuralReport(manifest), "utf8");
+
+    console.log(`PDF QA: ${manifest.pages.length} pagine ispezionate.`);
+    console.log(`Report: ${relative(root, join(qaDir, "index.html"))}`);
+
+    if (findings.length) {
+      for (const finding of findings) {
+        console.log(`ERRORE ${finding}`);
+      }
+      process.exit(1);
+    }
+
+    return;
+  }
 
   const tempDir = await mkdtemp(join(tmpdir(), "rpg-pdf-qa-"));
   const swiftPath = join(tempDir, "render-pdf.swift");
@@ -37,6 +57,110 @@ async function main() {
     }
     process.exit(1);
   }
+}
+
+function analyzePdfStructure(buffer, source) {
+  const text = buffer.toString("latin1");
+  const objects = [...text.matchAll(/\d+\s+\d+\s+obj\b[\s\S]*?\bendobj\b/g)]
+    .map((match) => match[0])
+    .filter((object) => /\/Type\s*\/Page(?!s)\b/.test(object));
+
+  const pages = objects.map((object, index) => {
+    const mediaBox = parseMediaBox(object.match(/\/MediaBox\s*\[([^\]]+)\]/)?.[1] || "");
+    return {
+      page: index + 1,
+      widthPt: mediaBox.width,
+      heightPt: mediaBox.height,
+      hasContents: /\/Contents\b/.test(object)
+    };
+  });
+
+  return {
+    source,
+    fileSize: buffer.length,
+    mode: "structure",
+    pages,
+    streamCount: (text.match(/\bstream\r?\n/g) || []).length
+  };
+}
+
+function parseMediaBox(raw) {
+  const [left, bottom, right, top] = raw.trim().split(/\s+/).map(Number);
+  if ([left, bottom, right, top].some((value) => !Number.isFinite(value))) {
+    return { width: 0, height: 0 };
+  }
+
+  return {
+    width: Math.abs(right - left),
+    height: Math.abs(top - bottom)
+  };
+}
+
+function analyzeStructuralManifest(manifest) {
+  const findings = [];
+  const expectedWidth = 595;
+  const expectedHeight = 842;
+  const tolerance = 3;
+
+  if (!manifest.pages.length) {
+    findings.push("nessuna pagina PDF trovata.");
+  }
+
+  if (manifest.fileSize < 10000) {
+    findings.push("PDF troppo piccolo, possibile export vuoto.");
+  }
+
+  if (manifest.streamCount < manifest.pages.length) {
+    findings.push("stream PDF insufficienti rispetto al numero di pagine.");
+  }
+
+  for (const page of manifest.pages) {
+    if (Math.abs(page.widthPt - expectedWidth) > tolerance || Math.abs(page.heightPt - expectedHeight) > tolerance) {
+      findings.push(`pagina ${page.page} non A4: ${Math.round(page.widthPt)} x ${Math.round(page.heightPt)} pt.`);
+    }
+
+    if (!page.hasContents) {
+      findings.push(`pagina ${page.page} senza stream contenuto.`);
+    }
+  }
+
+  return findings;
+}
+
+function renderStructuralReport(manifest) {
+  const rows = manifest.pages.map((page) => [
+    "<tr>",
+    `<td>${page.page}</td>`,
+    `<td>${Math.round(page.widthPt)} x ${Math.round(page.heightPt)} pt</td>`,
+    `<td>${page.hasContents ? "ok" : "manca"}</td>`,
+    "</tr>"
+  ].join("")).join("\n");
+
+  return [
+    "<!doctype html>",
+    '<html lang="it">',
+    "<head>",
+    '<meta charset="utf-8">',
+    '<meta name="viewport" content="width=device-width, initial-scale=1">',
+    "<title>PDF QA</title>",
+    "<style>",
+    "body{margin:0;background:#242424;color:#eee;font-family:system-ui,sans-serif}",
+    "main{max-width:920px;margin:0 auto;padding:1.25rem}",
+    "table{width:100%;border-collapse:collapse;background:#333;border:1px solid #555}",
+    "th,td{padding:.65rem;border-bottom:1px solid #555;text-align:left}",
+    "p{color:#bbb}",
+    "</style>",
+    "</head>",
+    "<body>",
+    "<main>",
+    "<h1>PDF QA</h1>",
+    `<p>${manifest.pages.length} pagine · ${(manifest.fileSize / 1024 / 1024).toFixed(1)} MB · ${manifest.streamCount} stream · ${escapeHtml(manifest.source)}</p>`,
+    "<table><thead><tr><th>Pagina</th><th>Formato</th><th>Contenuto</th></tr></thead>",
+    `<tbody>${rows}</tbody></table>`,
+    "</main>",
+    "</body>",
+    "</html>"
+  ].join("\n");
 }
 
 function swiftRenderer() {

@@ -18,7 +18,7 @@ table {
 
 thead {
   background:
-    linear-gradient(90deg, var(--color-accent-dark), var(--color-accent));
+    linear-gradient(90deg, var(--color-plum), var(--color-verdigris));
   color: white;
 }
 

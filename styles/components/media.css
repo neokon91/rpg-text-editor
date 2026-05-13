@@ -24,7 +24,7 @@
   border: 1px solid rgba(122, 87, 35, 0.38);
   border-radius: 4px;
   background:
-    linear-gradient(135deg, rgba(255, 246, 219, 0.92), rgba(226, 203, 150, 0.7)),
+    linear-gradient(135deg, rgba(255, 246, 219, 0.92), rgba(54, 113, 107, 0.12)),
     #ead29c;
 }
 
@@ -46,7 +46,7 @@
   font-family: var(--font-heading);
   font-size: 0.78rem;
   font-weight: 700;
-  letter-spacing: 0.06em;
+  letter-spacing: 0;
   text-transform: uppercase;
 }
 

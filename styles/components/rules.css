@@ -1,13 +1,13 @@
 .rules-card {
   position: relative;
   margin: 1.4rem 0;
-  padding: 1rem 1.1rem;
+  padding: 1rem 1.1rem 1.05rem;
   border: 1px solid rgba(122, 87, 35, 0.35);
-  border-top: 5px solid var(--color-border);
+  border-top: 5px solid var(--color-verdigris);
   border-radius: 3px;
   background:
-    linear-gradient(90deg, rgba(255, 255, 255, 0.62), rgba(255, 255, 255, 0.4)),
-    radial-gradient(circle at 100% 0, rgba(176, 138, 60, 0.13), transparent 22%),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.66), rgba(255, 255, 255, 0.42)),
+    radial-gradient(circle at 100% 0, rgba(54, 113, 107, 0.13), transparent 23%),
     linear-gradient(135deg, var(--color-paper-light), var(--color-paper));
   box-shadow:
     var(--shadow-box),
@@ -26,7 +26,7 @@
 .rules-card h3,
 .random-table h3 {
   margin: 0 0 0.45rem;
-  color: var(--color-accent-dark);
+  color: var(--color-plum);
 }
 
 .rules-card__label,
@@ -37,11 +37,11 @@
   background: rgba(255, 255, 255, 0.35);
   border: 1px solid rgba(122, 87, 35, 0.18);
   border-radius: 3px;
-  color: var(--color-border);
+  color: var(--color-verdigris);
   font-family: var(--font-heading);
   font-size: 0.74rem;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0;
   text-transform: uppercase;
 }
 
@@ -58,7 +58,7 @@
 }
 
 .location {
-  border-top-color: var(--color-border);
+  border-top-color: var(--color-verdigris);
 }
 
 .hazard {
@@ -68,7 +68,7 @@
 .rules-line {
   margin-bottom: 0.28rem;
   padding-left: 0.6rem;
-  border-left: 2px solid rgba(122, 87, 35, 0.22);
+  border-left: 2px solid rgba(54, 113, 107, 0.24);
 }
 
 .feature-heading {
@@ -84,11 +84,11 @@
   margin: 1.5rem 0;
   padding: 0.9rem 1rem 1rem;
   border: 1px solid rgba(122, 87, 35, 0.35);
-  border-left: 6px solid var(--color-green);
+  border-left: 6px solid var(--color-verdigris);
   border-radius: 3px;
   background:
     linear-gradient(90deg, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.42)),
-    radial-gradient(circle at 95% 8%, rgba(38, 79, 61, 0.14), transparent 24%),
+    radial-gradient(circle at 95% 8%, rgba(54, 113, 107, 0.16), transparent 24%),
     linear-gradient(135deg, var(--color-paper-light), var(--color-paper));
   box-shadow: var(--shadow-box);
 }
@@ -117,11 +117,12 @@
 }
 
 .book-cover {
+  position: relative;
   display: grid;
   min-height: 245mm;
-  align-content: center;
-  gap: 1rem;
-  padding: 14mm 6mm;
+  align-content: stretch;
+  gap: 1.05rem;
+  padding: 13mm 8mm;
   text-align: center;
   break-after: page;
 }
@@ -130,7 +131,8 @@
   margin: 0 auto;
   max-width: 14ch;
   border-bottom: 0;
-  font-size: 3.4rem;
+  font-size: 3.28rem;
+  letter-spacing: 0;
 }
 
 .book-kicker,
@@ -140,7 +142,7 @@
   font-family: var(--font-heading);
   font-size: 0.9rem;
   font-weight: 700;
-  letter-spacing: 0.12em;
+  letter-spacing: 0;
   text-transform: uppercase;
 }
 
@@ -150,6 +152,28 @@
   color: var(--color-muted);
   font-size: 1.12rem;
   font-style: italic;
+}
+
+.book-cover__frame {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: 0.78rem;
+  min-height: 220mm;
+  padding: 58mm 10mm 12mm;
+  border: 1px solid rgba(111, 84, 40, 0.34);
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.36), rgba(255, 255, 255, 0.18)),
+    radial-gradient(circle at 50% 18%, rgba(54, 113, 107, 0.14), transparent 32%),
+    radial-gradient(circle at 50% 86%, rgba(140, 47, 43, 0.12), transparent 34%);
+}
+
+.book-mark {
+  width: 4.8rem;
+  height: 0.32rem;
+  margin: 0 auto;
+  background:
+    linear-gradient(90deg, transparent, var(--color-verdigris), var(--color-gold), var(--color-accent), transparent);
 }
 
 .book-toc {

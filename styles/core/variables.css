@@ -3,20 +3,23 @@
   --page-padding: 18mm;
   --content-width: calc(var(--page-width) - (var(--page-padding) * 2));
 
-  --color-ink: #2a1d14;
-  --color-muted: #5a4636;
-  --color-paper: #f6e7c8;
-  --color-paper-light: #fff5d8;
-  --color-rule: #d1b16a;
-  --color-accent: #7f1d1d;
-  --color-accent-dark: #4a1111;
-  --color-gold: #a97d2d;
-  --color-border: #7a5723;
-  --color-green: #264f3d;
-  --color-blue: #243e63;
+  --color-ink: #241f1b;
+  --color-muted: #625c53;
+  --color-paper: #f2e4c6;
+  --color-paper-light: #fff8e2;
+  --color-rule: #bfa05a;
+  --color-accent: #8c2f2b;
+  --color-accent-dark: #4b1716;
+  --color-gold: #a77c2f;
+  --color-border: #6f5428;
+  --color-green: #255948;
+  --color-blue: #274d70;
+  --color-verdigris: #36716b;
+  --color-plum: #4a314f;
+  --color-wash: rgba(255, 255, 255, 0.56);
 
   --shadow-page: 0 0 40px rgba(0, 0, 0, 0.45);
-  --shadow-box: 0 4px 14px rgba(0, 0, 0, 0.18);
+  --shadow-box: 0 7px 18px rgba(42, 31, 22, 0.16);
 
   --font-body: "Alegreya", Georgia, "Times New Roman", serif;
   --font-heading: "Cinzel", Georgia, "Times New Roman", serif;

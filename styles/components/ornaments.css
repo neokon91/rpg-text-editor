@@ -7,10 +7,10 @@
 .page-shell::after,
 .markdown-body::after {
   background:
-    var(--svg-page-corner) top left / 26mm 26mm no-repeat,
-    var(--svg-page-corner) top right / 26mm 26mm no-repeat,
-    var(--svg-page-corner) bottom left / 26mm 26mm no-repeat,
-    var(--svg-page-corner) bottom right / 26mm 26mm no-repeat;
+    var(--svg-page-corner) top left / 12mm 12mm no-repeat,
+    var(--svg-page-corner) top right / 12mm 12mm no-repeat,
+    var(--svg-page-corner) bottom left / 12mm 12mm no-repeat,
+    var(--svg-page-corner) bottom right / 12mm 12mm no-repeat;
 }
 
 .page-shell::after {
@@ -43,12 +43,17 @@
 
 .book-cover::before {
   content: "";
+  position: absolute;
+  top: 26mm;
+  left: 50%;
+  z-index: 2;
   display: block;
   width: 6.8rem;
   height: 6.8rem;
-  margin: 0 auto 0.8rem;
+  margin: 0;
   background: var(--svg-book-seal) center / contain no-repeat;
   opacity: 0.92;
+  transform: translateX(-50%);
 }
 
 .book-toc::before,

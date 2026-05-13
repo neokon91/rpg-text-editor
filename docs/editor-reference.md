@@ -30,6 +30,8 @@ L'editor locale si apre su `http://127.0.0.1:8082`. Il Markdown resta il sorgent
 - `Apri documento` importa file Markdown da `docs/`.
 - `Salva` sovrascrive il file corrente, se esiste.
 - `Salva nuovo` crea una copia con nome unico, evitando overwrite accidentali.
+- `Rinomina` cambia nome al file Markdown corrente in `docs/`.
+- `Elimina` rimuove il file Markdown corrente da `docs/` dopo conferma.
 - `Scarica .md` esporta il Markdown corrente dal browser.
 - `Copia Markdown` mette il sorgente negli appunti.
 
@@ -59,7 +61,11 @@ La toolbar Markdown copre:
 - grassetto;
 - corsivo;
 - lista;
+- tabella Markdown;
 - readaloud;
+- callout nota;
+- immagine;
+- include riusabile;
 - page break.
 
 La palette componenti e generata da `schemas/components.json`, schema core e plugin pack abilitati.
@@ -67,6 +73,8 @@ La palette componenti e generata da `schemas/components.json`, schema core e plu
 ## Plugin pack
 
 Il pannello componenti mostra i pack dichiarati nel manifest. La selezione e locale in `localStorage`: disattivare un pack rimuove i componenti dalla palette editor e fa emergere diagnostiche sui blocchi gia presenti. Build, check e artefatti generati continuano a usare il manifest versionato.
+
+Il pannello permette anche di caricare un `pack.json` esterno non versionato. Il pack resta attivo solo nella sessione editor corrente e puo essere rimosso con `Rimuovi esterni`; per renderlo parte della suite va dichiarato nel manifest schema.
 
 ## Preview
 
@@ -97,7 +105,4 @@ npm run check
 ## Limiti noti
 
 - La preview e fedele agli stili finali, ma non sostituisce `npm run qa:pdf` per controllo pagina e sovrapposizioni.
-- Rename e delete dei documenti non sono ancora implementati.
-- Le conferme usano dialoghi browser nativi.
-- La toolbar e volutamente essenziale.
 - I componenti sono vicini a convenzioni 5e/5.5e, ma mantengono identita visuale originale.

@@ -22,6 +22,8 @@
           <button id="download-markdown" type="button">Scarica .md</button>
           <button id="save-document" type="button">Salva</button>
           <button id="save-copy" type="button">Salva nuovo</button>
+          <button id="rename-document" type="button">Rinomina</button>
+          <button id="delete-document" type="button">Elimina</button>
         </div>
       </header>
 
@@ -35,6 +37,14 @@
             <section class="pack-panel" aria-label="Plugin pack">
               <h3>Plugin pack</h3>
               <div id="pack-list" class="pack-list"></div>
+              <div class="external-pack-panel">
+                <label class="external-pack-upload">
+                  <span>Pack esterno</span>
+                  <input id="external-pack-input" type="file" accept="application/json,.json">
+                </label>
+                <button id="clear-external-packs" type="button">Rimuovi esterni</button>
+                <p id="external-pack-status" class="pack-empty">Nessun pack esterno caricato.</p>
+              </div>
             </section>
             <div id="component-list" class="component-list"></div>
           </div>
@@ -103,7 +113,11 @@
             <button type="button" data-action="bold">B</button>
             <button type="button" data-action="italic">I</button>
             <button type="button" data-action="list">Lista</button>
+            <button type="button" data-action="table">Tabella</button>
             <button type="button" data-action="readaloud">Readaloud</button>
+            <button type="button" data-action="callout">Callout</button>
+            <button type="button" data-action="image">Immagine</button>
+            <button type="button" data-action="include">Include</button>
             <button type="button" data-action="pagebreak">Pagina</button>
           </div>
           <textarea id="markdown-input" spellcheck="true"></textarea>
@@ -135,6 +149,24 @@
         <footer class="dialog-actions">
           <button value="cancel" type="submit">Annulla</button>
           <button id="insert-component" value="default" type="button">Inserisci</button>
+        </footer>
+      </form>
+    </dialog>
+
+    <dialog id="modal-dialog" class="modal-dialog">
+      <form method="dialog">
+        <header class="dialog-header">
+          <div>
+            <h2 id="modal-title">Conferma</h2>
+            <p id="modal-message"></p>
+          </div>
+        </header>
+        <div class="modal-body">
+          <input id="modal-input" type="text" hidden>
+        </div>
+        <footer class="dialog-actions">
+          <button id="modal-cancel" value="cancel" type="button">Annulla</button>
+          <button id="modal-confirm" value="default" type="button">Conferma</button>
         </footer>
       </form>
     </dialog>
