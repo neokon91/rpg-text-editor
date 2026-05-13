@@ -1,14 +1,17 @@
 .theme-classic-parchment {
-  --color-ink: #2a1d14;
-  --color-muted: #5a4636;
-  --color-paper: #f6e7c8;
-  --color-paper-light: #fff5d8;
-  --color-accent: #7f1d1d;
-  --color-accent-dark: #4a1111;
-  --color-gold: #a97d2d;
-  --color-border: #7a5723;
-  --color-green: #264f3d;
-  --color-blue: #243e63;
+  --color-ink: #241f1b;
+  --color-muted: #625546;
+  --color-paper: #f2e4c6;
+  --color-paper-light: #fff8e2;
+  --color-rule: #bfa05a;
+  --color-accent: #8c2f2b;
+  --color-accent-dark: #4b1716;
+  --color-gold: #a77c2f;
+  --color-border: #6f5428;
+  --color-green: #255948;
+  --color-blue: #274d70;
+  --color-verdigris: #36716b;
+  --color-plum: #4a314f;
 }
 
 .theme-dark-arcane {
@@ -38,6 +41,8 @@
   --color-border: #8d7a54;
   --color-green: #2f614f;
   --color-blue: #2f5278;
+  --color-verdigris: #3f7470;
+  --color-plum: #4f3d61;
 }
 
 .theme-printer-friendly {
@@ -52,6 +57,8 @@
   --color-border: #333333;
   --color-green: #111111;
   --color-blue: #111111;
+  --color-verdigris: #111111;
+  --color-plum: #111111;
   --shadow-page: none;
   --shadow-box: none;
 }

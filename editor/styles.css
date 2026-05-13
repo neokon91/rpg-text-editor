@@ -253,6 +253,41 @@ textarea:focus-visible {
   font-size: 12px;
 }
 
+.external-pack-panel {
+  display: grid;
+  gap: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+}
+
+.external-pack-upload {
+  display: grid;
+  gap: 4px;
+}
+
+.external-pack-upload span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.external-pack-upload input {
+  width: 100%;
+  font-size: 12px;
+}
+
+#clear-external-packs {
+  min-height: 30px;
+  padding: 0 8px;
+  font-size: 12px;
+}
+
+#clear-external-packs:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
 .component-group + .component-group {
   margin-top: 18px;
 }
@@ -401,7 +436,8 @@ textarea:focus-visible {
   color: #6f4a00;
 }
 
-.component-dialog {
+.component-dialog,
+.modal-dialog {
   width: min(760px, calc(100vw - 32px));
   max-height: calc(100vh - 32px);
   border: 1px solid var(--line);
@@ -410,14 +446,47 @@ textarea:focus-visible {
   box-shadow: var(--shadow);
 }
 
-.component-dialog::backdrop {
+.component-dialog::backdrop,
+.modal-dialog::backdrop {
   background: rgba(20, 18, 15, 0.45);
 }
 
-.component-dialog form {
+.component-dialog form,
+.modal-dialog form {
   display: grid;
   max-height: calc(100vh - 32px);
   grid-template-rows: auto minmax(0, 1fr) auto;
+}
+
+.modal-dialog {
+  width: min(480px, calc(100vw - 32px));
+}
+
+.modal-body {
+  display: grid;
+  gap: 10px;
+  padding: 16px;
+}
+
+.modal-body input {
+  width: 100%;
+  min-height: 38px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 0 10px;
+  background: var(--surface);
+  color: var(--ink);
+}
+
+#modal-confirm {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+#modal-confirm:hover {
+  background: var(--accent-strong);
+  border-color: var(--accent-strong);
 }
 
 .dialog-header,

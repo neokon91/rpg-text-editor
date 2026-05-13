@@ -6,10 +6,10 @@
   padding: 1.25rem 1.4rem 1.15rem;
 
   background:
-    linear-gradient(rgba(255,255,255,.62), rgba(255,255,255,.52)),
-    radial-gradient(circle at 86% 10%, rgba(127, 29, 29, 0.18), transparent 24%),
-    radial-gradient(circle at 10% 96%, rgba(176, 138, 60, 0.16), transparent 28%),
-    linear-gradient(135deg, #ead39b, #fff3cf 48%, #dfbf7b);
+    linear-gradient(rgba(255,255,255,.66), rgba(255,255,255,.5)),
+    radial-gradient(circle at 86% 10%, rgba(140, 47, 43, 0.17), transparent 24%),
+    radial-gradient(circle at 10% 96%, rgba(54, 113, 107, 0.15), transparent 28%),
+    linear-gradient(135deg, #ead6a4, #fff5d3 48%, #d9bd7e);
 
   background-size: cover;
 
@@ -43,8 +43,8 @@
     linear-gradient(
       to right,
       transparent,
-      var(--color-gold),
-      var(--color-accent),
+      var(--color-verdigris),
+      var(--color-verdigris),
       transparent
     );
 }
@@ -81,7 +81,7 @@
     1.78rem;
 
   letter-spacing:
-    .03em;
+    0;
 
   border-bottom:
     2px solid rgba(176,138,60,.7);
@@ -89,7 +89,7 @@
 
 .statblock em {
   color:
-    #5e4736;
+    var(--color-muted);
 }
 
 .statblock hr {
@@ -168,13 +168,13 @@
     .15rem;
 
   color:
-    var(--color-accent-dark);
+    var(--color-plum);
 
   font-size:
     .82rem;
 
   letter-spacing:
-    .04em;
+    0;
 }
 
 .statblock__label {
@@ -184,11 +184,11 @@
   background: rgba(255, 255, 255, 0.35);
   border: 1px solid rgba(122, 87, 35, 0.22);
   border-radius: 3px;
-  color: var(--color-border);
+  color: var(--color-verdigris);
   font-family: var(--font-heading);
   font-size: 0.76rem;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0;
   text-transform: uppercase;
 }
 

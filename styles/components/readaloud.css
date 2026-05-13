@@ -8,8 +8,8 @@
     1.5rem;
 
   background:
-    linear-gradient(rgba(255,255,255,.72), rgba(255,255,255,.72)),
-    radial-gradient(circle at 12% 20%, rgba(176, 138, 60, 0.14), transparent 28%),
+    linear-gradient(rgba(255,255,255,.76), rgba(255,255,255,.6)),
+    radial-gradient(circle at 12% 20%, rgba(54, 113, 107, 0.14), transparent 28%),
     linear-gradient(135deg, #fff7dc, #efd9a8);
 
   background-size: cover;
@@ -18,7 +18,7 @@
     1px solid rgba(122, 87, 35, .45);
 
   border-left:
-    7px solid var(--color-gold);
+    7px solid var(--color-verdigris);
 
   border-radius:
     2px;
@@ -49,7 +49,7 @@
     linear-gradient(
       to right,
       transparent,
-      rgba(176,138,60,.95),
+      rgba(54, 113, 107, 0.82),
       transparent
     );
 }
@@ -78,12 +78,12 @@
 
 .readaloud__label {
   margin-bottom: 0.4rem;
-  color: var(--color-accent-dark);
+  color: var(--color-verdigris);
   font-family: var(--font-heading);
   font-size: 0.78rem;
   font-style: normal;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0;
   text-transform: uppercase;
 }
 

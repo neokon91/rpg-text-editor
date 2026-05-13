@@ -664,10 +664,13 @@ function renderLegalAppendix(metadata, assetManifest = { assets: [] }) {
 function renderBookCover(metadata) {
   return [
     '<section class="book-cover">',
+    '<div class="book-cover__frame">',
     `<p class="book-kicker">${escapeHtml(metadata.compatibility || "5e/5.5e")}</p>`,
+    '<div class="book-mark" aria-hidden="true"></div>',
     `<h1>${escapeHtml(metadata.title)}</h1>`,
     metadata.summary ? `<p class="book-summary">${escapeHtml(metadata.summary)}</p>` : "",
     `<p class="book-author">${escapeHtml(metadata.author || "Autore indipendente")}</p>`,
+    "</div>",
     "</section>"
   ].join("\n");
 }

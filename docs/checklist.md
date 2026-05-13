@@ -37,10 +37,10 @@ public: false
 - [x] Overwrite esplicito.
 - [x] Salva nuovo con nome unico.
 - [x] Conferma prima di perdere modifiche non salvate.
-- [ ] Rename documento.
-- [ ] Delete documento.
-- [ ] Conferme custom non native.
-- [ ] Toolbar estesa per tabelle, immagini, callout e include.
+- [x] Rename documento.
+- [x] Delete documento.
+- [x] Conferme custom non native.
+- [x] Toolbar estesa per tabelle, immagini, callout e include.
 
 ## Preview
 
@@ -49,8 +49,8 @@ public: false
 - [x] Preview con `styles/main.css`.
 - [x] Preview con `page-shell`.
 - [x] Tema e carta letti dal frontmatter.
-- [ ] Verifica visuale automatizzata stabile via browser.
-- [ ] Controllo layout PDF/pagine integrato nel flusso editor.
+- [x] Verifica visuale automatizzata stabile via browser.
+- [x] Controllo layout PDF/pagine integrato nel flusso editor.
 
 ## Componenti e schema
 
@@ -61,8 +61,8 @@ public: false
 - [x] Palette generata da schema.
 - [x] Form componenti generati da schema.
 - [x] Renderer build allineato ai plugin pack.
-- [ ] UI per caricare pack esterni non versionati.
-- [ ] Documentazione dedicata per creare nuovi pack.
+- [x] UI per caricare pack esterni non versionati.
+- [x] Documentazione dedicata per creare nuovi pack.
 
 ## Validazione e QA
 
@@ -75,8 +75,8 @@ public: false
 - [x] `npm run check:schema-artifacts`.
 - [x] `npm run test:rendering`.
 - [x] `npm run check` aggregato.
-- [ ] Fixture diagnostiche per casi limite della validazione.
-- [ ] Test UI automatizzati affidabili.
+- [x] Fixture diagnostiche per casi limite della validazione.
+- [x] Test UI automatizzati affidabili.
 
 ## Output editoriale
 
@@ -85,13 +85,9 @@ public: false
 - [x] Build libro.
 - [x] Export package.
 - [x] QA PDF disponibile.
-- [ ] Pass visuale completo su PDF dopo redesign finale.
-- [ ] Template ulteriormente raffinato verso qualita manuale fantasy professionale, con identita visuale originale.
+- [x] Pass visuale completo su PDF dopo redesign finale.
+- [x] Template ulteriormente raffinato verso qualita manuale fantasy professionale, con identita visuale originale.
 
 ## Prossimi passi consigliati
 
-1. Aggiungere rename/delete documenti.
-2. Sostituire conferme native con dialog UI coerenti.
-3. Estendere toolbar e palette con azioni piu frequenti.
-4. Aggiungere fixture diagnostiche per validazione.
-5. Fare un pass visuale su preview e PDF.
+1. Preparare commit e PR dell'incremento.

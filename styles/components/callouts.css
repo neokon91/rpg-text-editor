@@ -8,8 +8,8 @@
   border-left-width: 6px;
   border-radius: 3px;
   background:
-    linear-gradient(90deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.42)),
-    radial-gradient(circle at 95% 12%, rgba(176, 138, 60, 0.18), transparent 24%),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.76), rgba(255, 255, 255, 0.44)),
+    radial-gradient(circle at 95% 12%, rgba(54, 113, 107, 0.13), transparent 24%),
     linear-gradient(135deg, #fff3cc, #efd8a6);
   box-shadow:
     0 4px 12px rgba(0, 0, 0, 0.12),
@@ -52,7 +52,7 @@
   font-family: var(--font-heading);
   font-size: 0.76rem;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0;
   text-transform: uppercase;
 }
 
