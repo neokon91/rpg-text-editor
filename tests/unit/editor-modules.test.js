@@ -1,6 +1,12 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { buildComponentMarkdown, buildComponentMarkdownFromValues, defaultComponentValues } from "../../editor-next/src/components/componentMarkdown.js";
+import {
+  applyComponentPreset,
+  buildComponentMarkdown,
+  buildComponentMarkdownFromValues,
+  defaultComponentValues,
+  validateComponentValues
+} from "../../editor-next/src/components/componentMarkdown.js";
 import { parseMarkdownOutline } from "../../packages/markdown/outline.js";
 
 test("parseMarkdownOutline ignores fenced headings and strips inline HTML", () => {
@@ -47,4 +53,44 @@ test("buildComponentMarkdown creates schema driven container blocks", () => {
 
   assert.match(customized, /name: Ombra del Cartografo/);
   assert.match(customized, /hook: Eco \| La luce si spegne vicino alle soglie\./);
+});
+
+test("component form values support presets, list removal and required diagnostics", () => {
+  const component = {
+    id: "random-table",
+    label: "Tabella",
+    container: "random-table",
+    fields: [
+      { key: "name", label: "Titolo", type: "text", required: true, default: "Eventi rapidi" },
+      { key: "die", label: "Dado", type: "text", default: "d6" }
+    ],
+    lists: [
+      { key: "row", default_name: "1", default_text: "Primo evento." }
+    ],
+    presets: [
+      {
+        id: "d4",
+        label: "Eventi d4",
+        fields: { name: "Eventi d4", die: "d4" },
+        lists: [
+          { key: "row", name: "1", text: "Evento uno." },
+          { key: "row", name: "2", text: "Evento due." }
+        ]
+      }
+    ]
+  };
+
+  const values = defaultComponentValues(component);
+  assert.equal(values.fields.name, "Eventi d4");
+  assert.equal(values.lists.length, 2);
+
+  const sparseValues = { ...values, fields: { ...values.fields, name: "" }, lists: values.lists.slice(0, 1) };
+  assert.deepEqual(validateComponentValues(component, sparseValues), [{
+    key: "name",
+    message: "Titolo e obbligatorio."
+  }]);
+
+  const presetValues = applyComponentPreset(component, sparseValues, "d4");
+  assert.equal(presetValues.fields.name, "Eventi d4");
+  assert.equal(presetValues.lists.length, 2);
 });

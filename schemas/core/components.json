@@ -31,6 +31,52 @@
       "lists": [
         { "key": "trait", "label": "Tratto", "default_name": "Corpo di Pietra", "default_text": "Ha vantaggio ai tiri salvezza contro veleno e malattia." },
         { "key": "action", "label": "Azione", "default_name": "Pugno Inciso", "default_text": "+4 a colpire, portata 1,5 m, un bersaglio. Colpisce per 1d8 + 2 danni contundenti." }
+      ],
+      "presets": [
+        {
+          "id": "brute",
+          "label": "Bruto marziale",
+          "fields": {
+            "name": "Mastino di Ferro",
+            "meta": "Costrutto medio, senza allineamento",
+            "ac": "16",
+            "hp": "45",
+            "speed": "9 m",
+            "cr": "2",
+            "str": 16,
+            "dex": 12,
+            "con": 16,
+            "int": 4,
+            "wis": 11,
+            "cha": 6
+          },
+          "lists": [
+            { "key": "trait", "name": "Carica Pesante", "text": "Se si muove di almeno 6 m in linea retta, il prossimo attacco infligge 1d6 danni extra." },
+            { "key": "action", "name": "Morso di Metallo", "text": "+5 a colpire, portata 1,5 m, un bersaglio. Colpisce per 1d10 + 3 danni perforanti." }
+          ]
+        },
+        {
+          "id": "caster",
+          "label": "Incantatore fragile",
+          "fields": {
+            "name": "Oracolo delle Ceneri",
+            "meta": "Umanoide medio, qualsiasi allineamento",
+            "ac": "12",
+            "hp": "27",
+            "speed": "9 m",
+            "cr": "2",
+            "str": 8,
+            "dex": 14,
+            "con": 12,
+            "int": 15,
+            "wis": 13,
+            "cha": 16
+          },
+          "lists": [
+            { "key": "trait", "name": "Presagio Bruciante", "text": "Una volta per turno puo imporre svantaggio a una prova di caratteristica entro 18 m." },
+            { "key": "action", "name": "Dardo di Cenere", "text": "+5 a colpire, gittata 18 m, un bersaglio. Colpisce per 2d8 danni da fuoco." }
+          ]
+        }
       ]
     },
     {
@@ -49,6 +95,36 @@
         { "key": "components", "label": "Componenti", "type": "text", "default": "V, S, M" },
         { "key": "duration", "label": "Durata", "type": "text", "default": "10 minuti" },
         { "key": "body", "label": "Descrizione", "type": "textarea", "default": "Una linea luminosa indica il percorso piu breve verso una destinazione nominata entro 300 metri." }
+      ],
+      "presets": [
+        {
+          "id": "utility",
+          "label": "Utilita",
+          "fields": {
+            "name": "Luce del Cartografo",
+            "level": "1° livello",
+            "school": "divinazione",
+            "casting_time": "1 azione",
+            "range": "personale",
+            "components": "V, S, M",
+            "duration": "10 minuti",
+            "body": "Una linea luminosa indica il percorso piu breve verso una destinazione nominata entro 300 metri."
+          }
+        },
+        {
+          "id": "combat",
+          "label": "Combattimento",
+          "fields": {
+            "name": "Scheggia Astrale",
+            "level": "2° livello",
+            "school": "invocazione",
+            "casting_time": "1 azione",
+            "range": "18 metri",
+            "components": "V, S",
+            "duration": "istantanea",
+            "body": "Una scheggia luminosa colpisce una creatura che puoi vedere. Il bersaglio effettua un tiro salvezza su Destrezza o subisce 3d8 danni radiosi."
+          }
+        }
       ]
     },
     {
@@ -132,6 +208,24 @@
       "lists": [
         { "key": "row", "label": "Riga", "default_name": "1", "default_text": "Si sente un colpo metallico." },
         { "key": "row", "label": "Riga", "default_name": "2", "default_text": "Una porta si apre da sola." }
+      ],
+      "presets": [
+        {
+          "id": "d6-events",
+          "label": "Eventi d6",
+          "fields": {
+            "name": "Eventi rapidi",
+            "die": "d6"
+          },
+          "lists": [
+            { "key": "row", "name": "1", "text": "Si sente un colpo metallico." },
+            { "key": "row", "name": "2", "text": "Una porta si apre da sola." },
+            { "key": "row", "name": "3", "text": "Un alleato riconosce un simbolo sul pavimento." },
+            { "key": "row", "name": "4", "text": "Una torcia si spegne senza vento." },
+            { "key": "row", "name": "5", "text": "Qualcosa gratta dietro una parete." },
+            { "key": "row", "name": "6", "text": "Un indizio importante emerge in piena vista." }
+          ]
+        }
       ]
     },
     {

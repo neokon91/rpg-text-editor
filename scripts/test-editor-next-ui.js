@@ -116,6 +116,13 @@ try {
 
   await assertEqual(await evalInPage("document.body.textContent.includes('Nuova scena')"), true, "outline shows inserted scene");
 
+  await clickButton("Pagina");
+  await waitFor(() => evalInPage("document.querySelector('.preview-toolbar')?.textContent.includes('/ 2')"));
+  await clickButtonByAriaLabel("Pagina successiva");
+  await waitFor(() => evalInPage("document.querySelector('.preview-toolbar input')?.value === '2'"));
+  await clickButton("Fit");
+  await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.documentElement.style.getPropertyValue('--rpg-preview-zoom') !== '1'"));
+
   const errors = await evalInPage("Array.from(window.__editorNextErrors || [])");
   if (errors.length) throw new Error(`Errori console browser: ${errors.join("; ")}`);
 
@@ -174,6 +181,15 @@ async function clickButton(label) {
   `);
 }
 
+async function clickButtonByAriaLabel(label) {
+  await evalInPage(`
+    {
+      const button = document.querySelector(\`button[aria-label="${label}"]\`);
+      if (!button) throw new Error('Button not found: ${label}');
+      button.click();
+    }
+  `);
+}
 
 async function exportedFileExists(filename) {
   const response = await fetch(`${baseUrl}/dist/${encodeURIComponent(filename)}`);

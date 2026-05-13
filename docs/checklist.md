@@ -30,6 +30,7 @@ public: false
 - [x] Form frontmatter nella UI React.
 - [x] Snippet Markdown base.
 - [x] Palette componenti da schema nella UI React.
+- [x] Benchmark Homebrewery/V3 documentato in `docs/homebrewery-benchmark.md`.
 - [ ] Toggle plugin pack nella UI React.
 - [x] Import documenti da `docs/`.
 - [x] Salvataggio con file corrente.
@@ -57,7 +58,7 @@ public: false
 - [x] Controllo layout PDF/pagine integrato nel flusso editor.
 - [x] Markdown Preview VS Code allineata ai token visuali del template.
 - [x] Preview locale con zoom persistente e marker `::pagebreak` visibile.
-- [ ] Navigazione pagina/spread nella UI React.
+- [x] Prima toolbar pagina/spread nella UI React: pagina corrente/totale, prev/next, input pagina, fit page/fill width e modalita single/facing/flow.
 - [x] Tema originale `modern-5-5` per resa 5.5-compatible piu moderna e pulita.
 
 ## Componenti e schema
@@ -67,7 +68,7 @@ public: false
 - [x] Plugin pack `fantasy-classic`.
 - [x] Validazione collisioni `id` e `container`.
 - [x] Palette generata da schema nella UI React.
-- [x] Form componenti base generati da schema nella UI React.
+- [x] Form componenti generati da schema nella UI React, con preset, rimozione righe lista e validazione inline.
 - [x] Renderer build allineato ai plugin pack.
 - [ ] UI React per caricare pack esterni non versionati.
 - [x] Documentazione dedicata per creare nuovi pack.
@@ -99,5 +100,6 @@ public: false
 
 ## Prossimi passi consigliati
 
-1. Rafforzare componenti/statblock verso una resa fantasy professionale originale.
-2. Aggiungere rifiniture responsive finali su layout stretto e pannelli collassabili.
+1. Rendere lo spread `facing/flow` fisicamente multipagina quando il renderer verra spezzato in pagine reali.
+2. Procedere con sync editor-preview bidirezionale basato su pagina/linea.
+3. Poi plugin pack UI e palette componenti con sottopreset.

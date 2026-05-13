@@ -41,9 +41,13 @@ Vite + React + CodeMirror 6 + iframe preview
 - Tranche Homebrewery-like avviata in `editor-next/` con Vite, React, CodeMirror 6, preview iframe e autosave locale separato.
 - `editor-next` ora usa un server integrato Vite + API locali con `npm run editor:next`, include apertura documenti, salvataggio, check guidato ed export HTML/PDF.
 - Build statica: `npm run editor:next:build`; smoke dedicato: `npm run test:editor-next-ui`.
+- Benchmark Homebrewery verificato in `docs/homebrewery-benchmark.md`: upstream e `naturalcrit/homebrewery`, V3 non e una codebase separata, e la priorita comparativa ora e la toolbar preview pagina/spread.
+- Form componenti gia portati oltre il base: preset schema-driven, rimozione righe lista e validazione inline dei campi richiesti.
+- Prima toolbar preview implementata: pagina corrente/totale, prev/next, input pagina, fit/fill e selettore single/facing/flow.
 
 ## File Da Conoscere
 
+- `docs/homebrewery-benchmark.md`
 - `packages/markdown/editor-actions.js`
 - `packages/documents/preview-shell.js`
 - `packages/components/preview.js`
@@ -56,26 +60,15 @@ Vite + React + CodeMirror 6 + iframe preview
 
 ## Primo Task Consigliato
 
-Continuare la nuova app editor moderna:
+Proseguire con il sync editor-preview bidirezionale:
 
-```text
-editor-next/
-  index.html
-  src/
-    App.jsx
-    editor/MarkdownEditor.jsx
-    preview/PreviewFrame.jsx
-    shell/TopMenu.jsx
-    storage/localDrafts.js
-```
+1. Mappare linee sorgente visibili nell'iframe e posizione editor corrente.
+2. Aggiungere toggle sync scroll.
+3. Da editor verso preview: scroll alla pagina/linea piu vicina.
+4. Da preview verso editor: il click su `[data-source-line]` esiste gia, va reso piu evidente e testato.
+5. Estendere `scripts/test-editor-next-ui.js` per sync e click preview.
 
-Poi:
-
-1. Raffinare form componenti: rimozione righe lista, preset avanzati e validazione inline.
-2. Aggiungere sync preview/editor bidirezionale piu robusto.
-3. Portare rename/delete o decidere se lasciarli fuori dal flusso Next.
-4. Rifinire test UI per coprire save/open, frontmatter edit e component insertion da `editor-next`.
-5. Spezzare il bundle CodeMirror se il peso diventa un problema reale.
+Poi: renderer multipagina reale per spread `facing/flow`, palette con sottopreset, plugin pack UI, rename/delete se confermati.
 
 ## Guardrail UX
 

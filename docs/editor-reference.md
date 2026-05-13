@@ -36,19 +36,26 @@ Il server apre `editor-next/` su `http://127.0.0.1:5173/editor-next/` e combina 
 - Check guidato con diagnostiche schema + author check.
 - Export HTML/PDF in `dist/` tramite renderer ufficiale.
 - Preview live con `styles/main.css`, `page-shell`, tema e carta da frontmatter.
-- Controlli preview: desktop/mobile, zoom, toggle preview.
+- Controlli preview: desktop/mobile, zoom, toggle preview, fit/fill, pagina corrente/totale, prev/next, input pagina e modalita single/facing/flow.
 - Snippet rapidi: scena, readaloud, incontro, tabella e page break.
 - Palette componenti generata da schema con ricerca, gruppi e inserimento al cursore.
-- Form componenti base per campi e liste dichiarati nello schema.
+- Form componenti per campi e liste dichiarati nello schema, con preset, rimozione righe e validazione inline dei campi richiesti.
 - Navigatore documento da heading Markdown con salto alla riga.
 - Form frontmatter compatto nel pannello documento.
 
+## Benchmark Homebrewery
+
+- Vedi `docs/homebrewery-benchmark.md` per il confronto sintetico aggiornato.
+- Direzione tecnica allineata: React, Vite, CodeMirror 6, preview iframe.
+- Differenza intenzionale: questo editor resta local-first e schema-driven, senza account/vault/MongoDB e senza copiare sintassi o trade dress Homebrewery.
+- Prima toolbar preview implementata; resta da rendere lo spread fisicamente multipagina quando il renderer verra spezzato in pagine reali.
+
 ## Mancanze Verso Homebrewery
 
-- Raffinamento form componenti e supporto ai plugin pack esterni nella nuova UI.
 - Sync editor-preview bidirezionale piu robusto.
-- Navigazione pagina/spread piu vicina a Homebrewery.
-- Controlli frontmatter visuali nella UI React.
+- Renderer multipagina reale per rendere `facing/flow` equivalenti al benchmark, oltre ai marker `::pagebreak` navigabili.
+- Supporto ai plugin pack esterni nella nuova UI.
+- Palette componenti con sottopreset e gruppi piu ricchi.
 - Rename/delete documento, se confermati come parte del flusso editor.
 - Test UI piu ampi per save/open e component insertion.
 

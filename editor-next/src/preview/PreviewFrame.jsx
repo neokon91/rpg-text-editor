@@ -1,7 +1,13 @@
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
-export function PreviewFrame({ html, zoom, viewport, onSelectLine }) {
+const MIN_ZOOM = 0.4;
+const MAX_ZOOM = 1.6;
+
+export function PreviewFrame({ html, zoom, viewport, spread, onSelectLine, onZoomChange, onSpreadChange }) {
   const frame = useRef(null);
+  const removeScrollListener = useRef(null);
+  const [pageState, setPageState] = useState({ current: 1, total: 1 });
+  const [pageInput, setPageInput] = useState("1");
 
   useEffect(() => {
     function handleMessage(event) {
@@ -13,23 +19,126 @@ export function PreviewFrame({ html, zoom, viewport, onSelectLine }) {
     return () => window.removeEventListener("message", handleMessage);
   }, [onSelectLine]);
 
+  const readPageMarkers = useCallback(() => {
+    const doc = frame.current?.contentDocument;
+    if (!doc) return [];
+    const shell = doc.querySelector(".page-shell");
+    const breaks = [...doc.querySelectorAll(".page-break")];
+    return [shell, ...breaks].filter(Boolean).map((node, index) => ({
+      index: index + 1,
+      top: node.offsetTop
+    }));
+  }, []);
+
+  const updatePageState = useCallback(() => {
+    const doc = frame.current?.contentDocument;
+    if (!doc) return;
+    const markers = readPageMarkers();
+    const scrollTop = doc.documentElement.scrollTop || doc.body.scrollTop || 0;
+    const current = markers.reduce((active, marker) => scrollTop + 40 >= marker.top ? marker.index : active, 1);
+    const nextState = { current, total: Math.max(markers.length, 1) };
+    setPageState(nextState);
+    setPageInput(String(nextState.current));
+  }, [readPageMarkers]);
+
   useEffect(() => {
     const documentElement = frame.current?.contentDocument?.documentElement;
     documentElement?.style.setProperty("--rpg-preview-zoom", zoom);
-  }, [html, zoom]);
+    updatePageState();
+  }, [html, zoom, updatePageState]);
+
+  useEffect(() => {
+    const body = frame.current?.contentDocument?.body;
+    if (body) body.dataset.spread = spread;
+  }, [html, spread]);
+
+  useEffect(() => {
+    setPageInput(String(pageState.current));
+  }, [pageState.current]);
+
+  useEffect(() => () => removeScrollListener.current?.(), []);
+
+  function bindFrame() {
+    const doc = frame.current?.contentDocument;
+    if (!doc) return;
+    removeScrollListener.current?.();
+    doc.documentElement.style.setProperty("--rpg-preview-zoom", zoom);
+    if (doc.body) doc.body.dataset.spread = spread;
+    const win = frame.current.contentWindow;
+    win?.addEventListener("scroll", updatePageState, { passive: true });
+    removeScrollListener.current = () => win?.removeEventListener("scroll", updatePageState);
+    updatePageState();
+  }
+
+  function goToPage(nextPage) {
+    const markers = readPageMarkers();
+    const page = Math.min(Math.max(Number(nextPage) || 1, 1), Math.max(markers.length, 1));
+    const marker = markers[page - 1];
+    if (!marker) return;
+    frame.current?.contentWindow?.scrollTo({ top: Math.max(marker.top - 18, 0), behavior: "smooth" });
+    setPageState({ current: page, total: Math.max(markers.length, 1) });
+  }
+
+  function fitPreview(mode) {
+    const frameNode = frame.current;
+    const doc = frameNode?.contentDocument;
+    const shell = doc?.querySelector(".page-shell");
+    if (!frameNode || !shell) return;
+
+    const activeZoom = Number(zoom) || 1;
+    const rect = shell.getBoundingClientRect();
+    const width = rect.width / activeZoom;
+    const height = rect.height / activeZoom;
+    const availableWidth = frameNode.clientWidth - 36;
+    const availableHeight = frameNode.clientHeight - 36;
+    const widthRatio = availableWidth / width;
+    const heightRatio = availableHeight / height;
+    const nextZoom = mode === "fill" ? widthRatio : Math.min(widthRatio, heightRatio);
+    onZoomChange(String(clampZoom(nextZoom)));
+  }
+
+  const canGoBack = pageState.current > 1;
+  const canGoForward = pageState.current < pageState.total;
 
   return (
-    <section className="preview-pane" aria-label="Anteprima">
+    <section className="preview-pane" aria-label="Anteprima" data-spread={spread}>
+      <div className="preview-toolbar" aria-label="Controlli anteprima">
+        <button type="button" onClick={() => fitPreview("fit")}>Fit</button>
+        <button type="button" onClick={() => fitPreview("fill")}>Fill</button>
+        <select value={spread} onChange={(event) => onSpreadChange(event.target.value)} aria-label="Modalita pagine">
+          <option value="single">Singola</option>
+          <option value="facing">Affiancata</option>
+          <option value="flow">Flusso</option>
+        </select>
+        <button type="button" disabled={!canGoBack} onClick={() => goToPage(pageState.current - 1)} aria-label="Pagina precedente">‹</button>
+        <label>
+          <span>Pagina</span>
+          <input
+            inputMode="numeric"
+            pattern="[0-9]*"
+            value={pageInput}
+            onChange={(event) => setPageInput(event.target.value.replace(/\D/g, ""))}
+            onBlur={() => goToPage(pageInput)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") goToPage(pageInput);
+            }}
+          />
+          <span>/ {pageState.total}</span>
+        </label>
+        <button type="button" disabled={!canGoForward} onClick={() => goToPage(pageState.current + 1)} aria-label="Pagina successiva">›</button>
+      </div>
       <iframe
         ref={frame}
         className="next-preview-frame"
         title="Anteprima documento"
         srcDoc={html}
         data-viewport={viewport}
-        onLoad={() => {
-          frame.current?.contentDocument?.documentElement.style.setProperty("--rpg-preview-zoom", zoom);
-        }}
+        onLoad={bindFrame}
       />
     </section>
   );
+}
+
+function clampZoom(value) {
+  return Math.min(Math.max(Number(value) || 1, MIN_ZOOM), MAX_ZOOM).toFixed(2);
 }

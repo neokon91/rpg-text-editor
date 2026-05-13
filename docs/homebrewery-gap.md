@@ -25,19 +25,27 @@ public: false
 - Check guidato con diagnostiche schema e author check.
 - Export HTML/PDF dal flusso locale.
 - Snippet rapidi per blocchi frequenti.
+- Toolbar preview con pagina corrente/totale, prev/next, input pagina, fit page/fill width e modalita single/facing/flow.
 - Palette componenti generata da schema, con ricerca e gruppi.
 - Inserimento componenti al cursore CodeMirror.
-- Form guidati base generati da schema per campi e liste.
+- Form guidati generati da schema per campi e liste, con preset, rimozione righe e validazione inline dei campi richiesti.
 - Navigatore documento da heading Markdown con salto alla riga.
 - Frontmatter visuale compatto per titolo, slug, summary, tema e carta.
 - Tema editoriale originale, senza trade dress Homebrewery/PHB.
 - Core modulare in `packages/`.
 
+## Benchmark Verificato
+
+- Riferimento compatto: `docs/homebrewery-benchmark.md`.
+- Upstream principale: `naturalcrit/homebrewery`.
+- V3 e una modalita/tema nello stesso repo, non una codebase separata da imitare.
+- Stack upstream recente: React, Vite, CodeMirror 6, renderer iframe, toolbar preview avanzata.
+
 ## Gap Prioritari
 
-1. Raffinare form guidati: campi ripetibili removibili, preset per componenti complessi, validazione inline.
-2. Sync editor-preview bidirezionale: scroll opzionale e click su preview verso riga sorgente.
-3. Controlli pagina/spread piu completi: pagina precedente/successiva, fit/page/mobile, marker pagina affidabili.
+1. Sync editor-preview bidirezionale: scroll opzionale e click su preview verso riga sorgente.
+2. Renderer multipagina reale: rendere `single/facing/flow` basati su pagine separate, non solo marker `::pagebreak` navigabili.
+3. Palette componenti piu ricca: sottopreset, gruppi rapidi e preset estendibili da schema/plugin.
 4. Gestione plugin pack nella UI React: attiva/disattiva pack e prova pack esterni.
 5. Comandi editor da tastiera e toolbar Markdown piu completa.
 6. Test UI per open/save, component insertion, sync preview e export PDF.

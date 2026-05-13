@@ -1,5 +1,10 @@
 import { useMemo, useState } from "react";
-import { buildComponentMarkdownFromValues, defaultComponentValues } from "./componentMarkdown.js";
+import {
+  applyComponentPreset,
+  buildComponentMarkdownFromValues,
+  defaultComponentValues,
+  validateComponentValues
+} from "./componentMarkdown.js";
 
 export function ComponentPalette({ schema, onInsert }) {
   const [query, setQuery] = useState("");
@@ -78,6 +83,9 @@ export function ComponentPalette({ schema, onInsert }) {
 }
 
 function ComponentForm({ component, values, onChange, onInsert }) {
+  const diagnostics = validateComponentValues(component, values);
+  const diagnosticKeys = new Map(diagnostics.map((item) => [item.key, item.message]));
+
   function updateField(key, value) {
     onChange({
       ...values,
@@ -92,6 +100,13 @@ function ComponentForm({ component, values, onChange, onInsert }) {
     onChange({
       ...values,
       lists: values.lists.map((item, itemIndex) => itemIndex === index ? { ...item, ...patch } : item)
+    });
+  }
+
+  function removeListItem(index) {
+    onChange({
+      ...values,
+      lists: values.lists.filter((_, itemIndex) => itemIndex !== index)
     });
   }
 
@@ -114,6 +129,7 @@ function ComponentForm({ component, values, onChange, onInsert }) {
       className="component-form"
       onSubmit={(event) => {
         event.preventDefault();
+        if (diagnostics.length) return;
         onInsert();
       }}
     >
@@ -121,26 +137,55 @@ function ComponentForm({ component, values, onChange, onInsert }) {
         <strong>{component.label}</strong>
         <small>{component.container}</small>
       </header>
+      {component.presets?.length ? (
+        <label>
+          <span>Preset</span>
+          <select
+            defaultValue=""
+            onChange={(event) => {
+              if (!event.target.value) return;
+              onChange(applyComponentPreset(component, values, event.target.value));
+              event.target.value = "";
+            }}
+          >
+            <option value="">Scegli preset</option>
+            {component.presets.map((preset) => (
+              <option key={preset.id} value={preset.id}>{preset.label || preset.id}</option>
+            ))}
+          </select>
+        </label>
+      ) : null}
       <label>
         <span>Etichetta</span>
         <input value={values.label} onChange={(event) => onChange({ ...values, label: event.target.value })} />
       </label>
-      {(component.fields || []).map((field) => (
-        <label key={field.key}>
-          <span>{field.label || field.key}{field.required ? " *" : ""}</span>
-          {field.type === "textarea" ? (
-            <textarea value={values.fields[field.key] || ""} onChange={(event) => updateField(field.key, event.target.value)} />
-          ) : (
-            <input value={values.fields[field.key] || ""} onChange={(event) => updateField(field.key, event.target.value)} />
-          )}
-        </label>
-      ))}
-      {values.lists.length ? (
+      {(component.fields || []).map((field) => {
+        const message = diagnosticKeys.get(field.key);
+        return (
+          <label key={field.key} className={message ? "has-inline-error" : ""}>
+            <span>{field.label || field.key}{field.required ? " *" : ""}</span>
+            {field.type === "textarea" ? (
+              <textarea value={values.fields[field.key] || ""} onChange={(event) => updateField(field.key, event.target.value)} />
+            ) : (
+              <input
+                type={field.type === "number" ? "number" : "text"}
+                value={values.fields[field.key] || ""}
+                onChange={(event) => updateField(field.key, event.target.value)}
+              />
+            )}
+            {message ? <small className="inline-error">{message}</small> : null}
+          </label>
+        );
+      })}
+      {values.lists.length || component.lists?.length ? (
         <div className="component-form-list">
           <strong>Liste</strong>
           {values.lists.map((item, index) => (
             <div key={`${item.key}-${index}`} className="component-list-row">
-              <span>{item.key}</span>
+              <span>
+                {item.key}
+                <button type="button" aria-label={`Rimuovi ${item.key}`} onClick={() => removeListItem(index)}>Rimuovi</button>
+              </span>
               <input value={item.name} onChange={(event) => updateList(index, { name: event.target.value })} />
               <textarea value={item.text} onChange={(event) => updateList(index, { text: event.target.value })} />
             </div>
@@ -150,7 +195,7 @@ function ComponentForm({ component, values, onChange, onInsert }) {
           ))}
         </div>
       ) : null}
-      <button type="submit" className="primary-action">Inserisci</button>
+      <button type="submit" className="primary-action" disabled={diagnostics.length > 0}>Inserisci</button>
     </form>
   );
 }

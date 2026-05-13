@@ -47,6 +47,7 @@ function App() {
   const [previewVisible, setPreviewVisible] = useState(true);
   const [zoom, setZoom] = useState(() => localStorage.getItem("rpg-text-editor-next:zoom") || "1");
   const [viewport, setViewport] = useState(() => localStorage.getItem("rpg-text-editor-next:viewport") || "desktop");
+  const [previewSpread, setPreviewSpread] = useState(() => localStorage.getItem("rpg-text-editor-next:preview-spread") || "single");
   const [selectedLine, setSelectedLine] = useState(null);
   const [documents, setDocuments] = useState([]);
   const [currentDocument, setCurrentDocument] = useState("");
@@ -93,6 +94,10 @@ function App() {
   useEffect(() => {
     localStorage.setItem("rpg-text-editor-next:viewport", viewport);
   }, [viewport]);
+
+  useEffect(() => {
+    localStorage.setItem("rpg-text-editor-next:preview-spread", previewSpread);
+  }, [previewSpread]);
 
   const parsed = useMemo(() => parseFrontmatter(markdown), [markdown]);
   const previewHtml = useMemo(() => {
@@ -305,7 +310,10 @@ function App() {
             html={previewHtml}
             zoom={zoom}
             viewport={viewport}
+            spread={previewSpread}
             onSelectLine={setSelectedLine}
+            onZoomChange={setZoom}
+            onSpreadChange={setPreviewSpread}
           />
         ) : null}
         <DocumentOutline

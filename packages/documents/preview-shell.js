@@ -20,11 +20,14 @@ export function renderPreviewDocument(metadata, content, options = {}) {
       body { background: #1c1510; padding: 24px; }
       body { zoom: var(--rpg-preview-zoom, 1); }
       .page-shell { min-height: 260mm; }
+      body[data-spread="facing"] .page-shell { margin-inline: auto; }
+      body[data-spread="flow"] .page-shell { min-height: auto; overflow: visible; }
       .page-break {
         height: auto;
         margin: 1.4rem 0;
         border-top: 2px dashed rgba(31, 111, 120, 0.48);
         break-after: page;
+        scroll-margin-top: 1.5rem;
       }
       .page-break::after {
         content: "Page break";

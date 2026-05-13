@@ -7,6 +7,8 @@ const snippets = {
   pagebreak: "::pagebreak"
 };
 
+const zoomOptions = ["0.75", "0.9", "1", "1.1", "1.25"];
+
 export function TopMenu({
   title,
   words,
@@ -37,6 +39,7 @@ export function TopMenu({
   const errors = diagnostics.filter((item) => item.severity === "error").length;
   const warnings = diagnostics.filter((item) => item.severity === "warning").length;
   const checkStatus = errors ? `${errors} errori` : warnings ? `${warnings} avvisi` : "Check ok";
+  const visibleZoomOptions = zoomOptions.includes(zoom) ? zoomOptions : [...zoomOptions, zoom];
 
   return (
     <header className="next-topbar">
@@ -86,11 +89,9 @@ export function TopMenu({
         <label>
           <span>Zoom</span>
           <select value={zoom} onChange={(event) => onZoomChange(event.target.value)}>
-            <option value="0.75">75%</option>
-            <option value="0.9">90%</option>
-            <option value="1">100%</option>
-            <option value="1.1">110%</option>
-            <option value="1.25">125%</option>
+            {visibleZoomOptions.map((value) => (
+              <option key={value} value={value}>{Math.round(Number(value) * 100)}%</option>
+            ))}
           </select>
         </label>
         <button type="button" aria-pressed={previewVisible} onClick={onTogglePreview}>
