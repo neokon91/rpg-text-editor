@@ -92,5 +92,5 @@ public: false
 
 ## Prossimi passi consigliati
 
-1. Migliorare UX autore nell'editor locale e nei workflow VS Code.
+1. Migliorare UX autore nell'editor locale come flusso primario.
 2. Rafforzare componenti/statblock verso una resa fantasy professionale originale.
