@@ -82,18 +82,21 @@ export function ComponentPalette({
           <section key={group} className="component-group">
             <h2>{group}</h2>
             {components.map((component) => (
-              <button
+              <ComponentCard
                 key={component.id}
-                type="button"
-                className={`component-card${component.id === selectedId ? " is-selected" : ""}`}
-                onClick={() => {
+                component={component}
+                selected={component.id === selectedId}
+                onSelect={() => {
                   setSelectedId(component.id);
                   setDraftValues(defaultComponentValues(component));
                 }}
-              >
-                <span>{component.label}</span>
-                <small>{component.description}</small>
-              </button>
+                onPreset={(presetId) => {
+                  const values = applyComponentPreset(component, defaultComponentValues(component), presetId);
+                  setSelectedId(component.id);
+                  setDraftValues(values);
+                  onInsert(buildComponentMarkdownFromValues(component, values));
+                }}
+              />
             ))}
           </section>
         ))}
@@ -158,6 +161,26 @@ function ExternalPackControls({ packs, error, onError, onImport, onRemove }) {
       ) : null}
       {error ? <small className="inline-error">{error}</small> : null}
     </div>
+  );
+}
+
+function ComponentCard({ component, selected, onSelect, onPreset }) {
+  return (
+    <article className={`component-card${selected ? " is-selected" : ""}`}>
+      <button type="button" className="component-card-main" onClick={onSelect}>
+        <span>{component.label}</span>
+        <small>{component.description}</small>
+      </button>
+      {component.presets?.length ? (
+        <div className="component-preset-actions" aria-label={`Preset ${component.label}`}>
+          {component.presets.map((preset) => (
+            <button key={preset.id} type="button" onClick={() => onPreset(preset.id)}>
+              {preset.label || preset.id}
+            </button>
+          ))}
+        </div>
+      ) : null}
+    </article>
   );
 }
 

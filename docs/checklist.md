@@ -71,6 +71,7 @@ public: false
 - [x] Validazione collisioni `id` e `container`.
 - [x] Palette generata da schema nella UI React.
 - [x] Form componenti generati da schema nella UI React, con preset, rimozione righe lista e validazione inline.
+- [x] Azioni preset rapide sulle card componenti.
 - [x] Renderer build allineato ai plugin pack.
 - [x] UI React per attivare/disattivare pack dichiarati nel manifest.
 - [x] UI React per caricare pack esterni non versionati.
@@ -105,6 +106,6 @@ public: false
 
 ## Prossimi passi consigliati
 
-1. Aggiungere palette componenti con sottopreset e gruppi rapidi.
+1. Aggiungere gruppi rapidi e migliori filtri nella palette componenti.
 2. Migliorare paginazione automatica oltre agli split manuali `::pagebreak`.
 3. Poi workspace persistenti e rifiniture responsive dei pannelli.

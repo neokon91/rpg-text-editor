@@ -137,6 +137,8 @@ try {
   await assertEqual(exportResult.outputs?.[0]?.path, "dist/nuova-avventura.html", "export api output path");
   await assertEqual(await exportedFileExists("nuova-avventura.html"), true, "exported html exists");
   await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 15"));
+  await clickButton("Combattimento");
+  await waitFor(() => evalInPage("window.localStorage.getItem('rpg-text-editor-next:draft')?.includes('Scheggia Astrale')"));
 
   await clickButton("Scena");
   await waitFor(() => evalInPage("document.body.textContent.includes('Nuova scena')"));

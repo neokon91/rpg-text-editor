@@ -329,7 +329,8 @@ button:disabled {
   width: 100%;
   max-width: none;
   height: auto;
-  padding: 8px;
+  padding: 0;
+  overflow: hidden;
   text-align: left;
 }
 
@@ -338,10 +339,39 @@ button:disabled {
   background: #e7f0ef;
 }
 
+.component-card-main {
+  display: grid;
+  width: 100%;
+  max-width: none;
+  height: auto;
+  padding: 8px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  text-align: left;
+}
+
+.component-card-main:hover {
+  background: transparent;
+}
+
 .component-card span,
 .outline-item span {
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.component-preset-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 0 8px 8px;
+}
+
+.component-preset-actions button {
+  min-height: 24px;
+  padding: 0 7px;
+  font-size: 12px;
 }
 
 .outline-list {
