@@ -78,6 +78,47 @@ function validateComponent(sourceId, component) {
     }
     fieldKeys.add(field.key);
   }
+
+  validatePresets(sourceId, component, fieldKeys);
+}
+
+function validatePresets(sourceId, component, fieldKeys) {
+  if (!component.presets) return;
+  if (!Array.isArray(component.presets)) {
+    throw new Error(`${sourceId}/${component.id}: presets deve essere un array.`);
+  }
+
+  const presetIds = new Set();
+  const listKeys = new Set((component.lists || []).map((list) => list.key));
+
+  for (const preset of component.presets) {
+    if (!preset.id || !preset.label) {
+      throw new Error(`${sourceId}/${component.id}: ogni preset richiede id e label.`);
+    }
+    if (presetIds.has(preset.id)) {
+      throw new Error(`${sourceId}/${component.id}: preset duplicato ${preset.id}.`);
+    }
+    presetIds.add(preset.id);
+
+    for (const key of Object.keys(preset.fields || {})) {
+      if (!fieldKeys.has(key)) {
+        throw new Error(`${sourceId}/${component.id}/${preset.id}: field preset non previsto ${key}.`);
+      }
+    }
+
+    if (preset.lists && !Array.isArray(preset.lists)) {
+      throw new Error(`${sourceId}/${component.id}/${preset.id}: lists preset deve essere un array.`);
+    }
+
+    for (const item of preset.lists || []) {
+      if (!item.key || !listKeys.has(item.key)) {
+        throw new Error(`${sourceId}/${component.id}/${preset.id}: lista preset non prevista ${item.key || "(vuota)"}.`);
+      }
+      if (!("text" in item) && !("default_text" in item)) {
+        throw new Error(`${sourceId}/${component.id}/${preset.id}: ogni lista preset richiede text.`);
+      }
+    }
+  }
 }
 
 function resolveSchemaPath(path) {

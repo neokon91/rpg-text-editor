@@ -38,6 +38,7 @@ public: false
 - Form guidati generati da schema per campi e liste, con preset, rimozione righe e validazione inline dei campi richiesti.
 - Azioni preset rapide sulle card componenti.
 - Sottogruppi preset visibili sulle card componenti.
+- Preset dichiarati anche da plugin pack versionati.
 - Filtri rapidi per gruppo nella palette componenti.
 - Breakpoint desktop compatti per evitare overflow orizzontale dei pannelli.
 - Workspace locale persistente per preview, zoom, viewport, spread, sync e filtro gruppo componenti.
@@ -58,7 +59,7 @@ public: false
 
 1. Ridurre overflow residuo dopo l'inserimento assistito.
 2. Paginazione automatica piu evoluta oltre agli split manuali `::pagebreak`.
-3. Palette componenti piu ricca: preset estendibili da schema/plugin.
+3. Palette componenti piu ricca: categorie e ricerca sui preset.
 4. Rifiniture responsive mobile dei pannelli laterali.
 5. Comandi editor da tastiera e toolbar Markdown piu completa.
 6. Test UI per open/save, component insertion, sync preview e export PDF.

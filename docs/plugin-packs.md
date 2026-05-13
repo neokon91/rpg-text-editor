@@ -71,8 +71,9 @@ Quando il pack diventa stabile, mettilo in `schemas/plugins/<pack-id>/pack.json`
 - `default_label`: etichetta proposta nel blocco.
 - `fields`: campi del form.
 - `lists`: liste ripetibili opzionali.
+- `presets`: varianti rapide opzionali mostrate sulle card e nel form.
 
-`id` e `container` devono essere unici tra core e tutti i pack attivi. Se due pack dichiarano lo stesso valore, la validazione fallisce.
+`id` e `container` devono essere unici tra core e tutti i pack attivi. Se due pack dichiarano lo stesso valore, la validazione fallisce. Anche i preset vengono controllati: `fields` deve usare chiavi dichiarate dal componente e ogni voce `lists` deve riferirsi a una lista esistente.
 
 ## Fields
 
@@ -124,6 +125,27 @@ hook: Suono | Un anello vibra quando qualcuno mente.
 ```
 
 La validazione segnala una lista malformata se manca il separatore `|`.
+
+## Presets
+
+I preset permettono a core e plugin pack di proporre varianti pronte senza cambiare il renderer. Ogni preset puo dichiarare campi, liste e un `group` visibile nella palette:
+
+```json
+{
+  "id": "secret-cabal",
+  "label": "Congrega segreta",
+  "group": "Tono",
+  "fields": {
+    "name": "Congrega della Soglia",
+    "goal": "Aprire un varco controllato verso una camera sigillata."
+  },
+  "lists": [
+    { "key": "hook", "name": "Segnale", "text": "Il simbolo appare su tre porte nella stessa notte." }
+  ]
+}
+```
+
+La UI raggruppa i preset per `group`; se manca, usa `Preset`.
 
 ## Prova rapida
 

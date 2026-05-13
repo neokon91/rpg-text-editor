@@ -128,6 +128,14 @@ try {
   await clickButton("Tutti");
   await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 15"));
   await assertEqual(await evalInPage("document.body.textContent.includes('Fazione')"), true, "plugin pack component visible");
+  await waitFor(() => evalInPage("Array.from(document.querySelectorAll('.component-preset-group-label')).some((node) => node.textContent.trim() === 'Tono')"));
+  const draftBeforePluginPreset = await evalInPage("window.localStorage.getItem('rpg-text-editor-next:draft')");
+  await clickButton("Congrega segreta");
+  await waitFor(() => evalInPage("window.localStorage.getItem('rpg-text-editor-next:draft')?.includes('Congrega della Soglia')"));
+  await evalInPage(`window.localStorage.setItem('rpg-text-editor-next:draft', ${JSON.stringify(draftBeforePluginPreset)})`);
+  await reloadPage();
+  await waitFor(() => evalInPage("document.readyState === 'complete'"));
+  await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 15"));
   await evalInPage(`
     {
       const pack = document.querySelector('.pack-toggles input[type="checkbox"]');

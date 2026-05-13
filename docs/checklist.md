@@ -83,6 +83,7 @@ public: false
 - [x] Sottogruppi preset visibili sulle card componenti.
 - [x] Filtri rapidi per gruppo nella palette componenti.
 - [x] Breakpoint desktop compatti per evitare overflow orizzontale dei pannelli.
+- [x] Preset dichiarati anche da plugin pack versionati.
 - [x] Renderer build allineato ai plugin pack.
 - [x] UI React per attivare/disattivare pack dichiarati nel manifest.
 - [x] UI React per caricare pack esterni non versionati.
@@ -118,4 +119,4 @@ public: false
 ## Prossimi passi consigliati
 
 1. Ridurre overflow residuo dopo l'inserimento assistito.
-2. Estendere preset componenti da schema/plugin.
+2. Rifinire responsive mobile dei pannelli laterali.

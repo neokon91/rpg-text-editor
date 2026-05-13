@@ -22,6 +22,36 @@
       ],
       "lists": [
         { "key": "hook", "label": "Aggancio", "default_name": "Richiesta", "default_text": "La fazione offre protezione in cambio di una mappa sottratta a un rivale." }
+      ],
+      "presets": [
+        {
+          "id": "secret-cabal",
+          "label": "Congrega segreta",
+          "group": "Tono",
+          "fields": {
+            "name": "Congrega della Soglia",
+            "goal": "Aprire un varco controllato verso una camera sigillata sotto la citta.",
+            "resources": "Iniziati mascherati, chiavi rituali, favori comprati tra funzionari minori.",
+            "complication": "Ogni rituale riuscito lascia un testimone incapace di ricordare il proprio nome."
+          },
+          "lists": [
+            { "key": "hook", "name": "Segnale", "text": "Un simbolo della congrega appare su tre porte lontane nella stessa notte." }
+          ]
+        },
+        {
+          "id": "public-order",
+          "label": "Ordine pubblico",
+          "group": "Tono",
+          "fields": {
+            "name": "Ordine della Lanterna",
+            "goal": "Proteggere strade e santuari da minacce che le autorita ignorano.",
+            "resources": "Guide locali, archivi sigillati, rifugi sicuri lungo le rotte commerciali.",
+            "complication": "Un protettore stimato finanzia anche una fazione rivale."
+          },
+          "lists": [
+            { "key": "hook", "name": "Mandato", "text": "L'ordine chiede prove prima che un magistrato chiuda l'indagine." }
+          ]
+        }
       ]
     },
     {
@@ -39,6 +69,36 @@
       ],
       "lists": [
         { "key": "hook", "label": "Ostacolo", "default_name": "Rivale", "default_text": "Una compagnia mercenaria vuole vendere la campana al miglior offerente." }
+      ],
+      "presets": [
+        {
+          "id": "relic-recovery",
+          "label": "Recupero reliquia",
+          "group": "Obiettivo",
+          "fields": {
+            "name": "La Campana Sepolta",
+            "objective": "Trovare la campana votiva prima dell'equinozio.",
+            "stakes": "Se la campana resta sepolta, il villaggio perdera la protezione rituale.",
+            "reward": "Accesso agli archivi del tempio e una reliquia minore."
+          },
+          "lists": [
+            { "key": "hook", "name": "Rivale", "text": "Una compagnia mercenaria vuole vendere la campana al miglior offerente." }
+          ]
+        },
+        {
+          "id": "rescue-mission",
+          "label": "Salvataggio",
+          "group": "Obiettivo",
+          "fields": {
+            "name": "Ospite nel Bosco Cavo",
+            "objective": "Riportare a casa un emissario sparito durante una tregua.",
+            "stakes": "La tregua fallisce se l'emissario non torna entro tre giorni.",
+            "reward": "Un lasciapassare diplomatico e il favore di due casate minori."
+          },
+          "lists": [
+            { "key": "hook", "name": "Traccia", "text": "Il sigillo dell'emissario viene trovato accanto a impronte non umane." }
+          ]
+        }
       ]
     }
   ]
