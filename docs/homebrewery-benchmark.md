@@ -56,5 +56,5 @@ Limite noto: la paginazione e ancora manuale tramite `::pagebreak`; la preview o
 
 - Sync editor-preview completato per toggle, click preview verso editor e range sorgente sui blocchi multi-linea.
 - Riduzione overflow residuo dopo l'inserimento assistito.
-- Palette componenti con sottopreset e gruppi piu ricchi.
+- Palette componenti con preset estendibili da plugin e responsive pannelli.
 - Rifiniture responsive dei pannelli laterali.

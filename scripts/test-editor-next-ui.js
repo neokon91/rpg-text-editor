@@ -115,6 +115,7 @@ try {
   await waitFor(() => evalInPage("Boolean(document.querySelector('.outline-list'))"));
   await waitFor(() => evalInPage("document.querySelector('select')?.options.length > 1"));
   await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 15"));
+  await waitFor(() => evalInPage("Array.from(document.querySelectorAll('.component-preset-group-label')).some((node) => node.textContent.trim() === 'Ruolo')"));
   await clickButton("Media");
   await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 2"));
   await assertEqual(await evalInPage("window.localStorage.getItem('rpg-text-editor-next:component-group')"), "Media", "component group persisted");

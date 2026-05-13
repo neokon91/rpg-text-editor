@@ -37,6 +37,7 @@ public: false
 - Inserimento componenti al cursore CodeMirror.
 - Form guidati generati da schema per campi e liste, con preset, rimozione righe e validazione inline dei campi richiesti.
 - Azioni preset rapide sulle card componenti.
+- Sottogruppi preset visibili sulle card componenti.
 - Filtri rapidi per gruppo nella palette componenti.
 - Workspace locale persistente per preview, zoom, viewport, spread, sync e filtro gruppo componenti.
 - Workspace locale persistente per collasso frontmatter/outline e riga outline selezionata.
@@ -56,7 +57,7 @@ public: false
 
 1. Ridurre overflow residuo dopo l'inserimento assistito.
 2. Paginazione automatica piu evoluta oltre agli split manuali `::pagebreak`.
-3. Palette componenti piu ricca: sottopreset, gruppi rapidi e preset estendibili da schema/plugin.
+3. Palette componenti piu ricca: preset estendibili da schema/plugin e gestione responsive piu rifinita.
 4. Rifiniture responsive dei pannelli laterali.
 5. Comandi editor da tastiera e toolbar Markdown piu completa.
 6. Test UI per open/save, component insertion, sync preview e export PDF.

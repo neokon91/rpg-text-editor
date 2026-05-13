@@ -36,6 +36,7 @@
         {
           "id": "brute",
           "label": "Bruto marziale",
+          "group": "Ruolo",
           "fields": {
             "name": "Mastino di Ferro",
             "meta": "Costrutto medio, senza allineamento",
@@ -58,6 +59,7 @@
         {
           "id": "caster",
           "label": "Incantatore fragile",
+          "group": "Ruolo",
           "fields": {
             "name": "Oracolo delle Ceneri",
             "meta": "Umanoide medio, qualsiasi allineamento",
@@ -100,6 +102,7 @@
         {
           "id": "utility",
           "label": "Utilita",
+          "group": "Uso",
           "fields": {
             "name": "Luce del Cartografo",
             "level": "1° livello",
@@ -114,6 +117,7 @@
         {
           "id": "combat",
           "label": "Combattimento",
+          "group": "Uso",
           "fields": {
             "name": "Scheggia Astrale",
             "level": "2° livello",
@@ -213,6 +217,7 @@
         {
           "id": "d6-events",
           "label": "Eventi d6",
+          "group": "Formato",
           "fields": {
             "name": "Eventi rapidi",
             "die": "d6"

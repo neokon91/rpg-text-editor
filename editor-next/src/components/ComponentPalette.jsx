@@ -183,23 +183,44 @@ function ExternalPackControls({ packs, error, onError, onImport, onRemove }) {
 }
 
 function ComponentCard({ component, selected, onSelect, onPreset }) {
+  const presetGroups = groupPresets(component.presets);
+
   return (
     <article className={`component-card${selected ? " is-selected" : ""}`}>
       <button type="button" className="component-card-main" onClick={onSelect}>
         <span>{component.label}</span>
         <small>{component.description}</small>
       </button>
-      {component.presets?.length ? (
+      {presetGroups.length ? (
         <div className="component-preset-actions" aria-label={`Preset ${component.label}`}>
-          {component.presets.map((preset) => (
-            <button key={preset.id} type="button" onClick={() => onPreset(preset.id)}>
-              {preset.label || preset.id}
-            </button>
+          {presetGroups.map(([group, presets]) => (
+            <section key={group} className="component-preset-group" aria-label={`Preset ${group}`}>
+              <span className="component-preset-group-label">{group}</span>
+              <div>
+                {presets.map((preset) => (
+                  <button key={preset.id} type="button" onClick={() => onPreset(preset.id)}>
+                    {preset.label || preset.id}
+                  </button>
+                ))}
+              </div>
+            </section>
           ))}
         </div>
       ) : null}
     </article>
   );
+}
+
+function groupPresets(presets = []) {
+  const groups = new Map();
+
+  for (const preset of presets) {
+    const group = preset.group || "Preset";
+    if (!groups.has(group)) groups.set(group, []);
+    groups.get(group).push(preset);
+  }
+
+  return [...groups.entries()];
 }
 
 function ComponentForm({ component, values, onChange, onInsert }) {

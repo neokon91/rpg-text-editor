@@ -52,6 +52,7 @@ Vite + React + CodeMirror 6 + iframe preview
 - Pack JSON esterni importabili e rimovibili dalla palette componenti, con persistenza locale e validazione collisioni.
 - Anteprima componenti dei pack esterni importati visibile nella palette.
 - Azioni preset rapide disponibili sulle card componenti.
+- Sottogruppi preset visibili sulle card componenti.
 - Filtri rapidi per gruppo disponibili nella palette componenti.
 - Workspace locale persistente per preview visibile, zoom, viewport, spread, sync e filtro gruppo componenti.
 - Workspace locale persistente per collasso frontmatter/outline e riga outline selezionata.
@@ -74,7 +75,7 @@ Vite + React + CodeMirror 6 + iframe preview
 Proseguire con page break piu intelligenti o palette avanzata:
 
 1. Page break: ridurre overflow residuo dopo l'inserimento assistito.
-2. Oppure palette avanzata: sottopreset e gruppi piu ricchi.
+2. Oppure palette avanzata: preset estendibili da plugin e responsive pannelli.
 3. Mantenere `npm run test:editor-next-ui` come smoke minimo per ogni tranche.
 
 Poi: rename/delete se confermati.

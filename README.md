@@ -81,7 +81,7 @@ I moduli condivisi vivono in `packages/`:
 
 La vecchia shell vanilla `editor/` e stata rimossa: `editor-next/` e l'unica UI applicativa.
 
-I plugin pack vivono in `schemas/plugins/<pack-id>/pack.json` e dichiarano nome, versione, compatibilita e componenti esportati. `npm run check:components` valida campi obbligatori e collisioni di `id`/`container`. La palette componenti nella UI React e il prossimo blocco di lavoro: lo schema e gia pronto, ma l'inserimento guidato in `editor-next` non e ancora stato riportato.
+I plugin pack vivono in `schemas/plugins/<pack-id>/pack.json` e dichiarano nome, versione, compatibilita e componenti esportati. `npm run check:components` valida campi obbligatori e collisioni di `id`/`container`. La palette componenti React legge lo stesso schema, supporta pack manifest/esterni, preset rapidi e sottogruppi preset dichiarati nei componenti.
 
 `npm run generate:schema-artifacts` usa lo stesso manifest per rigenerare la reference componenti e gli snippet rapidi in `.vscode/rpg.schema.code-snippets`. `npm run check:schema-artifacts` fallisce se questi file non sono allineati allo schema.
 

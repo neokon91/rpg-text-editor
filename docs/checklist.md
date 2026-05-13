@@ -80,6 +80,7 @@ public: false
 - [x] Palette generata da schema nella UI React.
 - [x] Form componenti generati da schema nella UI React, con preset, rimozione righe lista e validazione inline.
 - [x] Azioni preset rapide sulle card componenti.
+- [x] Sottogruppi preset visibili sulle card componenti.
 - [x] Filtri rapidi per gruppo nella palette componenti.
 - [x] Renderer build allineato ai plugin pack.
 - [x] UI React per attivare/disattivare pack dichiarati nel manifest.
@@ -116,4 +117,4 @@ public: false
 ## Prossimi passi consigliati
 
 1. Ridurre overflow residuo dopo l'inserimento assistito.
-2. Rifinire responsive dei pannelli e palette con sottopreset.
+2. Rifinire responsive dei pannelli e preset estendibili da schema/plugin.

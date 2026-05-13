@@ -386,10 +386,28 @@ button:disabled {
 }
 
 .component-preset-actions {
+  display: grid;
+  gap: 6px;
+  padding: 0 8px 8px;
+}
+
+.component-preset-group {
+  display: grid;
+  gap: 4px;
+}
+
+.component-preset-group-label {
+  color: #695d4d;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.component-preset-group div {
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
-  padding: 0 8px 8px;
 }
 
 .component-preset-actions button {
