@@ -6,7 +6,7 @@ import {
   validateComponentValues
 } from "./componentMarkdown.js";
 
-export function ComponentPalette({ schema, onInsert }) {
+export function ComponentPalette({ schema, packs = [], enabledPackIds = new Set(), onTogglePack, onInsert }) {
   const [query, setQuery] = useState("");
   const [selectedId, setSelectedId] = useState("");
   const selectedComponent = useMemo(
@@ -45,6 +45,20 @@ export function ComponentPalette({ schema, onInsert }) {
           value={query}
           onChange={(event) => setQuery(event.target.value)}
         />
+        {packs.length ? (
+          <div className="pack-toggles" aria-label="Plugin pack">
+            {packs.map((pack) => (
+              <label key={pack.id}>
+                <input
+                  type="checkbox"
+                  checked={enabledPackIds.has(pack.id)}
+                  onChange={() => onTogglePack?.(pack.id)}
+                />
+                <span>{pack.name}</span>
+              </label>
+            ))}
+          </div>
+        ) : null}
       </header>
       <div className="component-palette-scroll">
         {groupedComponents.map(([group, components]) => (

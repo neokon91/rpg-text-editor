@@ -94,6 +94,18 @@ try {
   await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.querySelector('.page-shell h1')?.textContent.toLowerCase().includes('nuova avventura')"));
   await waitFor(() => evalInPage("document.querySelector('select')?.options.length > 1"));
   await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 15"));
+  await assertEqual(await evalInPage("document.body.textContent.includes('Fazione')"), true, "plugin pack component visible");
+  await evalInPage(`
+    {
+      const pack = document.querySelector('.pack-toggles input[type="checkbox"]');
+      if (!pack) throw new Error('Plugin pack toggle not found');
+      pack.click();
+    }
+  `);
+  await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 13"));
+  await assertEqual(await evalInPage("document.body.textContent.includes('Fazione')"), false, "plugin pack component hidden");
+  await evalInPage("document.querySelector('.pack-toggles input[type=\"checkbox\"]').click()");
+  await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 15"));
 
   await clickButton("Check");
   await waitFor(() => evalInPage("document.body.textContent.includes('Check completo ok')"));

@@ -45,6 +45,7 @@ Vite + React + CodeMirror 6 + iframe preview
 - Form componenti gia portati oltre il base: preset schema-driven, rimozione righe lista e validazione inline dei campi richiesti.
 - Prima toolbar preview implementata: pagina corrente/totale, prev/next, input pagina, fit/fill e selettore single/facing/flow.
 - Sync editor-preview base implementato: toggle `Sync`, preview segue la linea cursore e il click preview seleziona la sorgente.
+- Plugin pack manifest attivabili/disattivabili dalla palette componenti, con scelta persistente.
 
 ## File Da Conoscere
 
@@ -61,10 +62,10 @@ Vite + React + CodeMirror 6 + iframe preview
 
 ## Primo Task Consigliato
 
-Proseguire con renderer multipagina reale o plugin pack UI:
+Proseguire con renderer multipagina reale o pack esterni:
 
 1. Renderer multipagina reale: spezzare la preview in pagine navigabili, preparando `single/facing/flow` veri.
-2. Oppure plugin pack UI: toggle pack installati da manifest e stato persistente.
+2. Oppure pack esterni: importare/provare pack JSON non versionati dalla UI.
 3. Mantenere `npm run test:editor-next-ui` come smoke minimo per ogni tranche.
 
 Poi: sync fine su scroll continuo, palette con sottopreset, rename/delete se confermati.

@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { renderMarkdown } from "../../packages/components/preview.js";
 import { renderComponentValidation } from "../../packages/components/validation.js";
-import { loadComponentSchema, loadEnabledPacks, manifestUrl, fetchJson } from "../../packages/components/schema.js";
+import { loadComponentSchema, loadEnabledPacks, manifestUrl, fetchJson, saveEnabledPacks } from "../../packages/components/schema.js";
 import { renderPreviewDocument } from "../../packages/documents/preview-shell.js";
 import { parseFrontmatter, serializeFrontmatter } from "../../packages/documents/frontmatter.js";
 import { checkDocument, exportDocument, getDocument, listDocuments, saveDocument } from "../../packages/documents/api.js";
@@ -15,6 +15,8 @@ import { PreviewFrame } from "./preview/PreviewFrame.jsx";
 import { TopMenu } from "./shell/TopMenu.jsx";
 import { clearDraft, loadDraft, saveDraft } from "./storage/localDrafts.js";
 import "./styles.css";
+
+const enabledPacksStorageKey = "rpg-text-editor:enabled-packs";
 
 const starterDocument = `---
 title: Nuova Avventura
@@ -42,6 +44,8 @@ Scrivi qui la prima scena.
 function App() {
   const editorRef = useRef(null);
   const [markdown, setMarkdown] = useState(() => loadDraft() || starterDocument);
+  const [componentManifest, setComponentManifest] = useState(null);
+  const [enabledPacks, setEnabledPacks] = useState(() => new Set());
   const [schema, setSchema] = useState({ components: [] });
   const [schemaState, setSchemaState] = useState("Caricamento schema");
   const [previewVisible, setPreviewVisible] = useState(true);
@@ -62,16 +66,35 @@ function App() {
 
   useEffect(() => {
     let cancelled = false;
-    async function loadSchema() {
+    async function loadManifest() {
       try {
         const manifest = await fetchJson(manifestUrl, "Manifest componenti non caricato");
-        const enabled = loadEnabledPacks(manifest, "rpg-text-editor:enabled-packs");
-        const loadedSchema = await loadComponentSchema(manifest, enabled);
+        if (cancelled) return;
+        setComponentManifest(manifest);
+        setEnabledPacks(loadEnabledPacks(manifest, enabledPacksStorageKey));
+      } catch (error) {
+        if (cancelled) return;
+        setSchemaState(error.message);
+      }
+    }
+    loadManifest();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!componentManifest) return undefined;
+    let cancelled = false;
+    async function loadSchema() {
+      try {
+        const loadedSchema = await loadComponentSchema(componentManifest, enabledPacks);
         if (cancelled) return;
         setSchema(loadedSchema);
         setSchemaState(`${loadedSchema.components.length} componenti`);
       } catch (error) {
         if (cancelled) return;
+        setSchema({ components: [] });
         setSchemaState(error.message);
       }
     }
@@ -79,7 +102,7 @@ function App() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [componentManifest, enabledPacks]);
 
   useEffect(() => {
     saveDraft(markdown);
@@ -149,6 +172,20 @@ function App() {
     } else {
       setMarkdown((current) => `${current.trimEnd()}${snippet}`);
     }
+    setExportOutputs([]);
+  }
+
+  function togglePack(packId) {
+    setEnabledPacks((current) => {
+      const next = new Set(current);
+      if (next.has(packId)) {
+        next.delete(packId);
+      } else {
+        next.add(packId);
+      }
+      saveEnabledPacks(enabledPacksStorageKey, next);
+      return next;
+    });
     setExportOutputs([]);
   }
 
@@ -311,7 +348,13 @@ function App() {
         onInsertSnippet={insertSnippet}
       />
       <section className="next-workspace">
-        <ComponentPalette schema={schema} onInsert={insertMarkdown} />
+        <ComponentPalette
+          schema={schema}
+          packs={componentManifest?.packs || []}
+          enabledPackIds={enabledPacks}
+          onTogglePack={togglePack}
+          onInsert={insertMarkdown}
+        />
         <MarkdownEditor
           ref={editorRef}
           markdown={markdown}

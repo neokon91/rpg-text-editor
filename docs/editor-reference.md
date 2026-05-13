@@ -40,6 +40,7 @@ Il server apre `editor-next/` su `http://127.0.0.1:5173/editor-next/` e combina 
 - Sync preview base: toggle `Sync`, scroll preview dalla linea cursore e click su preview verso la linea sorgente.
 - Snippet rapidi: scena, readaloud, incontro, tabella e page break.
 - Palette componenti generata da schema con ricerca, gruppi e inserimento al cursore.
+- Toggle plugin pack dichiarati nel manifest, con scelta persistente in `localStorage`.
 - Form componenti per campi e liste dichiarati nello schema, con preset, rimozione righe e validazione inline dei campi richiesti.
 - Navigatore documento da heading Markdown con salto alla riga.
 - Form frontmatter compatto nel pannello documento.
@@ -55,7 +56,7 @@ Il server apre `editor-next/` su `http://127.0.0.1:5173/editor-next/` e combina 
 
 - Renderer multipagina reale per rendere `facing/flow` equivalenti al benchmark, oltre ai marker `::pagebreak` navigabili.
 - Sync editor-preview piu fine su linee intermedie e scroll continuo, oltre al sync base gia disponibile.
-- Supporto ai plugin pack esterni nella nuova UI.
+- Caricamento plugin pack esterni non versionati nella nuova UI.
 - Palette componenti con sottopreset e gruppi piu ricchi.
 - Rename/delete documento, se confermati come parte del flusso editor.
 - Test UI piu ampi per save/open e component insertion.

@@ -31,7 +31,7 @@ public: false
 - [x] Snippet Markdown base.
 - [x] Palette componenti da schema nella UI React.
 - [x] Benchmark Homebrewery/V3 documentato in `docs/homebrewery-benchmark.md`.
-- [ ] Toggle plugin pack nella UI React.
+- [x] Toggle plugin pack nella UI React.
 - [x] Import documenti da `docs/`.
 - [x] Salvataggio con file corrente.
 - [x] Dirty state.
@@ -71,6 +71,7 @@ public: false
 - [x] Palette generata da schema nella UI React.
 - [x] Form componenti generati da schema nella UI React, con preset, rimozione righe lista e validazione inline.
 - [x] Renderer build allineato ai plugin pack.
+- [x] UI React per attivare/disattivare pack dichiarati nel manifest.
 - [ ] UI React per caricare pack esterni non versionati.
 - [x] Documentazione dedicata per creare nuovi pack.
 
@@ -102,5 +103,5 @@ public: false
 ## Prossimi passi consigliati
 
 1. Rendere lo spread `facing/flow` fisicamente multipagina quando il renderer verra spezzato in pagine reali.
-2. Aggiungere plugin pack UI.
+2. Aggiungere caricamento pack esterni non versionati.
 3. Poi palette componenti con sottopreset e workspace persistenti.

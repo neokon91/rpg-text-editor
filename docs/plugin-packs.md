@@ -127,15 +127,18 @@ La validazione segnala una lista malformata se manca il separatore `|`.
 
 ## Prova rapida
 
-La UI React non ha ancora la palette componenti completa. Per ora valida il pack da CLI e usa gli snippet/reference generati.
+La UI React carica i pack dichiarati in `schemas/components.json` e li mostra nella palette componenti. I toggle nella palette attivano/disattivano i pack manifest e salvano la scelta in `localStorage`.
+
+Per provare un pack versionato:
 
 ```sh
 npm run check:components
 npm run generate:schema-artifacts
 npm run check:schema-artifacts
+npm run editor
 ```
 
-Quando la palette React sara completata, questa sezione tornera a includere caricamento pack esterno e inserimento guidato.
+Poi apri l'editor, usa i toggle sotto la ricerca componenti e verifica che le card del pack compaiano o spariscano. Il caricamento di pack JSON esterni non versionati resta un passaggio futuro.
 
 ## Versionare un pack
 

@@ -212,6 +212,24 @@ button:disabled {
   max-width: none;
 }
 
+.pack-toggles {
+  display: grid;
+  gap: 5px;
+}
+
+.pack-toggles label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #695d4d;
+  font-size: 12px;
+}
+
+.pack-toggles input {
+  width: 15px;
+  min-height: 15px;
+}
+
 .component-palette-scroll {
   min-height: 0;
   overflow: auto;
