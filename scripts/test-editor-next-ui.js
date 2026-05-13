@@ -93,6 +93,9 @@ try {
   await waitFor(() => evalInPage("document.readyState === 'complete'"));
   await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.querySelector('.page-shell h1')?.textContent.toLowerCase().includes('nuova avventura')"));
   await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.querySelector('p[data-source-end-line]')?.dataset.sourceEndLine"));
+  await setViewport(1180, 820);
+  await waitFor(() => evalInPage("document.querySelector('.next-workspace') && document.documentElement.scrollWidth <= window.innerWidth"));
+  await setViewport(800, 600);
   await clickTopbarButton("Nascondi preview");
   await waitFor(() => evalInPage("window.localStorage.getItem('rpg-text-editor-next:preview-visible') === 'false' && !document.querySelector('iframe')"));
   await reloadPage();
@@ -261,6 +264,15 @@ async function evalInPage(expression) {
 
 async function reloadPage() {
   await cdp.send("Page.reload", { ignoreCache: true });
+}
+
+async function setViewport(width, height) {
+  await cdp.send("Emulation.setDeviceMetricsOverride", {
+    width,
+    height,
+    deviceScaleFactor: 1,
+    mobile: false
+  });
 }
 
 async function clickButton(label) {

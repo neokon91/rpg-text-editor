@@ -50,6 +50,7 @@ Il server apre `editor-next/` su `http://127.0.0.1:5173/editor-next/` e combina 
 - Azioni preset rapide direttamente sulle card dei componenti.
 - Sottogruppi preset visibili sulle card componenti quando dichiarati nello schema.
 - Filtri rapidi per gruppo nella palette componenti.
+- Breakpoint desktop compatti per mantenere palette, editor, preview e documento entro la viewport senza overflow orizzontale.
 - Workspace locale persistente per preview visibile, zoom, viewport, spread, sync e filtro gruppo componenti.
 - Workspace locale persistente per collasso frontmatter/outline e riga outline selezionata.
 - Navigatore documento da heading Markdown con salto alla riga.
@@ -65,7 +66,7 @@ Il server apre `editor-next/` su `http://127.0.0.1:5173/editor-next/` e combina 
 ## Mancanze Verso Homebrewery
 
 - Riduzione overflow residuo dopo l'inserimento assistito.
-- Palette componenti con preset estendibili da schema/plugin e responsive piu rifinito.
+- Palette componenti con preset estendibili da schema/plugin.
 - Rename/delete documento, se confermati come parte del flusso editor.
 - Test UI piu ampi per save/open e component insertion.
 

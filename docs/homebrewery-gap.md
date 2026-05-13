@@ -39,6 +39,7 @@ public: false
 - Azioni preset rapide sulle card componenti.
 - Sottogruppi preset visibili sulle card componenti.
 - Filtri rapidi per gruppo nella palette componenti.
+- Breakpoint desktop compatti per evitare overflow orizzontale dei pannelli.
 - Workspace locale persistente per preview, zoom, viewport, spread, sync e filtro gruppo componenti.
 - Workspace locale persistente per collasso frontmatter/outline e riga outline selezionata.
 - Navigatore documento da heading Markdown con salto alla riga.
@@ -57,8 +58,8 @@ public: false
 
 1. Ridurre overflow residuo dopo l'inserimento assistito.
 2. Paginazione automatica piu evoluta oltre agli split manuali `::pagebreak`.
-3. Palette componenti piu ricca: preset estendibili da schema/plugin e gestione responsive piu rifinita.
-4. Rifiniture responsive dei pannelli laterali.
+3. Palette componenti piu ricca: preset estendibili da schema/plugin.
+4. Rifiniture responsive mobile dei pannelli laterali.
 5. Comandi editor da tastiera e toolbar Markdown piu completa.
 6. Test UI per open/save, component insertion, sync preview e export PDF.
 
