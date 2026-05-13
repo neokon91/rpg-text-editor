@@ -168,8 +168,13 @@ export function PreviewFrame({
         </label>
         <button type="button" disabled={!canGoForward} onClick={() => goToPage(pageState.current + 1)} aria-label="Pagina successiva">›</button>
         {overflowPages.length ? (
-          <button type="button" className="preview-overflow" onClick={selectFirstOverflow}>
-            Overflow {overflowPages.length}
+          <button
+            type="button"
+            className="preview-overflow"
+            title={`Prima pagina overflow: ${firstOverflow.page}, riga ${firstOverflow.line}`}
+            onClick={selectFirstOverflow}
+          >
+            Overflow {overflowPages.length} · riga {firstOverflow.line}
           </button>
         ) : null}
       </div>

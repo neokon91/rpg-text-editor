@@ -204,7 +204,7 @@ try {
   `);
   await reloadPage();
   await waitFor(() => evalInPage("document.readyState === 'complete'"));
-  await waitFor(() => evalInPage("document.querySelector('.preview-overflow')?.textContent.includes('Overflow')"));
+  await waitFor(() => evalInPage("document.querySelector('.preview-overflow')?.textContent.includes('riga')"));
   await evalInPage("document.querySelector('.preview-overflow').click()");
   await waitFor(() => evalInPage("Number(window.localStorage.getItem('rpg-text-editor-next:selected-line')) > 1"));
   await clickTopbarButton("Break");

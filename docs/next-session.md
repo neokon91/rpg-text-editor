@@ -45,7 +45,7 @@ Vite + React + CodeMirror 6 + iframe preview
 - Form componenti gia portati oltre il base: preset schema-driven, rimozione righe lista e validazione inline dei campi richiesti.
 - Prima toolbar preview implementata: pagina corrente/totale, prev/next, input pagina, fit/fill e selettore single/facing/flow.
 - Preview multipagina reale implementata per `::pagebreak`: ogni pagina e una `page-shell` separata.
-- Indicatore overflow pagine implementato nella toolbar preview, con salto alla prima pagina e selezione della riga da spezzare.
+- Indicatore overflow pagine implementato nella toolbar preview, con riga sorgente del prossimo intervento e selezione da spezzare.
 - Comando `Break` disponibile per inserire `::pagebreak` prima del blocco Markdown selezionato e tracciare il marker creato.
 - Sync editor-preview implementato: toggle `Sync`, preview segue la linea cursore anche su blocchi multi-linea e il click preview seleziona la sorgente.
 - Plugin pack manifest attivabili/disattivabili dalla palette componenti, con scelta persistente.

@@ -68,6 +68,7 @@ public: false
 - [x] Inserimento assistito `::pagebreak` dalla riga overflow selezionata.
 - [x] Inserimento page break block-aware, evitando di spezzare paragrafi/liste/tabelle nel mezzo.
 - [x] Stato page break esplicito: dopo inserimento viene selezionato il marker creato e tracciata la riga del contenuto spostato.
+- [x] Badge overflow con riga sorgente del prossimo intervento.
 - [x] Tema originale `modern-5-5` per resa 5.5-compatible piu moderna e pulita.
 
 ## Componenti e schema
