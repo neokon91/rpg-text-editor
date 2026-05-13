@@ -145,7 +145,7 @@ I preset permettono a core e plugin pack di proporre varianti pronte senza cambi
 }
 ```
 
-La UI raggruppa i preset per `group`; se manca, usa `Preset`.
+La UI raggruppa i preset per `group`; se manca, usa `Preset`. La ricerca della palette considera anche `id`, `label`, `group` e valori dei campi dei preset.
 
 ## Prova rapida
 

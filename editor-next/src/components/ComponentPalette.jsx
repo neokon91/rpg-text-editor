@@ -45,7 +45,8 @@ export function ComponentPalette({
         component.id,
         component.container,
         component.description,
-        component.group
+        component.group,
+        presetSearchText(component.presets)
       ].join(" ").toLowerCase();
       if (normalized && !searchable.includes(normalized)) continue;
       if (!groups.has(group)) groups.set(group, []);
@@ -223,9 +224,22 @@ function groupPresets(presets = []) {
   return [...groups.entries()];
 }
 
+function presetSearchText(presets = []) {
+  return presets
+    .flatMap((preset) => [
+      preset.id,
+      preset.label,
+      preset.group,
+      ...Object.values(preset.fields || {})
+    ])
+    .filter(Boolean)
+    .join(" ");
+}
+
 function ComponentForm({ component, values, onChange, onInsert }) {
   const diagnostics = validateComponentValues(component, values);
   const diagnosticKeys = new Map(diagnostics.map((item) => [item.key, item.message]));
+  const presetGroups = groupPresets(component.presets);
 
   function updateField(key, value) {
     onChange({
@@ -278,7 +292,7 @@ function ComponentForm({ component, values, onChange, onInsert }) {
         <strong>{component.label}</strong>
         <small>{component.container}</small>
       </header>
-      {component.presets?.length ? (
+      {presetGroups.length ? (
         <label>
           <span>Preset</span>
           <select
@@ -290,8 +304,12 @@ function ComponentForm({ component, values, onChange, onInsert }) {
             }}
           >
             <option value="">Scegli preset</option>
-            {component.presets.map((preset) => (
-              <option key={preset.id} value={preset.id}>{preset.label || preset.id}</option>
+            {presetGroups.map(([group, presets]) => (
+              <optgroup key={group} label={group}>
+                {presets.map((preset) => (
+                  <option key={preset.id} value={preset.id}>{preset.label || preset.id}</option>
+                ))}
+              </optgroup>
             ))}
           </select>
         </label>

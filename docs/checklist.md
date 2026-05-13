@@ -84,6 +84,7 @@ public: false
 - [x] Filtri rapidi per gruppo nella palette componenti.
 - [x] Breakpoint desktop compatti per evitare overflow orizzontale dei pannelli.
 - [x] Preset dichiarati anche da plugin pack versionati.
+- [x] Ricerca palette estesa a label, gruppi e valori dei preset.
 - [x] Renderer build allineato ai plugin pack.
 - [x] UI React per attivare/disattivare pack dichiarati nel manifest.
 - [x] UI React per caricare pack esterni non versionati.

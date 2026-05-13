@@ -128,6 +128,11 @@ try {
   await clickButton("Tutti");
   await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 15"));
   await assertEqual(await evalInPage("document.body.textContent.includes('Fazione')"), true, "plugin pack component visible");
+  await setComponentSearch("Congrega");
+  await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 1 && document.body.textContent.includes('Fazione')"));
+  await waitFor(() => evalInPage("document.querySelector('.component-form optgroup[label=\"Tono\"]') || Array.from(document.querySelectorAll('.component-preset-group-label')).some((node) => node.textContent.trim() === 'Tono')"));
+  await setComponentSearch("");
+  await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 15"));
   await waitFor(() => evalInPage("Array.from(document.querySelectorAll('.component-preset-group-label')).some((node) => node.textContent.trim() === 'Tono')"));
   const draftBeforePluginPreset = await evalInPage("window.localStorage.getItem('rpg-text-editor-next:draft')");
   await clickButton("Congrega segreta");
@@ -290,6 +295,18 @@ async function clickButton(label) {
         .find((item) => item.textContent.trim() === ${JSON.stringify(label)});
       if (!button) throw new Error('Button not found: ${label}');
       button.click();
+    }
+  `);
+}
+
+async function setComponentSearch(value) {
+  await evalInPage(`
+    {
+      const input = document.querySelector('.component-palette input[type="search"]');
+      if (!input) throw new Error('Component search not found');
+      const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set;
+      setter.call(input, ${JSON.stringify(value)});
+      input.dispatchEvent(new Event('input', { bubbles: true }));
     }
   `);
 }
