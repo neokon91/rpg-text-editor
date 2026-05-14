@@ -722,6 +722,10 @@ button:disabled {
   white-space: nowrap;
 }
 
+.preview-toolbar .preview-auto-pages[data-state="warning"] {
+  color: #7d2d1a;
+}
+
 .preview-toolbar .preview-overflow {
   border-color: #a43d25;
   background: #fff5f1;

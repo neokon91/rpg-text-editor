@@ -56,7 +56,8 @@ export function PreviewFrame({
       if (event.data?.type === "rpg-preview-pagination") {
         setAutoPageReport({
           totalPages: Number(event.data.totalPages) || 1,
-          generatedPages: Number(event.data.generatedPages) || 0
+          generatedPages: Number(event.data.generatedPages) || 0,
+          overflowPages: Number(event.data.overflowPages) || 0
         });
         updatePageState();
       }
@@ -176,8 +177,12 @@ export function PreviewFrame({
           Auto pages
         </button>
         {autoPaginate && autoPageReport ? (
-          <span className="preview-auto-pages" title="Pagine generate dalla preview automatica">
-            Auto {autoPageReport.totalPages}p
+          <span
+            className="preview-auto-pages"
+            data-state={autoPageReport.overflowPages ? "warning" : "ok"}
+            title="Pagine generate dalla preview automatica"
+          >
+            Auto {autoPageReport.totalPages}p{autoPageReport.overflowPages ? ` · ${autoPageReport.overflowPages} overflow` : " · ok"}
           </span>
         ) : null}
         <button type="button" disabled={!canGoBack} onClick={() => goToPage(pageState.current - 1)} aria-label="Pagina precedente">‹</button>

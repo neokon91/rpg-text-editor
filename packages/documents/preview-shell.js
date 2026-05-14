@@ -137,12 +137,15 @@ ${page}
       }
 
       function reportAutoPagination(container, initialPages) {
-        var totalPages = container.querySelectorAll(".page-shell").length;
+        var pages = Array.from(container.querySelectorAll(".page-shell"));
+        var totalPages = pages.length;
+        var overflowPages = pages.filter(pageOverflows).length;
         window.parent.postMessage({
           type: "rpg-preview-pagination",
           autoPaginate: true,
           totalPages: totalPages,
-          generatedPages: Math.max(totalPages - initialPages, 0)
+          generatedPages: Math.max(totalPages - initialPages, 0),
+          overflowPages: overflowPages
         }, "*");
       }
     </script>
