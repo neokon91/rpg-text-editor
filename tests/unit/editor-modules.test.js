@@ -7,7 +7,7 @@ import {
   defaultComponentValues,
   validateComponentValues
 } from "../../editor-next/src/components/componentMarkdown.js";
-import { insertPageBreakBeforeLine } from "../../editor-next/src/editor/pageBreaks.js";
+import { insertPageBreakBeforeLine, insertPageBreaksBeforeLines } from "../../editor-next/src/editor/pageBreaks.js";
 import { renderMarkdown } from "../../packages/components/preview.js";
 import { parseMarkdownOutline } from "../../packages/markdown/outline.js";
 
@@ -134,4 +134,21 @@ continua qui
   assert.equal(duplicate.inserted, false);
   assert.equal(duplicate.breakLine, 5);
   assert.equal(duplicate.markdown, result.markdown);
+});
+
+test("insertPageBreaksBeforeLines inserts multiple block-aware breaks", () => {
+  const result = insertPageBreaksBeforeLines(`# Titolo
+
+Primo blocco
+continua
+
+Secondo blocco
+continua
+
+Terzo blocco`, [4, 7, 4]);
+
+  assert.equal(result.inserted, 2);
+  assert.deepEqual(result.breaks.map((item) => item.targetLine), [4, 7]);
+  assert.match(result.markdown, /# Titolo\n\n::pagebreak\n\nPrimo blocco/);
+  assert.match(result.markdown, /continua\n\n::pagebreak\n\nSecondo blocco/);
 });

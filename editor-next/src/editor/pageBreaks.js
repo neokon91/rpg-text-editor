@@ -16,6 +16,33 @@ export function insertPageBreakBeforeLine(markdown, lineNumber) {
   };
 }
 
+export function insertPageBreaksBeforeLines(markdown, lineNumbers) {
+  const targets = [...new Set(lineNumbers.map(Number).filter((line) => Number.isInteger(line) && line > 0))]
+    .sort((a, b) => a - b);
+  let nextMarkdown = markdown;
+  let lineOffset = 0;
+  const breaks = [];
+
+  for (const targetLine of targets) {
+    const adjustedLine = targetLine + lineOffset;
+    const result = insertPageBreakBeforeLine(nextMarkdown, adjustedLine);
+    if (!result.inserted) continue;
+    nextMarkdown = result.markdown;
+    lineOffset += result.contentLine - result.line;
+    breaks.push({
+      targetLine,
+      breakLine: result.breakLine,
+      contentLine: result.contentLine
+    });
+  }
+
+  return {
+    markdown: nextMarkdown,
+    inserted: breaks.length,
+    breaks
+  };
+}
+
 function findBlockStartLine(lines, lineNumber) {
   let index = Math.max(0, Math.min(Number(lineNumber) - 1, lines.length - 1));
   while (index > 0 && lines[index].trim() && lines[index - 1].trim() && lines[index - 1].trim() !== "::pagebreak") {

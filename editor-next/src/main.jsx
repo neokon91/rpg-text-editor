@@ -10,7 +10,7 @@ import { countWords, downloadMarkdown } from "../../packages/markdown/editor-act
 import { slugifyDocumentName } from "../../scripts/lib/component-schema.js";
 import { ComponentPalette } from "./components/ComponentPalette.jsx";
 import { MarkdownEditor } from "./editor/MarkdownEditor.jsx";
-import { insertPageBreakBeforeLine } from "./editor/pageBreaks.js";
+import { insertPageBreakBeforeLine, insertPageBreaksBeforeLines } from "./editor/pageBreaks.js";
 import { DocumentOutline } from "./outline/DocumentOutline.jsx";
 import { PreviewFrame } from "./preview/PreviewFrame.jsx";
 import { TopMenu } from "./shell/TopMenu.jsx";
@@ -75,6 +75,7 @@ function App() {
   const [isChecking, setIsChecking] = useState(false);
   const [exportOutputs, setExportOutputs] = useState([]);
   const [pendingBreakReview, setPendingBreakReview] = useState(null);
+  const [previewOverflowPages, setPreviewOverflowPages] = useState([]);
   const [dialog, setDialog] = useState(null);
 
   useEffect(() => {
@@ -258,6 +259,31 @@ function App() {
     setPendingBreakReview(inserted ? { breakLine, contentLine } : null);
     setStatus(inserted ? `Page break inserito alla riga ${breakLine}; contenuto da riga ${contentLine}` : `Page break gia vicino alla riga ${breakLine}`);
     setExportOutputs([]);
+  }
+
+  function insertPageBreaksAtOverflow() {
+    const overflowLines = previewOverflowPages.map((item) => item.line).filter(Boolean);
+    if (!overflowLines.length) {
+      setStatus("Nessun overflow preview da spezzare");
+      return;
+    }
+
+    const result = insertPageBreaksBeforeLines(markdown, overflowLines);
+    setMarkdown(result.markdown);
+
+    if (result.inserted) {
+      setSelectedLine(result.breaks[0].breakLine);
+      setPendingBreakReview(null);
+      setStatus(`Auto break: ${result.inserted} page break inseriti`);
+    } else {
+      setStatus("Auto break: page break gia presenti vicino agli overflow");
+    }
+    setExportOutputs([]);
+  }
+
+  function handleOverflowChange(overflowPages) {
+    setPreviewOverflowPages((current) => sameOverflowPages(current, overflowPages) ? current : overflowPages);
+    reviewBreakOverflow(overflowPages);
   }
 
   function reviewBreakOverflow(overflowPages) {
@@ -544,6 +570,7 @@ function App() {
         onResetDraft={resetDraft}
         onInsertSnippet={insertSnippet}
         onInsertPageBreakAtSelection={insertPageBreakAtSelection}
+        onInsertPageBreaksAtOverflow={insertPageBreaksAtOverflow}
       />
       <section className="next-workspace">
         <ComponentPalette
@@ -572,7 +599,7 @@ function App() {
             viewport={viewport}
             spread={previewSpread}
             syncSourceLine={syncPreview ? cursorLine : null}
-            onOverflowChange={reviewBreakOverflow}
+            onOverflowChange={handleOverflowChange}
             onSelectLine={setSelectedLine}
             onZoomChange={setZoom}
             onSpreadChange={setPreviewSpread}
@@ -663,6 +690,11 @@ function loadExternalPacks() {
 
 function saveExternalPacks(packs) {
   localStorage.setItem(externalPacksStorageKey, JSON.stringify(packs));
+}
+
+function sameOverflowPages(left, right) {
+  if (left.length !== right.length) return false;
+  return left.every((item, index) => item.page === right[index].page && item.line === right[index].line);
 }
 
 function normalizeExternalPack(pack) {

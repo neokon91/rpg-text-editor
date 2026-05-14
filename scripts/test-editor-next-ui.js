@@ -337,7 +337,8 @@ try {
   await waitFor(() => evalInPage("document.querySelector('.preview-overflow')?.textContent.includes('riga')"));
   await evalInPage("document.querySelector('.preview-overflow').click()");
   await waitFor(() => evalInPage("Number(window.localStorage.getItem('rpg-text-editor-next:selected-line')) > 1"));
-  await clickTopbarButton("Break");
+  await clickTopbarButton("Auto break");
+  await waitFor(() => evalInPage("document.body.textContent.includes('Auto break:')"));
   await waitFor(() => evalInPage("window.localStorage.getItem('rpg-text-editor-next:draft')?.includes('::pagebreak')"));
   await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.querySelectorAll('.page-shell').length > 1"));
   await evalInPage(`
@@ -464,6 +465,7 @@ async function clickButton(label) {
 }
 
 async function setComponentSearch(value) {
+  await waitFor(() => evalInPage("Boolean(document.querySelector('.component-palette input[type=\"search\"]'))"));
   await evalInPage(`
     {
       const input = document.querySelector('.component-palette input[type="search"]');

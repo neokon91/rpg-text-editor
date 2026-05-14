@@ -64,7 +64,7 @@ public: false
 
 ## Gap Prioritari
 
-1. Paginazione automatica piu evoluta oltre agli split manuali `::pagebreak`.
+1. Paginazione automatica piu predittiva prima del render overflow.
 2. Polish onboarding e messaggi errore/export.
 
 ## Non Obiettivi

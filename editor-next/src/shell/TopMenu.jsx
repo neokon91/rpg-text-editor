@@ -43,7 +43,8 @@ export function TopMenu({
   onZoomChange,
   onResetDraft,
   onInsertSnippet,
-  onInsertPageBreakAtSelection
+  onInsertPageBreakAtSelection,
+  onInsertPageBreaksAtOverflow
 }) {
   const errors = diagnostics.filter((item) => item.severity === "error").length;
   const warnings = diagnostics.filter((item) => item.severity === "warning").length;
@@ -87,6 +88,7 @@ export function TopMenu({
         <button type="button" onClick={() => onInsertSnippet(snippets.image)}>Immagine</button>
         <button type="button" onClick={() => onInsertSnippet(snippets.pagebreak)}>Pagina</button>
         <button type="button" onClick={onInsertPageBreakAtSelection}>Break</button>
+        <button type="button" onClick={onInsertPageBreaksAtOverflow}>Auto break</button>
         <span className="next-separator" />
         <button type="button" disabled={isChecking} onClick={() => onCheck()}>
           {isChecking ? "Check..." : "Check"}

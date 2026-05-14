@@ -73,7 +73,7 @@ Il server apre `editor-next/` su `http://127.0.0.1:5173/editor-next/` e combina 
 
 ## Mancanze Verso Homebrewery
 
-- Paginazione automatica piu evoluta oltre agli split manuali.
+- Polish onboarding e messaggi errore/export.
 
 ## Guardrail
 

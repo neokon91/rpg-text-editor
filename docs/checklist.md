@@ -70,6 +70,7 @@ public: false
 - [x] Stato page break esplicito: dopo inserimento viene selezionato il marker creato e tracciata la riga del contenuto spostato.
 - [x] Badge overflow con riga sorgente del prossimo intervento.
 - [x] Revisione post-break: se resta overflow seleziona la prossima riga da spezzare.
+- [x] Auto break da overflow preview: inserisce piu `::pagebreak` block-aware in una passata.
 - [x] Tema originale `modern-5-5` per resa 5.5-compatible piu moderna e pulita.
 
 ## Componenti e schema
@@ -128,5 +129,5 @@ public: false
 
 ## Prossimi passi consigliati
 
-1. Paginazione automatica piu evoluta oltre agli split manuali.
-2. Polish onboarding e messaggi errore/export.
+1. Polish onboarding e messaggi errore/export.
+2. Paginazione automatica piu predittiva prima del render overflow.
