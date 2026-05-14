@@ -151,6 +151,27 @@ export async function importBrowserDocumentsArchive(file) {
   return { count: archive.documents.length, renamed, documents: [...merged.values()].map(({ filename }) => filename) };
 }
 
+export async function importBrowserMarkdownDocument(file) {
+  const current = await browserDocuments();
+  const safeFilename = safeMarkdownFilename(file.name || "documento.md");
+  const content = await file.text();
+  const existing = current.find((document) => document.filename === safeFilename);
+  const filename = existing && existing.content !== content
+    ? uniqueFilename(current, safeFilename)
+    : safeFilename;
+
+  const nextDocuments = current.filter((document) => document.filename !== filename);
+  nextDocuments.push({ filename, content, updatedAt: new Date().toISOString() });
+  await saveBrowserDocuments(nextDocuments);
+  setBrowserOnlyMode(true);
+  return {
+    count: 1,
+    renamed: filename !== safeFilename ? 1 : 0,
+    filename,
+    documents: nextDocuments.sort((a, b) => a.filename.localeCompare(b.filename)).map(({ filename: itemFilename }) => itemFilename)
+  };
+}
+
 async function withServerFallback(serverAction, browserAction) {
   if (browserOnlyMode()) return browserAction();
   try {

@@ -49,6 +49,7 @@ public: false
 - [x] Persistenza browser documenti su IndexedDB con fallback/migrazione da `localStorage`.
 - [x] Smoke UI reale per migrazione documenti legacy da `localStorage` a IndexedDB.
 - [x] Lista documenti browser-only allineata al server con `filename` e titolo leggibile.
+- [x] Import diretto di file Markdown in storage browser-only, con rinomina conflitti.
 - [x] Export HTML/PDF guidato dal workflow autore locale.
 - [x] Overwrite esplicito.
 - [x] Salva nuovo con nome unico.

@@ -17,6 +17,7 @@ import {
   getBrowserDocumentStorageStats,
   getDocumentRuntimeMode,
   importBrowserDocumentsArchive,
+  importBrowserMarkdownDocument,
   listDocuments,
   saveDocument,
   setBrowserOnlyMode
@@ -363,6 +364,38 @@ test("browser-only archive import keeps existing documents on filename conflicts
     { filename: "conflict-2.md", title: "Imported" },
     { filename: "conflict.md", title: "Original" },
     { filename: "unsafe-name.md", title: "Safe Name" }
+  ]);
+});
+
+test("browser-only document api imports markdown files safely", async () => {
+  withBrowserOnlyStorage();
+
+  const first = await importBrowserMarkdownDocument({
+    name: "../Imported Adventure.md",
+    text: async () => `---
+title: Imported Adventure
+slug: imported-adventure
+summary: Imported
+compatibility: 5e/5.5e
+license_mode: srd-5.2-cc
+author: Codex
+---
+
+# Imported Adventure`
+  });
+  const second = await importBrowserMarkdownDocument({
+    name: "Imported Adventure.md",
+    text: async () => "# Alternate Import"
+  });
+  const listed = await listDocuments();
+
+  assert.equal(getDocumentRuntimeMode(), "browser");
+  assert.equal(first.filename, "Imported-Adventure.md");
+  assert.equal(second.filename, "Imported-Adventure-2.md");
+  assert.equal(second.renamed, 1);
+  assert.deepEqual(listed.documents, [
+    { filename: "Imported-Adventure-2.md", title: "Alternate Import" },
+    { filename: "Imported-Adventure.md", title: "Imported Adventure" }
   ]);
 });
 

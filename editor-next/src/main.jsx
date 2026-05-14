@@ -5,7 +5,7 @@ import { renderComponentValidation } from "../../packages/components/validation.
 import { loadComponentSchema, loadEnabledPacks, manifestUrl, fetchJson, saveEnabledPacks } from "../../packages/components/schema.js";
 import { renderPreviewDocument } from "../../packages/documents/preview-shell.js";
 import { parseFrontmatter, serializeFrontmatter } from "../../packages/documents/frontmatter.js";
-import { checkDocument, deleteDocument, exportBrowserDocumentsArchive, exportDocument, getBrowserDocumentStorageStats, getDocument, getDocumentRuntimeMode, importBrowserDocumentsArchive, listDocuments, renameDocument, saveDocument, setBrowserOnlyMode } from "../../packages/documents/api.js";
+import { checkDocument, deleteDocument, exportBrowserDocumentsArchive, exportDocument, getBrowserDocumentStorageStats, getDocument, getDocumentRuntimeMode, importBrowserDocumentsArchive, importBrowserMarkdownDocument, listDocuments, renameDocument, saveDocument, setBrowserOnlyMode } from "../../packages/documents/api.js";
 import { countWords, downloadMarkdown } from "../../packages/markdown/editor-actions.js";
 import { slugifyDocumentName } from "../../scripts/lib/component-schema.js";
 import { ComponentPalette } from "./components/ComponentPalette.jsx";
@@ -559,14 +559,18 @@ function App() {
     if (!file) return;
 
     try {
-      const result = await importBrowserDocumentsArchive(file);
+      const isMarkdown = /\.md$/i.test(file.name || "");
+      const result = isMarkdown
+        ? await importBrowserMarkdownDocument(file)
+        : await importBrowserDocumentsArchive(file);
       setDocuments(result.documents.map((filename) => ({ filename })));
       setCurrentDocument("");
       setExportOutputs([]);
       setBrowserStorageStats(await getBrowserDocumentStorageStats());
+      const kind = isMarkdown ? "Markdown" : "browser";
       setStatus(result.renamed
-        ? `Import browser completato: ${result.count} documenti, ${result.renamed} rinominati`
-        : `Import browser completato: ${result.count} documenti`);
+        ? `Import ${kind} completato: ${result.count} documenti, ${result.renamed} rinominati`
+        : `Import ${kind} completato: ${result.count} documenti`);
     } catch {
       setStatus("Import browser non riuscito");
     } finally {
@@ -680,7 +684,7 @@ function App() {
       <input
         ref={archiveInputRef}
         type="file"
-        accept="application/json,.json"
+        accept="application/json,text/markdown,.json,.md"
         hidden
         onChange={importBrowserArchive}
       />
