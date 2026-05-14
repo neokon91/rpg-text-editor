@@ -26,7 +26,7 @@ title: Nuova Avventura
 slug: nuova-avventura
 summary: Bozza creata dall'editor Next.
 category: avventure
-tags: bozza, ttrpg
+tags: demo, avventura, ttrpg
 compatibility: 5e/5.5e
 license_mode: srd-5.2-cc
 author: Andrea
@@ -37,17 +37,32 @@ public: true
 
 # Nuova Avventura
 
-<p class="subtitle">Una premessa pronta da sviluppare.</p>
+<p class="subtitle">Il Santuario sotto la pioggia.</p>
 
 ## Scena iniziale
 
-Scrivi qui la prima scena.
+La strada termina davanti a un arco spezzato. Le lanterne del villaggio tremano dietro gli alberi, mentre dal santuario arriva un rintocco senza campana.
+
+::: readaloud Da leggere al tavolo
+La pietra bagnata riflette una luce verde pallida. Oltre l'arco, una scala scende nel buio e porta con se odore di terra smossa.
+:::
+
+::: note Spunto per il master
+Il primo indizio e inciso sul bordo dell'arco: tre lune, una chiave e un nome cancellato.
+:::
+
+## Incontro
+
+::: encounter Guardiani della soglia
+body: Due custodi scheletrici proteggono la scala. Non attaccano chi pronuncia il nome cancellato.
+:::
 `;
 
 function App() {
   const editorRef = useRef(null);
   const dialogResolverRef = useRef(null);
-  const [markdown, setMarkdown] = useState(() => loadDraft() || starterDocument);
+  const initialMarkdown = useRef(loadDraft() || starterDocument);
+  const [markdown, setMarkdown] = useState(() => initialMarkdown.current);
   const [componentManifest, setComponentManifest] = useState(null);
   const [enabledPacks, setEnabledPacks] = useState(() => new Set());
   const [externalPacks, setExternalPacks] = useState(() => loadExternalPacks());
@@ -68,7 +83,7 @@ function App() {
   }));
   const [documents, setDocuments] = useState([]);
   const [currentDocument, setCurrentDocument] = useState("");
-  const [lastSavedContent, setLastSavedContent] = useState("");
+  const [lastSavedContent, setLastSavedContent] = useState(() => initialMarkdown.current);
   const [status, setStatus] = useState("Bozza locale");
   const [statusDetail, setStatusDetail] = useState("");
   const [authorDiagnostics, setAuthorDiagnostics] = useState([]);

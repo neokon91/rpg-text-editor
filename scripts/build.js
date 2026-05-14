@@ -402,6 +402,7 @@ function renderStructuredContainer(name, label, markdown) {
 
 function renderSchemaComponent(component, data, label) {
   const className = component.container;
+  const body = componentBody(data);
   const bodyKeys = new Set(["body", "name"]);
   const title = data.name || label || component.default_label || component.label;
   const lines = (component.fields || [])
@@ -418,7 +419,7 @@ function renderSchemaComponent(component, data, label) {
   return renderRulesCard(className, label || component.default_label || component.label, title, [
     ...lines,
     ...features,
-    data.body.length ? renderMarkdown(data.body.join("\n")) : ""
+    body.length ? renderMarkdown(body.join("\n")) : ""
   ]);
 }
 
@@ -470,6 +471,7 @@ function splitPair(value) {
 }
 
 function renderMonster(data, label) {
+  const body = componentBody(data);
   const abilities = ["str", "dex", "con", "int", "wis", "cha"];
   const hasAbilities = abilities.some((ability) => data[ability]);
 
@@ -490,7 +492,7 @@ function renderMonster(data, label) {
     renderFeatureList(data.actions, "Azioni"),
     renderFeatureList(data.reactions, "Reazioni"),
     renderFeatureList(data.legendary, "Azioni leggendarie"),
-    data.body.length ? renderMarkdown(data.body.join("\n")) : "",
+    body.length ? renderMarkdown(body.join("\n")) : "",
     "</aside>"
   ].join("\n");
 }
@@ -525,44 +527,53 @@ function renderFeatureList(items, title) {
 }
 
 function renderSpell(data, label) {
+  const body = componentBody(data);
   return renderRulesCard("spell", label || "Incantesimo", data.name || "Incantesimo", [
     data.level || data.school ? `<p><em>${renderInline([data.level, data.school].filter(Boolean).join(", "))}</em></p>` : "",
     renderKeyValueList(data, ["casting_time", "range", "components", "duration"]),
-    data.body.length ? renderMarkdown(data.body.join("\n")) : ""
+    body.length ? renderMarkdown(body.join("\n")) : ""
   ]);
 }
 
 function renderMagicItem(data, label) {
+  const body = componentBody(data);
   return renderRulesCard("magicitem", label || "Oggetto magico", data.name || "Oggetto magico", [
     data.rarity || data.type ? `<p><em>${renderInline([data.type, data.rarity].filter(Boolean).join(", "))}</em></p>` : "",
     data.attunement ? `<p class="rules-line"><strong>Sintonia.</strong> ${renderInline(data.attunement)}</p>` : "",
-    data.body.length ? renderMarkdown(data.body.join("\n")) : ""
+    body.length ? renderMarkdown(body.join("\n")) : ""
   ]);
 }
 
 function renderNpc(data, label) {
+  const body = componentBody(data);
   return renderRulesCard("npc", label || "PNG", data.name || "PNG", [
     data.role ? `<p><em>${renderInline(data.role)}</em></p>` : "",
     renderKeyValueList(data, ["motive", "secret", "voice", "appearance"]),
     renderFeatureList(data.hooks, "Spunti"),
-    data.body.length ? renderMarkdown(data.body.join("\n")) : ""
+    body.length ? renderMarkdown(body.join("\n")) : ""
   ]);
 }
 
 function renderLocation(data, label) {
+  const body = componentBody(data);
   return renderRulesCard("location", label || "Luogo", data.name || "Luogo", [
     data.tags ? `<p><em>${renderInline(data.tags)}</em></p>` : "",
     renderKeyValueList(data, ["mood", "danger", "treasure"]),
     renderFeatureList(data.hooks, "Dettagli"),
-    data.body.length ? renderMarkdown(data.body.join("\n")) : ""
+    body.length ? renderMarkdown(body.join("\n")) : ""
   ]);
 }
 
 function renderHazard(data, label) {
+  const body = componentBody(data);
   return renderRulesCard("hazard", label || "Pericolo", data.name || "Pericolo", [
     renderKeyValueList(data, ["trigger", "effect", "countermeasure", "dc"]),
-    data.body.length ? renderMarkdown(data.body.join("\n")) : ""
+    body.length ? renderMarkdown(body.join("\n")) : ""
   ]);
+}
+
+function componentBody(data) {
+  return Array.isArray(data.body) ? data.body : [data.body].filter(Boolean);
 }
 
 function renderRandomTable(data, label) {

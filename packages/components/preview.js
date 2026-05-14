@@ -106,6 +106,7 @@ function renderContainer(name, label, markdown, schema, sourceLine, sourceEndLin
 
 function renderSchemaComponent(component, label, data, schema, sourceLine, sourceEndLine = sourceLine) {
   const className = component.container;
+  const body = componentBody(data);
   const bodyKeys = new Set(["body"]);
   const lines = (component.fields || [])
     .filter((field) => !bodyKeys.has(field.key) && data[field.key])
@@ -121,12 +122,13 @@ function renderSchemaComponent(component, label, data, schema, sourceLine, sourc
       <h3>${renderInline(data.name || label)}</h3>
       ${lines}
       ${features}
-      ${data.body.length ? renderMarkdown(data.body.join("\n"), schema, { startLine: sourceLine }) : ""}
+      ${body.length ? renderMarkdown(body.join("\n"), schema, { startLine: sourceLine }) : ""}
     </aside>
   `;
 }
 
 function renderRulesComponent(className, label, data, schema, sourceLine, sourceEndLine = sourceLine) {
+  const body = componentBody(data);
   const headingLevel = className === "monster" ? "h2" : "h3";
   const classes = className === "monster" ? "statblock monster no-break" : `${className} rules-card no-break`;
   const titleClass = className === "monster" ? "statblock__label" : `${className}__label rules-card__label`;
@@ -140,9 +142,13 @@ function renderRulesComponent(className, label, data, schema, sourceLine, source
       ${meta ? `<p><em>${renderInline(meta)}</em></p>` : ""}
       ${renderDataLines(data)}
       ${features.map((item) => `<p><strong>${renderInline(item.name)}.</strong> ${renderInline(item.text)}</p>`).join("")}
-      ${data.body.length ? renderMarkdown(data.body.join("\n"), schema, { startLine: sourceLine }) : ""}
+      ${body.length ? renderMarkdown(body.join("\n"), schema, { startLine: sourceLine }) : ""}
     </aside>
   `;
+}
+
+function componentBody(data) {
+  return Array.isArray(data.body) ? data.body : [data.body].filter(Boolean);
 }
 
 function renderDataLines(data) {

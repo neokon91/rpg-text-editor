@@ -63,9 +63,11 @@ button:disabled {
 
 .next-topbar {
   display: grid;
-  grid-template-columns: minmax(170px, 230px) minmax(0, 1fr) max-content;
+  grid-template-columns: minmax(170px, 230px) minmax(0, 1fr) minmax(220px, 420px);
   align-items: center;
   gap: 12px;
+  min-width: 0;
+  overflow: hidden;
   padding: 8px 12px;
   border-bottom: 1px solid #bcae99;
   background: #fbf7ef;
@@ -100,6 +102,7 @@ button:disabled {
   flex-wrap: wrap;
   gap: 8px;
   min-width: 0;
+  overflow: hidden;
 }
 
 .next-actions label {
@@ -123,9 +126,9 @@ button:disabled {
   display: flex;
   align-items: center;
   justify-content: end;
+  flex-wrap: wrap;
   gap: 8px;
   min-width: 0;
-  white-space: nowrap;
 }
 
 .next-status span,

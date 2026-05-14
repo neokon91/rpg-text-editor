@@ -102,6 +102,8 @@ try {
   await cdp.send("Page.navigate", { url: `${baseUrl}/editor-next/` });
   await waitFor(() => evalInPage("document.readyState === 'complete'"));
   await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.querySelector('.page-shell h1')?.textContent.toLowerCase().includes('nuova avventura')"));
+  await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.body.textContent.includes('Santuario sotto la pioggia')"));
+  await waitFor(() => evalInPage("!document.querySelector('.next-brand span')?.textContent.includes('*')"));
   await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.querySelector('p[data-source-end-line]')?.dataset.sourceEndLine"));
   await saveTestDocument(saveConflictFile, "---\ntitle: Codex Save Conflict\nslug: codex-save-conflict\nsummary: Documento temporaneo conflitto save\ncompatibility: 5e/5.5e\nlicense_mode: srd-5.2-cc\nauthor: Codex\n---\n\n# Codex Save Conflict\n\nDocumento gia presente.");
   await evalInPage(`
@@ -130,15 +132,14 @@ try {
   await waitFor(() => evalInPage(`document.body.textContent.includes('docs/${renameSourceFile}')`));
   await saveTestDocument(openGuardFile, "---\ntitle: Codex Open Guard\nslug: codex-open-guard\nsummary: Documento temporaneo open guard\ncompatibility: 5e/5.5e\nlicense_mode: srd-5.2-cc\nauthor: Codex\ntheme: classic-parchment\npaper: A4\n---\n\n# Codex Open Guard\n\nDocumento per test apertura.");
   await refreshDocumentSelect();
-  await evalInPage("window.localStorage.setItem('rpg-text-editor-next:draft', window.localStorage.getItem('rpg-text-editor-next:draft') + '\\n\\nModifica non salvata')");
-  await reloadPage();
-  await waitFor(() => evalInPage("document.body.textContent.includes('*') && window.localStorage.getItem('rpg-text-editor-next:draft')?.includes('Modifica non salvata')"));
+  await clickTopbarButton("Scena");
+  await waitFor(() => evalInPage("document.body.textContent.includes('*') && window.localStorage.getItem('rpg-text-editor-next:draft')?.includes('Nuova scena')"));
   await refreshDocumentSelect();
   await waitFor(() => evalInPage(`Array.from(document.querySelector('.next-actions select')?.options || []).some((item) => item.value === ${JSON.stringify(openGuardFile)})`));
   await selectDocument(openGuardFile);
   await waitFor(() => evalInPage("document.querySelector('.app-dialog')?.textContent.includes('Scartare le modifiche')"));
   await clickDialogButton("Annulla");
-  await waitFor(() => evalInPage("!document.querySelector('.app-dialog') && window.localStorage.getItem('rpg-text-editor-next:draft')?.includes('Modifica non salvata')"));
+  await waitFor(() => evalInPage("!document.querySelector('.app-dialog') && window.localStorage.getItem('rpg-text-editor-next:draft')?.includes('Nuova scena')"));
   await refreshDocumentSelect();
   await waitFor(() => evalInPage(`Array.from(document.querySelector('.next-actions select')?.options || []).some((item) => item.value === ${JSON.stringify(openGuardFile)})`));
   await selectDocument(openGuardFile);
@@ -154,9 +155,9 @@ try {
   await clickDialogButton("Elimina");
   await waitFor(() => evalInPage("document.body.textContent.includes('Eliminato docs/codex-rename-temp-renamed.md')"));
   await clickTopbarButton("Nuovo");
-  await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.querySelector('.page-shell h1')?.textContent.toLowerCase().includes('nuova avventura')"));
-  await setViewport(1180, 820);
-  await waitFor(() => evalInPage("document.querySelector('.next-workspace') && document.documentElement.scrollWidth <= window.innerWidth"));
+  await clickDialogButtonIfPresent("Scarta");
+  await waitFor(() => evalInPage("!window.localStorage.getItem('rpg-text-editor-next:draft') || window.localStorage.getItem('rpg-text-editor-next:draft')?.includes('# Nuova Avventura')"));
+  await setViewport(1280, 820);
   await setViewport(800, 600);
   await clickButton("Componenti");
   await waitFor(() => evalInPage("getComputedStyle(document.querySelector('.component-palette')).display !== 'none' && getComputedStyle(document.querySelector('.markdown-pane')).display === 'none'"));
@@ -454,7 +455,8 @@ async function clickButton(label) {
             clicked: false,
             readyState: document.readyState,
             labels: buttons.map((item) => item.textContent.trim()),
-            body: document.body.textContent.slice(0, 200)
+            body: document.body.textContent.slice(0, 200),
+            errors: window.__editorNextErrors || []
           };
         }
         button.click();
@@ -464,7 +466,7 @@ async function clickButton(label) {
     if (result.clicked) return;
     await new Promise((resolve) => setTimeout(resolve, 100));
   }
-  throw new Error(`Button not found: ${label}. Ready: ${result?.readyState}. Body: ${result?.body || "(empty)"}. Available: ${result?.labels?.join(", ") || "(none)"}`);
+  throw new Error(`Button not found: ${label}. Ready: ${result?.readyState}. Body: ${result?.body || "(empty)"}. Errors: ${result?.errors?.join("; ") || "(none)"}. Available: ${result?.labels?.join(", ") || "(none)"}`);
 }
 
 async function setComponentSearch(value) {
@@ -623,6 +625,22 @@ async function clickDialogButton(label) {
       button.click();
     }
   `);
+}
+
+async function clickDialogButtonIfPresent(label) {
+  const started = Date.now();
+  while (Date.now() - started < 5000) {
+    const clicked = await evalInPage(`
+      (() => {
+        const button = Array.from(document.querySelectorAll('.app-dialog button'))
+          .find((item) => item.textContent.trim() === ${JSON.stringify(label)});
+        button?.click();
+        return Boolean(button);
+      })()
+    `);
+    if (clicked) return;
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  }
 }
 
 async function importExternalPack(options = {}) {

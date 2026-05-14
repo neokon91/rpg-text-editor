@@ -116,6 +116,7 @@ public: false
 - [x] Test UI per component insertion da form con campi modificati e preview aggiornata.
 - [x] Test UI per sync preview da cursore editor verso anteprima.
 - [x] Badge status con severita `warning`/`busy`/`error` per save/export e log export nel tooltip.
+- [x] Primo avvio con bozza demo pulita e contenuto starter rappresentativo.
 
 ## Output editoriale
 
@@ -130,5 +131,5 @@ public: false
 
 ## Prossimi passi consigliati
 
-1. Polish onboarding minimo per primo avvio e documenti demo.
-2. Paginazione automatica piu predittiva prima del render overflow.
+1. Paginazione automatica piu predittiva prima del render overflow.
+2. Packaging/distribuzione per utente non tecnico.

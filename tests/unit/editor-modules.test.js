@@ -115,6 +115,26 @@ riga due del paragrafo
   assert.match(html, /<table class="table-compact" data-source-line="9" data-source-end-line="11">/);
 });
 
+test("renderMarkdown supports schema component body fields", () => {
+  const html = renderMarkdown(`::: encounter Incontro
+name: Guardiani
+body: Due custodi proteggono la soglia.
+:::`, {
+    components: [{
+      id: "encounter",
+      label: "Incontro",
+      container: "encounter",
+      fields: [
+        { key: "name", label: "Nome" },
+        { key: "body", label: "Descrizione" }
+      ]
+    }]
+  });
+
+  assert.match(html, /<aside class="encounter rules-card no-break"/);
+  assert.match(html, /Due custodi proteggono la soglia\./);
+});
+
 test("insertPageBreakBeforeLine inserts before the current markdown block", () => {
   const result = insertPageBreakBeforeLine(`# Titolo
 
