@@ -50,6 +50,7 @@ Il server apre `editor-next/` su `http://127.0.0.1:5173/editor-next/` e combina 
 - Form componenti per campi e liste dichiarati nello schema, con preset, rimozione righe e validazione inline dei campi richiesti.
 - Azioni preset rapide direttamente sulle card dei componenti.
 - Sottogruppi preset visibili sulle card componenti quando dichiarati nello schema.
+- Filtro categorie preset dedicato nella palette componenti.
 - Preset supportati anche nei plugin pack versionati.
 - Ricerca palette estesa a label, gruppi e valori dei preset.
 - Shortcut palette: `Ctrl/Cmd+K` porta il focus sulla ricerca componenti, `Escape` svuota il filtro attivo.

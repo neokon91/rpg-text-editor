@@ -21,6 +21,7 @@ export function ComponentPalette({
   const [query, setQuery] = useState("");
   const [selectedId, setSelectedId] = useState("");
   const [packError, setPackError] = useState("");
+  const [activePresetGroup, setActivePresetGroup] = useState("all");
   const searchRef = useRef(null);
   const selectedComponent = useMemo(
     () => (schema.components || []).find((component) => component.id === selectedId) || null,
@@ -31,9 +32,19 @@ export function ComponentPalette({
     const groups = new Set((schema.components || []).map((component) => component.group || "Componenti"));
     return [...groups].sort((a, b) => a.localeCompare(b));
   }, [schema]);
+  const presetGroups = useMemo(() => {
+    const groups = new Set();
+    for (const component of schema.components || []) {
+      for (const preset of component.presets || []) groups.add(preset.group || "Preset");
+    }
+    return [...groups].sort((a, b) => a.localeCompare(b));
+  }, [schema]);
   useEffect(() => {
     if (componentGroups.length && activeGroup !== "all" && !componentGroups.includes(activeGroup)) onActiveGroupChange?.("all");
   }, [activeGroup, componentGroups, onActiveGroupChange]);
+  useEffect(() => {
+    if (presetGroups.length && activePresetGroup !== "all" && !presetGroups.includes(activePresetGroup)) setActivePresetGroup("all");
+  }, [activePresetGroup, presetGroups]);
   useEffect(() => {
     function handleShortcut(event) {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
@@ -59,6 +70,7 @@ export function ComponentPalette({
     for (const component of schema.components || []) {
       const group = component.group || "Componenti";
       if (activeGroup !== "all" && group !== activeGroup) continue;
+      if (activePresetGroup !== "all" && !componentHasPresetGroup(component, activePresetGroup)) continue;
       const searchable = [
         component.label,
         component.id,
@@ -73,7 +85,7 @@ export function ComponentPalette({
     }
 
     return [...groups.entries()];
-  }, [schema, query, activeGroup]);
+  }, [schema, query, activeGroup, activePresetGroup]);
 
   return (
     <aside className="component-palette" aria-label="Componenti">
@@ -94,6 +106,17 @@ export function ComponentPalette({
             </button>
           ))}
         </div>
+        {presetGroups.length ? (
+          <div className="preset-group-filter" aria-label="Filtra categorie preset">
+            <span>Preset</span>
+            <button type="button" aria-pressed={activePresetGroup === "all"} onClick={() => setActivePresetGroup("all")}>Tutti preset</button>
+            {presetGroups.map((group) => (
+              <button key={group} type="button" aria-pressed={activePresetGroup === group} onClick={() => setActivePresetGroup(group)}>
+                {group}
+              </button>
+            ))}
+          </div>
+        ) : null}
         {packs.length ? (
           <div className="pack-toggles" aria-label="Plugin pack">
             {packs.map((pack) => (
@@ -124,6 +147,7 @@ export function ComponentPalette({
               <ComponentCard
                 key={component.id}
                 component={component}
+                activePresetGroup={activePresetGroup}
                 selected={component.id === selectedId}
                 onSelect={() => {
                   setSelectedId(component.id);
@@ -203,8 +227,8 @@ function ExternalPackControls({ packs, error, onError, onImport, onRemove }) {
   );
 }
 
-function ComponentCard({ component, selected, onSelect, onPreset }) {
-  const presetGroups = groupPresets(component.presets);
+function ComponentCard({ component, activePresetGroup = "all", selected, onSelect, onPreset }) {
+  const presetGroups = groupPresets(component.presets, activePresetGroup);
 
   return (
     <article className={`component-card${selected ? " is-selected" : ""}`}>
@@ -232,16 +256,21 @@ function ComponentCard({ component, selected, onSelect, onPreset }) {
   );
 }
 
-function groupPresets(presets = []) {
+function groupPresets(presets = [], activeGroup = "all") {
   const groups = new Map();
 
   for (const preset of presets) {
     const group = preset.group || "Preset";
+    if (activeGroup !== "all" && group !== activeGroup) continue;
     if (!groups.has(group)) groups.set(group, []);
     groups.get(group).push(preset);
   }
 
   return [...groups.entries()];
+}
+
+function componentHasPresetGroup(component, activeGroup) {
+  return (component.presets || []).some((preset) => (preset.group || "Preset") === activeGroup);
 }
 
 function presetSearchText(presets = []) {

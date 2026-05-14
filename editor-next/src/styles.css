@@ -235,10 +235,24 @@ button:disabled {
   gap: 4px;
 }
 
-.component-group-filter button {
+.component-group-filter button,
+.preset-group-filter button {
   min-height: 24px;
   padding: 0 7px;
   font-size: 12px;
+}
+
+.preset-group-filter {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+}
+
+.preset-group-filter span {
+  flex-basis: 100%;
+  font-weight: 700;
+  text-transform: uppercase;
 }
 
 .pack-toggles {

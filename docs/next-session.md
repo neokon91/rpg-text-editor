@@ -54,6 +54,7 @@ Vite + React + CodeMirror 6 + iframe preview
 - Anteprima componenti dei pack esterni importati visibile nella palette.
 - Azioni preset rapide disponibili sulle card componenti.
 - Sottogruppi preset visibili sulle card componenti.
+- Filtro categorie preset dedicato nella palette componenti.
 - Preset dichiarati anche da plugin pack versionati.
 - Ricerca palette estesa a label, gruppi e valori dei preset.
 - Shortcut palette: `Ctrl/Cmd+K` focus ricerca, `Escape` pulisce filtro attivo.
@@ -80,8 +81,8 @@ Vite + React + CodeMirror 6 + iframe preview
 
 Proseguire con page break piu intelligenti o palette avanzata:
 
-1. Palette avanzata: categorie preset dedicate.
-2. Oppure rename/delete documento nella UI React.
+1. Rename/delete documento nella UI React.
+2. Oppure comandi editor da tastiera e toolbar Markdown piu completa.
 3. Mantenere `npm run test:editor-next-ui` come smoke minimo per ogni tranche.
 
 Poi: rename/delete se confermati.

@@ -82,6 +82,7 @@ public: false
 - [x] Form componenti generati da schema nella UI React, con preset, rimozione righe lista e validazione inline.
 - [x] Azioni preset rapide sulle card componenti.
 - [x] Sottogruppi preset visibili sulle card componenti.
+- [x] Filtro categorie preset dedicato nella palette componenti.
 - [x] Filtri rapidi per gruppo nella palette componenti.
 - [x] Breakpoint desktop compatti per evitare overflow orizzontale dei pannelli.
 - [x] Switch pannelli mobile per Editor, Componenti, Preview e Documento.
@@ -122,5 +123,5 @@ public: false
 
 ## Prossimi passi consigliati
 
-1. Categorie preset dedicate nella palette componenti.
-2. Rename/delete documento nella UI React.
+1. Rename/delete documento nella UI React.
+2. Comandi editor da tastiera e toolbar Markdown piu completa.

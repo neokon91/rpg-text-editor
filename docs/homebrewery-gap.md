@@ -39,6 +39,7 @@ public: false
 - Form guidati generati da schema per campi e liste, con preset, rimozione righe e validazione inline dei campi richiesti.
 - Azioni preset rapide sulle card componenti.
 - Sottogruppi preset visibili sulle card componenti.
+- Filtro categorie preset dedicato nella palette componenti.
 - Preset dichiarati anche da plugin pack versionati.
 - Ricerca palette estesa a label, gruppi e valori dei preset.
 - Shortcut palette: `Ctrl/Cmd+K` focus ricerca, `Escape` pulisce filtro attivo.
@@ -62,9 +63,8 @@ public: false
 ## Gap Prioritari
 
 1. Paginazione automatica piu evoluta oltre agli split manuali `::pagebreak`.
-2. Palette componenti piu ricca: categorie preset dedicate.
-3. Comandi editor da tastiera e toolbar Markdown piu completa.
-4. Test UI per open/save, component insertion, sync preview e export PDF.
+2. Comandi editor da tastiera e toolbar Markdown piu completa.
+3. Test UI per open/save, component insertion, sync preview e export PDF.
 
 ## Non Obiettivi
 

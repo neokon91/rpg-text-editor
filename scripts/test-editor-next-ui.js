@@ -137,6 +137,11 @@ try {
   await clickButton("Tutti");
   await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 15"));
   await assertEqual(await evalInPage("document.body.textContent.includes('Fazione')"), true, "plugin pack component visible");
+  await clickButton("Tono");
+  await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 1 && document.body.textContent.includes('Fazione') && !document.body.textContent.includes('Missione')"));
+  await waitFor(() => evalInPage("Array.from(document.querySelectorAll('.component-preset-group-label')).every((node) => node.textContent.trim() === 'Tono')"));
+  await clickButton("Tutti preset");
+  await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 15"));
   await dispatchDocumentKey("k", { ctrlKey: true });
   await waitFor(() => evalInPage("document.activeElement === document.querySelector('.component-palette input[type=\"search\"]')"));
   await setComponentSearch("Congrega");
