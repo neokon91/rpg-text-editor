@@ -74,6 +74,7 @@ public: false
 - [x] Auto break predittivo: dopo la prima riga overflow pianifica altri break euristici nel resto del documento lungo.
 - [x] Modalita `Auto pages` nella preview: misura l'iframe e crea pagine fisiche spostando blocchi interi su nuove `page-shell`.
 - [x] Smoke UI su `Auto pages`: toggle toolbar, stato iframe e generazione pagine fisiche.
+- [x] Feedback `Auto pages` in toolbar con conteggio pagine generato dalla preview misurata.
 - [x] Tema originale `modern-5-5` per resa 5.5-compatible piu moderna e pulita.
 
 ## Componenti e schema

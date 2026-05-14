@@ -89,6 +89,7 @@ ${page}
         var container = document.querySelector(".preview-pages");
         if (!container) return;
         var guard = 0;
+        var initialPages = container.querySelectorAll(".page-shell").length;
 
         while (guard < 120) {
           guard += 1;
@@ -119,6 +120,8 @@ ${page}
           refreshPageNumbers(container);
           if (!changed) break;
         }
+
+        reportAutoPagination(container, initialPages);
       }
 
       function pageOverflows(page) {
@@ -131,6 +134,16 @@ ${page}
         Array.from(container.querySelectorAll(".page-shell")).forEach(function(page, index) {
           page.dataset.previewPage = String(index + 1);
         });
+      }
+
+      function reportAutoPagination(container, initialPages) {
+        var totalPages = container.querySelectorAll(".page-shell").length;
+        window.parent.postMessage({
+          type: "rpg-preview-pagination",
+          autoPaginate: true,
+          totalPages: totalPages,
+          generatedPages: Math.max(totalPages - initialPages, 0)
+        }, "*");
       }
     </script>
   </body>

@@ -21,16 +21,7 @@ export function PreviewFrame({
   const [pageState, setPageState] = useState({ current: 1, total: 1 });
   const [pageInput, setPageInput] = useState("1");
   const [overflowPages, setOverflowPages] = useState([]);
-
-  useEffect(() => {
-    function handleMessage(event) {
-      if (event.source !== frame.current?.contentWindow) return;
-      if (event.data?.type !== "rpg-preview-source-line") return;
-      onSelectLine(Number(event.data.line));
-    }
-    window.addEventListener("message", handleMessage);
-    return () => window.removeEventListener("message", handleMessage);
-  }, [onSelectLine]);
+  const [autoPageReport, setAutoPageReport] = useState(null);
 
   const readPageMarkers = useCallback(() => {
     const doc = frame.current?.contentDocument;
@@ -54,6 +45,25 @@ export function PreviewFrame({
     setOverflowPages(nextOverflowPages);
     onOverflowChange?.(nextOverflowPages);
   }, [onOverflowChange, readPageMarkers]);
+
+  useEffect(() => {
+    function handleMessage(event) {
+      if (event.source !== frame.current?.contentWindow) return;
+      if (event.data?.type === "rpg-preview-source-line") {
+        onSelectLine(Number(event.data.line));
+        return;
+      }
+      if (event.data?.type === "rpg-preview-pagination") {
+        setAutoPageReport({
+          totalPages: Number(event.data.totalPages) || 1,
+          generatedPages: Number(event.data.generatedPages) || 0
+        });
+        updatePageState();
+      }
+    }
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, [onSelectLine, updatePageState]);
 
   useEffect(() => {
     const documentElement = frame.current?.contentDocument?.documentElement;
@@ -82,6 +92,7 @@ export function PreviewFrame({
     const doc = frame.current?.contentDocument;
     if (!doc) return;
     removeScrollListener.current?.();
+    setAutoPageReport(null);
     doc.documentElement.style.setProperty("--rpg-preview-zoom", zoom);
     if (doc.body) doc.body.dataset.spread = spread;
     const win = frame.current.contentWindow;
@@ -164,6 +175,11 @@ export function PreviewFrame({
         >
           Auto pages
         </button>
+        {autoPaginate && autoPageReport ? (
+          <span className="preview-auto-pages" title="Pagine generate dalla preview automatica">
+            Auto {autoPageReport.totalPages}p
+          </span>
+        ) : null}
         <button type="button" disabled={!canGoBack} onClick={() => goToPage(pageState.current - 1)} aria-label="Pagina precedente">‹</button>
         <label>
           <span>Pagina</span>

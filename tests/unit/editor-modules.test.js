@@ -191,4 +191,5 @@ test("renderPreviewDocument can enable measured auto pagination", () => {
   assert.match(html, /data-auto-paginate="true"/);
   assert.match(html, /function paginatePreviewPages/);
   assert.match(html, /pageOverflows/);
+  assert.match(html, /rpg-preview-pagination/);
 });

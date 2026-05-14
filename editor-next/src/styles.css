@@ -714,6 +714,14 @@ button:disabled {
   font-weight: 700;
 }
 
+.preview-toolbar .preview-auto-pages {
+  padding: 0 6px;
+  color: #174f55;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
 .preview-toolbar .preview-overflow {
   border-color: #a43d25;
   background: #fff5f1;
