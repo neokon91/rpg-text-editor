@@ -39,6 +39,8 @@
     "editor": "node scripts/serve-editor-next.js",
     "editor:next": "node scripts/serve-editor-next.js",
     "editor:next:build": "vite build",
+    "package:editor": "node scripts/package-editor-app.js",
+    "package:editor:check": "node scripts/package-editor-app.js --check",
     "preview:watch": "node scripts/serve.js --expanded --watch"
   },
   "dependencies": {

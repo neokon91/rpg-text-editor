@@ -65,7 +65,8 @@ public: false
 ## Gap Prioritari
 
 1. Paginazione automatica piu predittiva prima del render overflow.
-2. Polish onboarding e messaggi errore/export.
+2. Installer/app desktop oltre allo ZIP applicativo locale.
+3. Polish onboarding e messaggi errore/export.
 
 ## Non Obiettivi
 

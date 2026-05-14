@@ -85,7 +85,7 @@ Vite + React + CodeMirror 6 + iframe preview
 Proseguire con page break piu intelligenti o palette avanzata:
 
 1. Paginazione automatica piu predittiva prima del render overflow.
-2. Oppure packaging/distribuzione installabile oltre all'avvio guidato locale.
+2. Oppure installer/app desktop oltre allo ZIP applicativo locale.
 3. Mantenere `npm run test:editor-next-ui` come smoke minimo per ogni tranche.
 
 Poi: polish errori/export e onboarding minimo.

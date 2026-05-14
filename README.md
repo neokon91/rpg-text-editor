@@ -33,6 +33,7 @@ npm run preview:watch
 npm start
 npm run editor
 npm run editor:next:build
+npm run package:editor
 ```
 
 - `npm run build` genera `dist/santuario-sepolto.html`.
@@ -62,6 +63,7 @@ npm run editor:next:build
 - `npm start` avvia la UI editor e apre automaticamente il browser sull'URL locale corretto.
 - `npm run editor` avvia la UI React/CodeMirror su `http://127.0.0.1:5173/editor-next/` con API locali per documenti, check ed export.
 - `npm run editor:next:build` genera la build statica di `editor-next`.
+- `npm run package:editor` crea uno ZIP applicativo locale con editor, sorgenti, script, istruzioni di avvio e manifest.
 
 ## Authoring in VS Code
 
@@ -78,6 +80,14 @@ npm start
 ```
 
 L'editor mantiene il Markdown come sorgente primaria, usa CodeMirror 6, salva bozze in `localStorage` e mostra una preview live in iframe con `styles/main.css`, `page-shell`, tema e formato carta del frontmatter. Il server locale integra le API per aprire documenti da `docs/`, salvare la bozza corrente, eseguire check guidati ed esportare HTML/PDF in `dist/`.
+
+Per preparare un pacchetto consegnabile dell'app locale usa:
+
+```sh
+npm run package:editor
+```
+
+Lo ZIP viene scritto in `dist/editor-app/` e include `START_HERE.md` con i passaggi minimi `npm install`, `npm run doctor`, `npm start`.
 
 I moduli condivisi vivono in `packages/`:
 

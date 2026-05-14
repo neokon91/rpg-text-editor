@@ -126,6 +126,7 @@ public: false
 - [x] Export package.
 - [x] Preflight locale `npm run doctor` per prerequisiti editor/export.
 - [x] Avvio guidato `npm start` con apertura automatica browser sull'editor locale.
+- [x] ZIP applicativo locale `npm run package:editor` con manifest e istruzioni di primo avvio.
 - [x] QA PDF disponibile.
 - [x] Pass visuale completo su PDF dopo redesign finale.
 - [x] Template ulteriormente raffinato verso qualita manuale fantasy professionale, con identita visuale originale.
@@ -134,4 +135,4 @@ public: false
 ## Prossimi passi consigliati
 
 1. Paginazione automatica piu predittiva prima del render overflow.
-2. Packaging/distribuzione installabile oltre all'avvio guidato locale.
+2. Installer/app desktop oltre allo ZIP applicativo locale.

@@ -73,7 +73,7 @@ Il server apre `editor-next/` su `http://127.0.0.1:5173/editor-next/` e combina 
 
 ## Mancanze Verso Homebrewery
 
-- Packaging/distribuzione installabile oltre all'avvio guidato locale.
+- Installer/app desktop oltre allo ZIP applicativo locale.
 
 ## Guardrail
 
