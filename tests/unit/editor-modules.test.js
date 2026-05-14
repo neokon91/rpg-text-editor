@@ -10,7 +10,7 @@ import {
 import { insertPageBreakBeforeLine, insertPageBreaksBeforeLines, predictPageBreakLines } from "../../editor-next/src/editor/pageBreaks.js";
 import { renderMarkdown } from "../../packages/components/preview.js";
 import { renderPreviewDocument } from "../../packages/documents/preview-shell.js";
-import { checkDocument, listDocuments, saveDocument } from "../../packages/documents/api.js";
+import { checkDocument, getDocumentRuntimeMode, listDocuments, saveDocument } from "../../packages/documents/api.js";
 import { parseMarkdownOutline } from "../../packages/markdown/outline.js";
 
 test("parseMarkdownOutline ignores fenced headings and strips inline HTML", () => {
@@ -217,6 +217,7 @@ CD 31`;
   const listed = await listDocuments();
   const checked = await checkDocument({ filename: saved.filename, content });
 
+  assert.equal(getDocumentRuntimeMode(), "browser");
   assert.equal(saved.filename, "browser-test.md");
   assert.deepEqual(listed.documents, ["browser-test.md"]);
   assert.equal(checked.diagnostics.some((item) => item.message.includes("CD 31 fuori scala")), true);

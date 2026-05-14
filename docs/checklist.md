@@ -40,6 +40,7 @@ public: false
 - [x] Dirty state.
 - [x] Autosave locale.
 - [x] Modalita browser-only iniziale per salvataggio/lista/check/export HTML senza API locali.
+- [x] Indicatore runtime documenti in status bar: `Server locale`/`Browser-only`.
 - [x] Export HTML/PDF guidato dal workflow autore locale.
 - [x] Overwrite esplicito.
 - [x] Salva nuovo con nome unico.

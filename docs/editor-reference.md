@@ -43,6 +43,7 @@ npm start
 - Check guidato con diagnostiche schema e author check.
 - Export HTML/PDF in `dist/`, con stato busy/error e log export nel tooltip.
 - Modalita browser-only iniziale: se le API locali non esistono, documenti/check/export HTML usano storage e download del browser.
+- La status bar indica il runtime documenti: `Server locale` oppure `Browser-only`.
 - Palette componenti schema-driven con ricerca, gruppi, preset, pack manifest e pack JSON esterni.
 - Form componenti generati dallo schema, con liste, preset e validazione inline.
 - Preview iframe con tema/carta da frontmatter, zoom, fit/fill, pagina corrente/totale, prev/next, single/facing/flow.

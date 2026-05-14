@@ -18,6 +18,7 @@ export function TopMenu({
   diagnostics,
   documents,
   currentDocument,
+  documentRuntimeMode,
   isDirty,
   status,
   statusDetail,
@@ -50,6 +51,7 @@ export function TopMenu({
   const errors = diagnostics.filter((item) => item.severity === "error").length;
   const warnings = diagnostics.filter((item) => item.severity === "warning").length;
   const checkStatus = errors ? `${errors} errori` : warnings ? `${warnings} avvisi` : "Check ok";
+  const runtimeLabel = documentRuntimeMode === "browser" ? "Browser-only" : "Server locale";
   const visibleZoomOptions = zoomOptions.includes(zoom) ? zoomOptions : [...zoomOptions, zoom];
   const statusState = statusDetail || /non riuscito|bloccato|errore|errori|non disponibile/i.test(status)
     ? "error"
@@ -142,6 +144,7 @@ export function TopMenu({
       <div className="next-status" aria-live="polite">
         <span>{words} parole</span>
         <span>{schemaState}</span>
+        <span data-state={documentRuntimeMode === "browser" ? "warning" : "ok"} title="Runtime documenti">{runtimeLabel}</span>
         <span data-state={errors ? "error" : warnings ? "warning" : "ok"}>{checkStatus}</span>
         <span data-state={statusState} title={statusDetail || status}>{status}</span>
         {exportOutputs.map((output) => (

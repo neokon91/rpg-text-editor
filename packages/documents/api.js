@@ -77,12 +77,17 @@ export async function exportDocument({ filename, content, format }) {
   );
 }
 
+export function getDocumentRuntimeMode() {
+  return browserOnlyMode() ? "browser" : "server";
+}
+
 async function withServerFallback(serverAction, browserAction) {
   if (browserOnlyMode()) return browserAction();
   try {
     return await serverAction();
   } catch (error) {
     if (error.status) throw error;
+    activateBrowserOnlyMode();
     return browserAction();
   }
 }
@@ -112,6 +117,12 @@ function browserOnlyMode() {
   return params.has("browser-only")
     || window.__RPG_TEXT_EDITOR_BROWSER_ONLY__ === true
     || safeLocalStorageGet(browserModeStorageKey) === "true";
+}
+
+function activateBrowserOnlyMode() {
+  try {
+    localStorage.setItem(browserModeStorageKey, "true");
+  } catch {}
 }
 
 function browserDocuments() {

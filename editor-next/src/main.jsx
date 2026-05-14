@@ -5,7 +5,7 @@ import { renderComponentValidation } from "../../packages/components/validation.
 import { loadComponentSchema, loadEnabledPacks, manifestUrl, fetchJson, saveEnabledPacks } from "../../packages/components/schema.js";
 import { renderPreviewDocument } from "../../packages/documents/preview-shell.js";
 import { parseFrontmatter, serializeFrontmatter } from "../../packages/documents/frontmatter.js";
-import { checkDocument, deleteDocument, exportDocument, getDocument, listDocuments, renameDocument, saveDocument } from "../../packages/documents/api.js";
+import { checkDocument, deleteDocument, exportDocument, getDocument, getDocumentRuntimeMode, listDocuments, renameDocument, saveDocument } from "../../packages/documents/api.js";
 import { countWords, downloadMarkdown } from "../../packages/markdown/editor-actions.js";
 import { slugifyDocumentName } from "../../scripts/lib/component-schema.js";
 import { ComponentPalette } from "./components/ComponentPalette.jsx";
@@ -84,6 +84,7 @@ function App() {
   }));
   const [documents, setDocuments] = useState([]);
   const [currentDocument, setCurrentDocument] = useState("");
+  const [documentRuntimeMode, setDocumentRuntimeMode] = useState(() => getDocumentRuntimeMode());
   const [lastSavedContent, setLastSavedContent] = useState(() => initialMarkdown.current);
   const [status, setStatus] = useState("Bozza locale");
   const [statusDetail, setStatusDetail] = useState("");
@@ -388,6 +389,8 @@ function App() {
       setDocuments(result.documents || []);
     } catch {
       setStatus("Lista documenti non disponibile");
+    } finally {
+      setDocumentRuntimeMode(getDocumentRuntimeMode());
     }
   }
 
@@ -413,6 +416,8 @@ function App() {
       setStatus(`Aperto docs/${document.filename}`);
     } catch {
       setStatus("Import non riuscito");
+    } finally {
+      setDocumentRuntimeMode(getDocumentRuntimeMode());
     }
   }
 
@@ -430,6 +435,8 @@ function App() {
       setStatus(`Salvato docs/${result.filename}`);
     } catch (error) {
       setStatus(error.status === 409 ? "File gia esistente: usa Salva copia" : "Salvataggio non riuscito");
+    } finally {
+      setDocumentRuntimeMode(getDocumentRuntimeMode());
     }
   }
 
@@ -447,6 +454,8 @@ function App() {
       setStatus(`Salvato nuovo docs/${result.filename}`);
     } catch {
       setStatus("Salva copia non riuscito");
+    } finally {
+      setDocumentRuntimeMode(getDocumentRuntimeMode());
     }
   }
 
@@ -475,6 +484,8 @@ function App() {
       setStatus(`Rinominato docs/${result.filename}`);
     } catch (error) {
       setStatus(error.status === 409 ? "Rename non riuscito: file gia esistente" : "Rename non riuscito");
+    } finally {
+      setDocumentRuntimeMode(getDocumentRuntimeMode());
     }
   }
 
@@ -499,6 +510,8 @@ function App() {
       setStatus(`Eliminato docs/${deleted}`);
     } catch {
       setStatus("Eliminazione non riuscita");
+    } finally {
+      setDocumentRuntimeMode(getDocumentRuntimeMode());
     }
   }
 
@@ -535,6 +548,7 @@ function App() {
       return { ok: false, diagnostics: [...diagnostics, ...failed] };
     } finally {
       setIsChecking(false);
+      setDocumentRuntimeMode(getDocumentRuntimeMode());
     }
   }
 
@@ -561,6 +575,8 @@ function App() {
       setExportOutputs([]);
       setStatus(error.message || "Export non riuscito");
       setStatusDetail(error.log || "");
+    } finally {
+      setDocumentRuntimeMode(getDocumentRuntimeMode());
     }
   }
 
@@ -573,6 +589,7 @@ function App() {
         diagnostics={combinedDiagnostics}
         documents={documents}
         currentDocument={currentDocument}
+        documentRuntimeMode={documentRuntimeMode}
         isDirty={isDirty}
         status={status}
         statusDetail={statusDetail}
