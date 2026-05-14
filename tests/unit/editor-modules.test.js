@@ -260,6 +260,33 @@ Documento stampabile.`;
   assert.match(downloadedBlob, /window\.print/);
 });
 
+test("browser-only document api carries auto pages into printable export", async () => {
+  const downloads = [];
+  withBrowserOnlyStorage({ downloads });
+
+  await exportDocument({
+    filename: "auto-pages.md",
+    format: "pdf",
+    autoPaginate: true,
+    content: `---
+title: Auto Pages
+slug: auto-pages
+summary: Test
+compatibility: 5e/5.5e
+license_mode: srd-5.2-cc
+author: Codex
+---
+
+# Auto Pages
+
+Documento lungo.`
+  });
+  const downloadedBlob = await downloads[0].blob.text();
+
+  assert.match(downloadedBlob, /data-auto-paginate="true"/);
+  assert.match(downloadedBlob, /paginatePreviewPages/);
+});
+
 function withBrowserOnlyStorage(options = {}) {
   return withBrowserStorage({ browserOnly: true, ...options });
 }

@@ -49,11 +49,11 @@ npm start
 - Preview iframe con tema/carta da frontmatter, zoom, fit/fill, pagina corrente/totale, prev/next, single/facing/flow.
 - Sync editor-preview: toggle `Sync`, scroll preview dalla linea cursore, click preview verso sorgente.
 - Paginazione manuale: `::pagebreak`, bottone `Break`, overflow badge e revisione post-break.
-- Paginazione assistita: `Auto break` predittivo e `Auto pages` misurato in preview.
+- Paginazione assistita: `Auto break` predittivo e `Auto pages` misurato in preview, inoltrato anche a export HTML/PDF.
 
 ## Auto Pages
 
-`Auto pages` e ancora una feature preview, non un renderer/export stabile.
+`Auto pages` ora partecipa all'export, ma resta da raffinare la resa PDF web-native e la persistenza cloud/browser definitiva.
 
 - Misura le `.page-shell` nell'iframe.
 - Sposta blocchi interi su nuove pagine quando una pagina supera il box carta.
@@ -63,8 +63,8 @@ npm start
 
 ## Mancanze Prioritarie
 
-1. Portare `Auto pages` nel renderer/export stabile.
-2. Estendere la modalita browser-only a persistenza definitiva e export PDF web-native oltre al fallback print.
+1. Estendere la modalita browser-only a persistenza definitiva.
+2. Rendere l'export PDF web-native oltre al fallback print.
 3. Rifinire deploy, onboarding e messaggi errore per utente finale non tecnico.
 
 ## Guardrail

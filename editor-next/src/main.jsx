@@ -579,7 +579,7 @@ function App() {
     setStatus(`Export ${format.toUpperCase()} in corso...`);
     setStatusDetail("");
     try {
-      const exportResult = await exportDocument({ filename, content: markdown, format });
+      const exportResult = await exportDocument({ filename, content: markdown, format, autoPaginate: autoPaginatePreview });
       setExportOutputs(exportResult.outputs || []);
       setStatus(`Export ${format.toUpperCase()} pronto`);
       setStatusDetail("");

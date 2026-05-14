@@ -19,6 +19,7 @@ const buildSite = args.has("--site");
 const buildBook = args.has("--book");
 const buildHtml = args.has("--html") || (!args.has("--pdf") && !buildSite);
 const buildPdf = args.has("--pdf");
+const autoPages = args.has("--auto-pages");
 const sourceArg = [...args].find((arg) => arg.endsWith(".md"));
 const sourcePath = sourceArg ? resolve(root, sourceArg) : join(sourceDir, "esempio.md");
 let componentSchema = { components: [] };
@@ -94,11 +95,11 @@ async function renderDocument(document, css, template, assetManifest) {
     metadata.theme ? `theme-${metadata.theme}` : "theme-classic-parchment",
     metadata.paper ? `paper-${metadata.paper.toLowerCase()}` : ""
   ].filter(Boolean).join(" ");
-  const rendered = template
+  const rendered = withAutoPages(template
     .replaceAll("{{title}}", escapeHtml(title))
     .replace("{{styles}}", css)
     .replace("{{content}}", html)
-    .replace("{{documentClass}}", documentClass);
+    .replace("{{documentClass}}", documentClass));
 
   const htmlPath = join(outDir, `${slug}.html`);
   const pdfPath = join(outDir, `${slug}.pdf`);
@@ -169,16 +170,99 @@ async function renderBook(css, template, assetManifest) {
     renderLegalAppendix(metadata, assetManifest)
   ].join("\n");
 
-  const rendered = template
+  const rendered = withAutoPages(template
     .replaceAll("{{title}}", escapeHtml(metadata.title))
     .replace("{{styles}}", css)
     .replace("{{content}}", content)
-    .replace("{{documentClass}}", documentClass);
+    .replace("{{documentClass}}", documentClass));
 
   const htmlPath = join(outDir, "book", `${metadata.slug}.html`);
   const pdfPath = join(outDir, "book", `${metadata.slug}.pdf`);
 
   return { rendered, htmlPath, pdfPath };
+}
+
+function withAutoPages(rendered) {
+  if (!autoPages) return rendered;
+
+  const tools = `
+    <style id="rpg-auto-pages-export">
+      body[data-auto-pages="true"] {
+        padding: 24px 0;
+      }
+      body[data-auto-pages="true"] .page-shell {
+        margin-bottom: 24px;
+      }
+      @media print {
+        body[data-auto-pages="true"] {
+          width: auto;
+          padding: 0;
+        }
+        body[data-auto-pages="true"] .page-shell {
+          min-height: 297mm;
+          margin: 0;
+          overflow: hidden;
+          break-after: page;
+          page-break-after: always;
+        }
+        body[data-auto-pages="true"] .page-shell:last-of-type {
+          break-after: auto;
+          page-break-after: auto;
+        }
+      }
+    </style>
+    <script>
+      window.addEventListener("load", function() {
+        document.body.dataset.autoPages = "true";
+        requestAnimationFrame(paginateExportPages);
+      });
+
+      function paginateExportPages() {
+        var guard = 0;
+
+        while (guard < 120) {
+          guard += 1;
+          var changed = false;
+          var pages = Array.from(document.querySelectorAll("body > .page-shell"));
+
+          for (var index = 0; index < pages.length; index += 1) {
+            var page = pages[index];
+            if (!pageOverflows(page)) continue;
+            var children = Array.from(page.children).filter(function(child) {
+              return !child.classList.contains("page-break");
+            });
+            if (children.length <= 1) continue;
+
+            var nextPage = page.nextElementSibling;
+            if (!nextPage || !nextPage.classList.contains("page-shell")) {
+              nextPage = document.createElement("main");
+              nextPage.className = page.className;
+              page.parentNode.insertBefore(nextPage, page.nextSibling);
+            }
+
+            while (pageOverflows(page) && children.length > 1) {
+              nextPage.insertBefore(children.pop(), nextPage.firstChild);
+              changed = true;
+            }
+          }
+
+          if (!changed) break;
+        }
+
+        document.body.setAttribute("data-auto-pages-ready", "true");
+        document.body.setAttribute("data-auto-pages-total", String(document.querySelectorAll("body > .page-shell").length));
+      }
+
+      function pageOverflows(page) {
+        var style = getComputedStyle(page);
+        var limit = parseFloat(style.minHeight || "0") || parseFloat(style.height || "0") || page.clientHeight;
+        return page.scrollHeight > limit + 4 || page.scrollWidth > page.clientWidth + 4;
+      }
+    </script>`;
+
+  return rendered
+    .replace("<body ", '<body data-auto-pages="true" ')
+    .replace("</body>", `${tools}\n  </body>`);
 }
 
 function parseFrontmatter(markdown) {

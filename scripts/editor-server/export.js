@@ -15,6 +15,7 @@ export function createDocumentExportApi({ root }) {
     const filename = safeMarkdownFilename(payload.filename || "bozza-rpg.md");
     const content = String(payload.content || "");
     const format = payload.format === "pdf" ? "pdf" : "html";
+    const autoPaginate = payload.autoPaginate === true;
     const tempPath = join(root, ".tmp", "editor-export", filename);
     const slug = readSlug(content) || filename.replace(/\.md$/i, "");
 
@@ -22,7 +23,9 @@ export function createDocumentExportApi({ root }) {
     await writeFile(tempPath, content, "utf8");
 
     try {
-      const args = [join(root, "scripts", "build.js"), format === "pdf" ? "--pdf" : "--html", relative(root, tempPath)];
+      const args = [join(root, "scripts", "build.js"), format === "pdf" ? "--pdf" : "--html"];
+      if (autoPaginate) args.push("--auto-pages");
+      args.push(relative(root, tempPath));
       const result = await run(process.execPath, args, root);
       const outputs = [{
         format: "html",

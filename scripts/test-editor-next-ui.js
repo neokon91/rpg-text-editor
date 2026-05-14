@@ -115,9 +115,13 @@ try {
   `);
   await reloadPage();
   await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.querySelector('.page-shell h1')?.textContent.includes('Browser PDF Fallback')"));
+  await clickButton("Auto pages");
+  await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.body?.dataset.autoPaginate === 'true'"));
   await clickTopbarButton("PDF");
   await waitFor(() => evalInPage("document.body.textContent.includes('Export PDF pronto')"));
   await waitFor(() => evalInPage("Array.from(document.querySelectorAll('.next-status a')).some((link) => link.textContent.includes('.print.html'))"));
+  await clickButton("Auto pages");
+  await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.body?.dataset.autoPaginate === 'false'"));
   await clickTopbarButton("Browser-only");
   await waitFor(() => evalInPage("!window.localStorage.getItem('rpg-text-editor-next:browser-only')"));
   await waitFor(() => evalInPage("document.body.textContent.includes('Server locale')"));

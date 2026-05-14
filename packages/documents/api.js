@@ -66,14 +66,14 @@ export async function checkDocument({ filename, content }) {
   );
 }
 
-export async function exportDocument({ filename, content, format }) {
+export async function exportDocument({ filename, content, format, autoPaginate = false }) {
   return withServerFallback(
     () => fetchJson("/api/export-document", {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ filename, content, format })
+      body: JSON.stringify({ filename, content, format, autoPaginate })
     }, "Export documento non riuscito", { includeLog: true }),
-    () => exportBrowserDocument({ filename, content, format })
+    () => exportBrowserDocument({ filename, content, format, autoPaginate })
   );
 }
 
@@ -186,9 +186,13 @@ function renameBrowserDocument(filename, nextFilename) {
   return documents[index];
 }
 
-function exportBrowserDocument({ filename, content, format }) {
+function exportBrowserDocument({ filename, content, format, autoPaginate = false }) {
   const parsed = parseFrontmatter(content);
-  const html = renderPreviewDocument(parsed.metadata, renderMarkdown(parsed.body, { components: [] }, { startLine: parsed.bodyStartLine }));
+  const html = renderPreviewDocument(
+    parsed.metadata,
+    renderMarkdown(parsed.body, { components: [] }, { startLine: parsed.bodyStartLine }),
+    { autoPaginate }
+  );
 
   if (format === "pdf") {
     const outputName = safeMarkdownFilename(filename).replace(/\.md$/i, ".print.html");

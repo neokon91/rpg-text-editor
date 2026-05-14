@@ -85,6 +85,7 @@ public: false
 - [x] Feedback residui `Auto pages`: segnala se restano pagine in overflow dopo la ripaginazione.
 - [x] Navigazione residui `Auto pages`: click sul badge overflow auto porta alla prima pagina/riga problematica.
 - [x] Feedback pagine create `Auto pages`: mostra quante pagine sono state aggiunte dalla ripaginazione misurata.
+- [x] `Auto pages` inoltrato a export HTML/PDF server e fallback browser-only.
 - [x] Tema originale `modern-5-5` per resa 5.5-compatible piu moderna e pulita.
 
 ## Componenti e schema
@@ -148,5 +149,5 @@ public: false
 
 ## Prossimi passi consigliati
 
-1. Promuovere `Auto pages` da preview sperimentale a renderer/export stabile.
-2. Completare persistenza browser/backend web e rifinire export PDF web-native oltre al fallback print del browser.
+1. Rifinire persistenza browser/backend web per documenti utente reali.
+2. Rendere export PDF web-native oltre al fallback print del browser.
