@@ -176,17 +176,17 @@ async function runNamedSuite(suite) {
 }
 
 async function testBrowserStorage() {
-  logStep("browser-storage: enable browser-only");
+  console.log("browser-storage: enable browser-only");
   await clickTopbarButton("Browser-only");
   await waitFor(() => evalInPage("window.localStorage.getItem('rpg-text-editor-next:browser-only') === 'true'"));
   await waitFor(() => evalInPage("document.body.textContent.includes('Browser-only')"));
   await waitFor(() => evalInPage("/Browser \\d+ doc \\/ \\d+ (B|KB|MB)/.test(document.body.textContent)"));
   await waitFor(() => evalInPage("document.querySelector('.next-actions button[aria-pressed=\"true\"]')?.textContent.trim() === 'Browser-only'"));
-  logStep("browser-storage: backup archive");
+  console.log("browser-storage: backup archive");
   await clickTopbarButton("Backup");
   await waitFor(() => evalInPage("document.body.textContent.includes('Backup browser pronto')"));
   await waitFor(() => evalInPage("Array.from(document.querySelectorAll('.next-status a')).some((link) => link.textContent.includes('browser-documents'))"));
-  logStep("browser-storage: disable browser-only");
+  console.log("browser-storage: disable browser-only");
   await clickTopbarButton("Browser-only");
   await waitFor(() => evalInPage("!window.localStorage.getItem('rpg-text-editor-next:browser-only')"));
   await waitFor(() => evalInPage("document.body.textContent.includes('Server locale')"));
@@ -791,72 +791,6 @@ async function importExternalPack(options = {}) {
   `);
 }
 
-async function importBrowserMarkdownDocuments() {
-  await evalInPage(`
-    {
-      const input = document.querySelector('input[accept*="text/markdown"]');
-      if (!input) throw new Error('Browser document import input not found');
-      const one = new File(['---\\ntitle: Browser Import One\\nslug: browser-import-one\\nsummary: Import uno\\ncompatibility: 5e/5.5e\\nlicense_mode: srd-5.2-cc\\nauthor: Codex\\n---\\n\\n# Browser Import One\\n\\nPrimo import.'], 'browser-import-one.md', { type: 'text/markdown' });
-      const two = new File(['---\\ntitle: Browser Import Two\\nslug: browser-import-two\\nsummary: Import due\\ncompatibility: 5e/5.5e\\nlicense_mode: srd-5.2-cc\\nauthor: Codex\\n---\\n\\n# Browser Import Two\\n\\nSecondo import.'], 'browser-import-two.md', { type: 'text/markdown' });
-      const transfer = new DataTransfer();
-      transfer.items.add(one);
-      transfer.items.add(two);
-      input.files = transfer.files;
-      input.dispatchEvent(new Event('change', { bubbles: true }));
-    }
-  `);
-}
-
-async function seedBrowserDocuments(documents) {
-  await evalInPage(`
-    new Promise((resolve, reject) => {
-      const incoming = ${JSON.stringify(documents)}.map((document) => ({
-        filename: document.filename,
-        content: document.content,
-        updatedAt: new Date().toISOString()
-      }));
-      const request = indexedDB.open('rpg-text-editor-next', 1);
-      request.onupgradeneeded = () => {
-        const db = request.result;
-        if (!db.objectStoreNames.contains('documents')) {
-          db.createObjectStore('documents', { keyPath: 'filename' });
-        }
-      };
-      request.onerror = () => reject(request.error);
-      request.onsuccess = () => {
-        const db = request.result;
-        const transaction = db.transaction('documents', 'readwrite');
-        const store = transaction.objectStore('documents');
-        for (const document of incoming) store.put(document);
-        transaction.oncomplete = () => resolve(true);
-        transaction.onerror = () => reject(transaction.error);
-      };
-    })
-  `);
-}
-
-async function dropBrowserMarkdownDocument() {
-  await evalInPage(`
-    {
-      const shell = document.querySelector('.next-shell');
-      if (!shell) throw new Error('Editor shell not found');
-      const file = new File(['---\\ntitle: Browser Drop Import\\nslug: browser-drop-import\\nsummary: Drop import\\ncompatibility: 5e/5.5e\\nlicense_mode: srd-5.2-cc\\nauthor: Codex\\n---\\n\\n# Browser Drop Import\\n\\nDrop import.'], 'browser-drop-import.md', { type: 'text/markdown' });
-      const transfer = new DataTransfer();
-      transfer.items.add(file);
-      window.__browserDropTransfer = transfer;
-      shell.dispatchEvent(new DragEvent('dragenter', { bubbles: true, cancelable: true, dataTransfer: transfer }));
-    }
-  `);
-  await waitFor(() => evalInPage("document.querySelector('.next-shell')?.dataset.importDrag === 'on'"));
-  await evalInPage(`
-    {
-      const shell = document.querySelector('.next-shell');
-      shell.dispatchEvent(new DragEvent('drop', { bubbles: true, cancelable: true, dataTransfer: window.__browserDropTransfer }));
-      delete window.__browserDropTransfer;
-    }
-  `);
-}
-
 async function exportedFileExists(filename) {
   const response = await fetch(`${baseUrl}/dist/${encodeURIComponent(filename)}`);
   return response.ok;
@@ -930,10 +864,6 @@ async function readUiDiagnostics() {
 
 async function assertEqual(actual, expected, label) {
   if (actual !== expected) throw new Error(`${label}: atteso ${expected}, ricevuto ${actual}`);
-}
-
-function logStep(message) {
-  console.log(message);
 }
 
 async function fetchJson(url, options) {

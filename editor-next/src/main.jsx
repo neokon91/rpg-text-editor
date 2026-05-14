@@ -1,15 +1,15 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { renderMarkdown } from "../../packages/components/preview.js";
-import { loadComponentSchema, loadEnabledPacks, manifestUrl, fetchJson, saveEnabledPacks } from "../../packages/components/schema.js";
 import { renderPreviewDocument } from "../../packages/documents/preview-shell.js";
 import { parseFrontmatter, serializeFrontmatter } from "../../packages/documents/frontmatter.js";
 import { checkDocument, deleteDocument, exportBrowserDocumentsArchive, exportDocument, getBrowserDocumentStorageStats, getDocument, getDocumentRuntimeMode, importBrowserDocumentsArchive, importBrowserMarkdownDocuments, listDocuments, renameDocument, saveDocument, setBrowserOnlyMode } from "../../packages/documents/api.js";
 import { countWords, downloadMarkdown } from "../../packages/markdown/editor-actions.js";
 import { slugifyDocumentName } from "../../scripts/lib/component-schema.js";
+import { useComponentCatalog } from "./app/componentCatalog.js";
 import { collectDiagnostics, sameOverflowPages } from "./app/diagnostics.js";
-import { enabledPacksStorageKey, starterDocument } from "./app/constants.js";
-import { loadExternalPacks, normalizeExternalPack, saveExternalPacks, validateExternalPack } from "./app/externalPacks.js";
+import { useDialogState } from "./app/dialogState.js";
+import { starterDocument } from "./app/constants.js";
 import { loadBooleanWorkspaceSetting, loadNumberWorkspaceSetting, saveBooleanWorkspaceSetting, workspaceKey } from "./app/workspaceSettings.js";
 import { AppDialog } from "./components/AppDialog.jsx";
 import { ComponentPalette } from "./components/ComponentPalette.jsx";
@@ -25,14 +25,18 @@ import "./styles.css";
 function App() {
   const editorRef = useRef(null);
   const archiveInputRef = useRef(null);
-  const dialogResolverRef = useRef(null);
   const initialMarkdown = useRef(loadDraft() || starterDocument);
   const [markdown, setMarkdown] = useState(() => initialMarkdown.current);
-  const [componentManifest, setComponentManifest] = useState(null);
-  const [enabledPacks, setEnabledPacks] = useState(() => new Set());
-  const [externalPacks, setExternalPacks] = useState(() => loadExternalPacks());
-  const [schema, setSchema] = useState({ components: [] });
-  const [schemaState, setSchemaState] = useState("Caricamento schema");
+  const {
+    enabledPacks,
+    externalPacks,
+    importExternalPack: upsertExternalPack,
+    manifest: componentManifest,
+    removeExternalPack: deleteExternalPack,
+    schema,
+    schemaState,
+    togglePack: toggleEnabledPack
+  } = useComponentCatalog();
   const [previewVisible, setPreviewVisible] = useState(() => loadBooleanWorkspaceSetting("preview-visible", true));
   const [zoom, setZoom] = useState(() => localStorage.getItem(workspaceKey("zoom")) || "1");
   const [viewport, setViewport] = useState(() => localStorage.getItem(workspaceKey("viewport")) || "desktop");
@@ -68,47 +72,7 @@ function App() {
   const [pendingBreakReview, setPendingBreakReview] = useState(null);
   const [previewOverflowPages, setPreviewOverflowPages] = useState([]);
   const [isDraggingImport, setIsDraggingImport] = useState(false);
-  const [dialog, setDialog] = useState(null);
-
-  useEffect(() => {
-    let cancelled = false;
-    async function loadManifest() {
-      try {
-        const manifest = await fetchJson(manifestUrl, "Manifest componenti non caricato");
-        if (cancelled) return;
-        setComponentManifest(manifest);
-        setEnabledPacks(loadEnabledPacks(manifest, enabledPacksStorageKey));
-      } catch (error) {
-        if (cancelled) return;
-        setSchemaState(error.message);
-      }
-    }
-    loadManifest();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!componentManifest) return undefined;
-    let cancelled = false;
-    async function loadSchema() {
-      try {
-        const loadedSchema = await loadComponentSchema(componentManifest, enabledPacks, externalPacks);
-        if (cancelled) return;
-        setSchema(loadedSchema);
-        setSchemaState(`${loadedSchema.components.length} componenti`);
-      } catch (error) {
-        if (cancelled) return;
-        setSchema({ components: [] });
-        setSchemaState(error.message);
-      }
-    }
-    loadSchema();
-    return () => {
-      cancelled = true;
-    };
-  }, [componentManifest, enabledPacks, externalPacks]);
+  const { dialog, requestConfirm, requestPrompt, resolveDialog } = useDialogState();
 
   useEffect(() => {
     saveDraft(markdown);
@@ -194,27 +158,6 @@ function App() {
   function updateMarkdown(nextMarkdown) {
     setMarkdown(nextMarkdown);
     setExportOutputs([]);
-  }
-
-  function resolveDialog(value) {
-    const resolver = dialogResolverRef.current;
-    dialogResolverRef.current = null;
-    setDialog(null);
-    resolver?.(value);
-  }
-
-  function requestConfirm({ title, message, confirmLabel = "Conferma" }) {
-    return new Promise((resolve) => {
-      dialogResolverRef.current = resolve;
-      setDialog({ kind: "confirm", title, message, confirmLabel });
-    });
-  }
-
-  function requestPrompt({ title, message, defaultValue = "", confirmLabel = "Conferma" }) {
-    return new Promise((resolve) => {
-      dialogResolverRef.current = resolve;
-      setDialog({ kind: "prompt", title, message, defaultValue, confirmLabel });
-    });
   }
 
   async function resetDraft() {
@@ -309,44 +252,18 @@ function App() {
   }
 
   function togglePack(packId) {
-    setEnabledPacks((current) => {
-      const next = new Set(current);
-      if (next.has(packId)) {
-        next.delete(packId);
-      } else {
-        next.add(packId);
-      }
-      saveEnabledPacks(enabledPacksStorageKey, next);
-      return next;
-    });
+    toggleEnabledPack(packId);
     setExportOutputs([]);
   }
 
   function importExternalPack(pack) {
-    const normalized = normalizeExternalPack(pack);
-    validateExternalPack(normalized, {
-      manifest: componentManifest,
-      schema,
-      externalPacks
-    });
-    setExternalPacks((current) => {
-      const next = [
-        ...current.filter((item) => item.id !== normalized.id),
-        normalized
-      ];
-      saveExternalPacks(next);
-      return next;
-    });
+    const normalized = upsertExternalPack(pack);
     setStatus(`Pack esterno caricato: ${normalized.name}`);
     setExportOutputs([]);
   }
 
   function removeExternalPack(packId) {
-    setExternalPacks((current) => {
-      const next = current.filter((pack) => pack.id !== packId);
-      saveExternalPacks(next);
-      return next;
-    });
+    deleteExternalPack(packId);
     setStatus("Pack esterno rimosso");
     setExportOutputs([]);
   }
