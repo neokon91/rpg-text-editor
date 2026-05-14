@@ -338,6 +338,13 @@ try {
   await reloadPage();
   await waitFor(() => evalInPage("document.readyState === 'complete'"));
   await waitFor(() => evalInPage("document.querySelector('.preview-overflow')?.textContent.includes('riga')"));
+  await clickButton("Auto pages");
+  await waitFor(() => evalInPage("Array.from(document.querySelectorAll('.preview-toolbar button[aria-pressed=\"true\"]')).some((button) => button.textContent.trim() === 'Auto pages')"));
+  await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.body?.dataset.autoPaginate === 'true'"));
+  await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.querySelectorAll('.page-shell').length > 1"));
+  await clickButton("Auto pages");
+  await waitFor(() => evalInPage("!Array.from(document.querySelectorAll('.preview-toolbar button[aria-pressed=\"true\"]')).some((button) => button.textContent.trim() === 'Auto pages')"));
+  await waitFor(() => evalInPage("document.querySelector('.preview-overflow')?.textContent.includes('riga')"));
   await evalInPage("document.querySelector('.preview-overflow').click()");
   await waitFor(() => evalInPage("Number(window.localStorage.getItem('rpg-text-editor-next:selected-line')) > 1"));
   await clickTopbarButton("Auto break");
