@@ -42,6 +42,7 @@ Il server apre `editor-next/` su `http://127.0.0.1:5173/editor-next/` e combina 
 - Preview multipagina reale: ogni `::pagebreak` crea una nuova `page-shell` navigabile.
 - Indicatore overflow nella toolbar preview quando una pagina manuale supera il box pagina, con riga sorgente del prossimo intervento e salto alla selezione da spezzare.
 - Comando `Break` per inserire `::pagebreak` prima del blocco Markdown selezionato, selezionando il marker creato e indicando la riga del contenuto spostato.
+- Comando `Auto break` predittivo: usa le righe overflow della preview e stima altri break block-aware nel resto del documento lungo.
 - Revisione post-break: se resta overflow dopo l'inserimento assistito, la prossima riga da spezzare viene selezionata automaticamente.
 - Sync preview: toggle `Sync`, scroll preview dalla linea cursore, range sorgente sui blocchi multi-linea e click su preview verso la linea sorgente.
 - Snippet rapidi: scena, readaloud, nota/callout, incontro, tabella, include, immagine e page break.
@@ -73,6 +74,7 @@ Il server apre `editor-next/` su `http://127.0.0.1:5173/editor-next/` e combina 
 
 ## Mancanze Verso Homebrewery
 
+- Paginazione fisica automatica nel renderer, oltre agli helper predittivi.
 - Installer/app desktop oltre allo ZIP applicativo locale.
 
 ## Guardrail

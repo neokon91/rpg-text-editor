@@ -10,7 +10,7 @@ import { countWords, downloadMarkdown } from "../../packages/markdown/editor-act
 import { slugifyDocumentName } from "../../scripts/lib/component-schema.js";
 import { ComponentPalette } from "./components/ComponentPalette.jsx";
 import { MarkdownEditor } from "./editor/MarkdownEditor.jsx";
-import { insertPageBreakBeforeLine, insertPageBreaksBeforeLines } from "./editor/pageBreaks.js";
+import { insertPageBreakBeforeLine, insertPageBreaksBeforeLines, predictPageBreakLines } from "./editor/pageBreaks.js";
 import { DocumentOutline } from "./outline/DocumentOutline.jsx";
 import { PreviewFrame } from "./preview/PreviewFrame.jsx";
 import { TopMenu } from "./shell/TopMenu.jsx";
@@ -288,13 +288,14 @@ function App() {
       return;
     }
 
-    const result = insertPageBreaksBeforeLines(markdown, overflowLines);
+    const plannedLines = predictPageBreakLines(markdown, overflowLines);
+    const result = insertPageBreaksBeforeLines(markdown, plannedLines);
     setMarkdown(result.markdown);
 
     if (result.inserted) {
       setSelectedLine(result.breaks[0].breakLine);
       setPendingBreakReview(null);
-      setStatus(`Auto break: ${result.inserted} page break inseriti`);
+      setStatus(`Auto break: ${result.inserted} page break predittivi inseriti`);
     } else {
       setStatus("Auto break: page break gia presenti vicino agli overflow");
     }

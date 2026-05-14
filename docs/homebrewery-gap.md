@@ -64,7 +64,7 @@ public: false
 
 ## Gap Prioritari
 
-1. Paginazione automatica piu predittiva prima del render overflow.
+1. Paginazione fisica automatica nel renderer, oltre agli helper predittivi.
 2. Installer/app desktop oltre allo ZIP applicativo locale.
 3. Polish onboarding e messaggi errore/export.
 

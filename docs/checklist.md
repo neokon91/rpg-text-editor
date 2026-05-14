@@ -71,6 +71,7 @@ public: false
 - [x] Badge overflow con riga sorgente del prossimo intervento.
 - [x] Revisione post-break: se resta overflow seleziona la prossima riga da spezzare.
 - [x] Auto break da overflow preview: inserisce piu `::pagebreak` block-aware in una passata.
+- [x] Auto break predittivo: dopo la prima riga overflow pianifica altri break euristici nel resto del documento lungo.
 - [x] Tema originale `modern-5-5` per resa 5.5-compatible piu moderna e pulita.
 
 ## Componenti e schema
@@ -134,5 +135,5 @@ public: false
 
 ## Prossimi passi consigliati
 
-1. Paginazione automatica piu predittiva prima del render overflow.
+1. Paginazione fisica automatica nel renderer, oltre agli helper predittivi.
 2. Installer/app desktop oltre allo ZIP applicativo locale.

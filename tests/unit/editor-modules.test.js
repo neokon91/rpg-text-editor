@@ -7,7 +7,7 @@ import {
   defaultComponentValues,
   validateComponentValues
 } from "../../editor-next/src/components/componentMarkdown.js";
-import { insertPageBreakBeforeLine, insertPageBreaksBeforeLines } from "../../editor-next/src/editor/pageBreaks.js";
+import { insertPageBreakBeforeLine, insertPageBreaksBeforeLines, predictPageBreakLines } from "../../editor-next/src/editor/pageBreaks.js";
 import { renderMarkdown } from "../../packages/components/preview.js";
 import { parseMarkdownOutline } from "../../packages/markdown/outline.js";
 
@@ -171,4 +171,15 @@ Terzo blocco`, [4, 7, 4]);
   assert.deepEqual(result.breaks.map((item) => item.targetLine), [4, 7]);
   assert.match(result.markdown, /# Titolo\n\n::pagebreak\n\nPrimo blocco/);
   assert.match(result.markdown, /continua\n\n::pagebreak\n\nSecondo blocco/);
+});
+
+test("predictPageBreakLines plans extra block-aware breaks after overflow", () => {
+  const blocks = Array.from({ length: 12 }, (_, index) => `Paragrafo ${index + 1}\n${"testo ".repeat(95)}`).join("\n\n");
+  const markdown = `# Titolo\n\n${blocks}`;
+
+  const targets = predictPageBreakLines(markdown, [4], { blockWeightThreshold: 18 });
+
+  assert.equal(targets[0], 3);
+  assert.ok(targets.length > 1);
+  assert.ok(targets.every((line) => markdown.split("\n")[line - 1]?.startsWith("Paragrafo")));
 });
