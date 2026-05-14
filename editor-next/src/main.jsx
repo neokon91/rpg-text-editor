@@ -46,6 +46,7 @@ Scrivi qui la prima scena.
 
 function App() {
   const editorRef = useRef(null);
+  const dialogResolverRef = useRef(null);
   const [markdown, setMarkdown] = useState(() => loadDraft() || starterDocument);
   const [componentManifest, setComponentManifest] = useState(null);
   const [enabledPacks, setEnabledPacks] = useState(() => new Set());
@@ -74,6 +75,7 @@ function App() {
   const [isChecking, setIsChecking] = useState(false);
   const [exportOutputs, setExportOutputs] = useState([]);
   const [pendingBreakReview, setPendingBreakReview] = useState(null);
+  const [dialog, setDialog] = useState(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -185,8 +187,36 @@ function App() {
     setExportOutputs([]);
   }
 
-  function resetDraft() {
-    if (isDirty && !window.confirm("Scartare le modifiche non salvate?")) return;
+  function resolveDialog(value) {
+    const resolver = dialogResolverRef.current;
+    dialogResolverRef.current = null;
+    setDialog(null);
+    resolver?.(value);
+  }
+
+  function requestConfirm({ title, message, confirmLabel = "Conferma" }) {
+    return new Promise((resolve) => {
+      dialogResolverRef.current = resolve;
+      setDialog({ kind: "confirm", title, message, confirmLabel });
+    });
+  }
+
+  function requestPrompt({ title, message, defaultValue = "", confirmLabel = "Conferma" }) {
+    return new Promise((resolve) => {
+      dialogResolverRef.current = resolve;
+      setDialog({ kind: "prompt", title, message, defaultValue, confirmLabel });
+    });
+  }
+
+  async function resetDraft() {
+    if (isDirty) {
+      const confirmed = await requestConfirm({
+        title: "Nuova bozza",
+        message: "Scartare le modifiche non salvate e tornare al documento iniziale?",
+        confirmLabel: "Scarta"
+      });
+      if (!confirmed) return;
+    }
     clearDraft();
     setMarkdown(starterDocument);
     setCurrentDocument("");
@@ -311,7 +341,14 @@ function App() {
 
   async function openDocument(nextFilename) {
     if (!nextFilename) return;
-    if (isDirty && !window.confirm("Scartare le modifiche non salvate?")) return;
+    if (isDirty) {
+      const confirmed = await requestConfirm({
+        title: "Apri documento",
+        message: "Scartare le modifiche non salvate e aprire un altro documento?",
+        confirmLabel: "Apri"
+      });
+      if (!confirmed) return;
+    }
 
     try {
       const document = await getDocument(nextFilename);
@@ -371,7 +408,12 @@ function App() {
       return;
     }
 
-    const nextName = window.prompt("Nuovo nome file Markdown", currentDocument);
+    const nextName = await requestPrompt({
+      title: "Rinomina documento",
+      message: "Inserisci il nuovo nome file Markdown.",
+      defaultValue: currentDocument,
+      confirmLabel: "Rinomina"
+    });
     if (!nextName || nextName === currentDocument) return;
 
     try {
@@ -389,7 +431,12 @@ function App() {
       setStatus("Apri o salva un documento prima di eliminarlo");
       return;
     }
-    if (!window.confirm(`Eliminare docs/${currentDocument}?`)) return;
+    const confirmed = await requestConfirm({
+      title: "Elimina documento",
+      message: `Eliminare definitivamente docs/${currentDocument}?`,
+      confirmLabel: "Elimina"
+    });
+    if (!confirmed) return;
 
     try {
       const deleted = currentDocument;
@@ -541,7 +588,46 @@ function App() {
           onTogglePanel={toggleDocumentPanel}
         />
       </section>
+      {dialog ? (
+        <AppDialog
+          dialog={dialog}
+          onCancel={() => resolveDialog(null)}
+          onConfirm={resolveDialog}
+        />
+      ) : null}
     </main>
+  );
+}
+
+function AppDialog({ dialog, onCancel, onConfirm }) {
+  const [value, setValue] = useState(dialog.defaultValue || "");
+
+  return (
+    <div className="app-dialog-backdrop" role="presentation">
+      <form
+        className="app-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="app-dialog-title"
+        onSubmit={(event) => {
+          event.preventDefault();
+          onConfirm(dialog.kind === "prompt" ? value.trim() : true);
+        }}
+      >
+        <header>
+          <strong id="app-dialog-title">{dialog.title}</strong>
+          <button type="button" aria-label="Chiudi dialog" onClick={onCancel}>×</button>
+        </header>
+        <p>{dialog.message}</p>
+        {dialog.kind === "prompt" ? (
+          <input autoFocus value={value} onChange={(event) => setValue(event.target.value)} />
+        ) : null}
+        <footer>
+          <button type="button" onClick={onCancel}>Annulla</button>
+          <button type="submit" className="primary-action">{dialog.confirmLabel || "Conferma"}</button>
+        </footer>
+      </form>
+    </div>
   );
 }
 

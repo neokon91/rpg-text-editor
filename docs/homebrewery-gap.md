@@ -23,6 +23,7 @@ public: false
 - Autosave locale.
 - Apertura e salvataggio file Markdown da `docs/`.
 - Rename/delete del documento corrente dalla topbar.
+- Dialog custom per conferme e input rename, senza prompt/confirm nativi.
 - Check guidato con diagnostiche schema e author check.
 - Export HTML/PDF dal flusso locale.
 - Snippet rapidi per blocchi frequenti.

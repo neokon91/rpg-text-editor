@@ -155,6 +155,58 @@ button:disabled {
   color: #7d2d1a;
 }
 
+.app-dialog-backdrop {
+  position: fixed;
+  z-index: 10;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  background: rgba(37, 33, 29, 0.58);
+}
+
+.app-dialog {
+  display: grid;
+  gap: 12px;
+  width: min(420px, 100%);
+  padding: 14px;
+  border: 1px solid #bcae99;
+  border-radius: 8px;
+  background: #fbf7ef;
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.28);
+}
+
+.app-dialog header,
+.app-dialog footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.app-dialog header button {
+  width: 30px;
+  padding: 0;
+}
+
+.app-dialog p {
+  margin: 0;
+  color: #4b4036;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.app-dialog input {
+  width: 100%;
+  max-width: none;
+}
+
+.app-dialog .primary-action {
+  border-color: #1f6f78;
+  background: #dcecdf;
+  font-weight: 700;
+}
+
 .next-workspace {
   display: grid;
   grid-template-columns: 240px minmax(360px, 1fr) minmax(420px, 1fr) 220px;

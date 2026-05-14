@@ -105,11 +105,12 @@ try {
   await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.querySelector('.page-shell h1')?.textContent.includes('Codex Rename Temp')"));
   await clickTopbarButton("Salva");
   await waitFor(() => evalInPage(`document.body.textContent.includes('docs/${renameSourceFile}')`));
-  await evalInPage(`window.prompt = () => ${JSON.stringify(renameTargetFile)}`);
   await clickTopbarButton("Rinomina");
+  await fillDialogInput(renameTargetFile);
+  await clickDialogButton("Rinomina");
   await waitFor(() => evalInPage(`document.body.textContent.includes('docs/${renameTargetFile}') && document.body.textContent.includes('Rinominato')`));
-  await evalInPage("window.confirm = () => true");
   await clickTopbarButton("Elimina");
+  await clickDialogButton("Elimina");
   await waitFor(() => evalInPage("document.body.textContent.includes('Eliminato docs/codex-rename-temp-renamed.md')"));
   await clickTopbarButton("Nuovo");
   await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.querySelector('.page-shell h1')?.textContent.toLowerCase().includes('nuova avventura')"));
@@ -405,6 +406,29 @@ async function clickButtonByAriaLabel(label) {
     {
       const button = document.querySelector(\`button[aria-label="${label}"]\`);
       if (!button) throw new Error('Button not found: ${label}');
+      button.click();
+    }
+  `);
+}
+
+async function fillDialogInput(value) {
+  await evalInPage(`
+    {
+      const input = document.querySelector('.app-dialog input');
+      if (!input) throw new Error('Dialog input not found');
+      const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set;
+      setter.call(input, ${JSON.stringify(value)});
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+  `);
+}
+
+async function clickDialogButton(label) {
+  await evalInPage(`
+    {
+      const button = Array.from(document.querySelectorAll('.app-dialog button'))
+        .find((item) => item.textContent.trim() === ${JSON.stringify(label)});
+      if (!button) throw new Error('Dialog button not found: ${label}');
       button.click();
     }
   `);
