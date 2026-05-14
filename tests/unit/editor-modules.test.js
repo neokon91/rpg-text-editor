@@ -10,7 +10,7 @@ import {
 import { insertPageBreakBeforeLine, insertPageBreaksBeforeLines, predictPageBreakLines } from "../../editor-next/src/editor/pageBreaks.js";
 import { renderMarkdown } from "../../packages/components/preview.js";
 import { renderPreviewDocument } from "../../packages/documents/preview-shell.js";
-import { checkDocument, getDocumentRuntimeMode, listDocuments, saveDocument, setBrowserOnlyMode } from "../../packages/documents/api.js";
+import { checkDocument, exportDocument, getDocumentRuntimeMode, listDocuments, saveDocument, setBrowserOnlyMode } from "../../packages/documents/api.js";
 import { parseMarkdownOutline } from "../../packages/markdown/outline.js";
 
 test("parseMarkdownOutline ignores fenced headings and strips inline HTML", () => {
@@ -233,12 +233,41 @@ test("document api can force browser-only runtime from browser storage", () => {
   assert.equal(getDocumentRuntimeMode(), "server");
 });
 
-function withBrowserOnlyStorage() {
-  withBrowserStorage({ browserOnly: true });
+test("browser-only document api exports pdf as printable html", async () => {
+  const downloads = [];
+  withBrowserOnlyStorage({ downloads });
+
+  const content = `---
+title: Browser PDF
+slug: browser-pdf
+summary: Test PDF browser
+compatibility: 5e/5.5e
+license_mode: srd-5.2-cc
+author: Codex
+---
+
+# Browser PDF
+
+Documento stampabile.`;
+
+  const exported = await exportDocument({ filename: "browser-pdf.md", content, format: "pdf" });
+  const downloadedBlob = await downloads[0].blob.text();
+
+  assert.equal(exported.outputs[0].path, "browser-download/browser-pdf.print.html");
+  assert.equal(downloads[0].filename, "browser-pdf.print.html");
+  assert.match(downloads[0].href, /^blob:rpg-test-/);
+  assert.match(downloadedBlob, /Salva come PDF/);
+  assert.match(downloadedBlob, /window\.print/);
+});
+
+function withBrowserOnlyStorage(options = {}) {
+  return withBrowserStorage({ browserOnly: true, ...options });
 }
 
-function withBrowserStorage({ browserOnly }) {
+function withBrowserStorage({ browserOnly, downloads = [] }) {
   const store = new Map();
+  const blobs = new Map();
+  let blobCount = 0;
   globalThis.window = {
     location: { search: browserOnly ? "?browser-only" : "" },
     __RPG_TEXT_EDITOR_BROWSER_ONLY__: browserOnly
@@ -248,4 +277,26 @@ function withBrowserStorage({ browserOnly }) {
     setItem: (key, value) => store.set(key, String(value)),
     removeItem: (key) => store.delete(key)
   };
+  globalThis.URL.createObjectURL = (blob) => {
+    const url = `blob:rpg-test-${++blobCount}`;
+    blobs.set(url, blob);
+    return url;
+  };
+  globalThis.document = {
+    createElement: () => {
+      const link = {
+        href: "",
+        download: "",
+        click: () => {
+          downloads.push({
+            href: link.href,
+            filename: link.download,
+            blob: blobs.get(link.href)
+          });
+        }
+      };
+      return link;
+    }
+  };
+  return { downloads };
 }

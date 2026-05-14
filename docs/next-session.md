@@ -29,7 +29,7 @@ public: false
 - Markdown resta sorgente primaria, con autosave locale e download Markdown.
 - Apertura/salvataggio/rename/delete documenti da `docs/`, con dialog custom.
 - Check guidato, diagnostiche schema + author check, export HTML/PDF.
-- Adapter documenti browser-only iniziale: fallback automatico da API locali a storage/download browser.
+- Adapter documenti browser-only iniziale: fallback automatico da API locali a storage/download browser, con PDF come HTML stampabile da browser.
 - Palette componenti schema-driven con ricerca, gruppi, preset, pack manifest, pack JSON esterni e validazione collisioni.
 - Preview live iframe con tema/carta, sync editor-preview, zoom, pagina corrente/totale, single/facing/flow.
 - `::pagebreak` crea pagine fisiche; `Break` e `Auto break` inseriscono page break block-aware.
@@ -39,7 +39,7 @@ public: false
 ## Prossime Priorita
 
 1. Promuovere `Auto pages` da preview sperimentale a renderer/export stabile.
-2. Completare persistenza browser/backend web e export PDF senza server locale di sviluppo.
+2. Completare persistenza browser/backend web e export PDF web-native oltre al fallback print.
 3. Deploy web e onboarding browser-first per utente non tecnico.
 
 ## Guardrail

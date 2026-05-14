@@ -42,7 +42,7 @@ npm start
 - Frontmatter compatto, outline da heading Markdown e salto alla riga sorgente.
 - Check guidato con diagnostiche schema e author check.
 - Export HTML/PDF in `dist/`, con stato busy/error e log export nel tooltip.
-- Modalita browser-only iniziale: se le API locali non esistono, documenti/check/export HTML usano storage e download del browser.
+- Modalita browser-only iniziale: se le API locali non esistono, documenti/check/export HTML usano storage e download del browser; export PDF scarica un HTML stampabile per `Salva come PDF`.
 - La topbar espone il toggle `Browser-only`; la status bar indica il runtime documenti: `Server locale` oppure `Browser-only`.
 - Palette componenti schema-driven con ricerca, gruppi, preset, pack manifest e pack JSON esterni.
 - Form componenti generati dallo schema, con liste, preset e validazione inline.
@@ -64,7 +64,7 @@ npm start
 ## Mancanze Prioritarie
 
 1. Portare `Auto pages` nel renderer/export stabile.
-2. Estendere la modalita browser-only a persistenza definitiva e export web/PDF.
+2. Estendere la modalita browser-only a persistenza definitiva e export PDF web-native oltre al fallback print.
 3. Rifinire deploy, onboarding e messaggi errore per utente finale non tecnico.
 
 ## Guardrail

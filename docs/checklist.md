@@ -42,6 +42,7 @@ public: false
 - [x] Modalita browser-only iniziale per salvataggio/lista/check/export HTML senza API locali.
 - [x] Indicatore runtime documenti in status bar: `Server locale`/`Browser-only`.
 - [x] Toggle esplicito `Browser-only` nella topbar per forzare storage, check ed export HTML nel browser.
+- [x] Fallback PDF browser-only come HTML stampabile con `Salva come PDF` del browser.
 - [x] Export HTML/PDF guidato dal workflow autore locale.
 - [x] Overwrite esplicito.
 - [x] Salva nuovo con nome unico.
@@ -148,4 +149,4 @@ public: false
 ## Prossimi passi consigliati
 
 1. Promuovere `Auto pages` da preview sperimentale a renderer/export stabile.
-2. Completare persistenza browser/backend web e export PDF senza server locale di sviluppo.
+2. Completare persistenza browser/backend web e rifinire export PDF web-native oltre al fallback print del browser.
