@@ -15,6 +15,7 @@
     "export:package": "node scripts/export-package.js",
     "export:package:pdf": "node scripts/export-package.js --pdf",
     "qa:pdf": "node scripts/qa-pdf.js",
+    "doctor": "node scripts/doctor.js",
     "check:legal": "node scripts/check-legal.js",
     "check:editorial": "node scripts/check-editorial.js",
     "check:assets": "node scripts/check-assets.js",

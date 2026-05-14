@@ -14,6 +14,7 @@ npm run build:site
 npm run export:package
 npm run export:package:pdf
 npm run qa:pdf
+npm run doctor
 npm run check:legal
 npm run check:editorial
 npm run check:assets
@@ -41,6 +42,7 @@ npm run editor:next:build
 - `npm run export:package` crea uno ZIP di pubblicazione da `book.json` con HTML, asset, crediti e manifest verificabile.
 - `npm run export:package:pdf` include anche il PDF nel package, se Brave/Chrome headless e disponibile.
 - `npm run qa:pdf` genera il PDF, rasterizza tutte le pagine in PNG e crea `dist/qa/pdf/index.html` per controllare il layout.
+- `npm run doctor` controlla prerequisiti locali: Node/npm, dipendenze, browser Chromium/Brave/Chrome e porta dell'editor.
 - `npm run check:legal` segnala termini rischiosi o marchi da trattare con cautela nei sorgenti Markdown.
 - `npm run check:editorial` controlla metadati, gerarchia titoli, CD, GS, danni medi e ricompense.
 - `npm run check:assets` valida il registro asset e verifica che i file dichiarati esistano.
@@ -68,6 +70,8 @@ Per il flusso pratico completo vedi `docs/authoring.md`. Per creare pack compone
 La UI locale vive in `editor-next/` e si avvia con:
 
 ```sh
+npm install
+npm run doctor
 npm run editor
 ```
 
