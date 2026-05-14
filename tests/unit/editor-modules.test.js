@@ -245,7 +245,7 @@ test("document api can force browser-only runtime from browser storage", () => {
   assert.equal(getDocumentRuntimeMode(), "server");
 });
 
-test("browser-only document api exports pdf as printable html", async () => {
+test("browser-only document api exports a native pdf with printable html fallback", async () => {
   const downloads = [];
   withBrowserOnlyStorage({ downloads });
 
@@ -265,18 +265,19 @@ Documento stampabile.`;
   const exported = await exportDocument({ filename: "browser-pdf.md", content, format: "pdf" });
   const downloadedBlob = await downloads[0].blob.text();
 
-  assert.equal(exported.outputs[0].path, "browser-download/browser-pdf.print.html");
-  assert.equal(downloads[0].filename, "browser-pdf.print.html");
+  assert.equal(exported.outputs[0].path, "browser-download/browser-pdf.pdf");
+  assert.equal(exported.outputs[1].path, "browser-fallback/browser-pdf.print.html");
+  assert.equal(downloads[0].filename, "browser-pdf.pdf");
   assert.match(downloads[0].href, /^blob:rpg-test-/);
-  assert.match(downloadedBlob, /Salva come PDF/);
-  assert.match(downloadedBlob, /window\.print/);
+  assert.match(downloadedBlob, /^%PDF-1\.4/);
+  assert.match(downloadedBlob, /Browser PDF/);
 });
 
 test("browser-only document api carries auto pages into printable export", async () => {
   const downloads = [];
-  withBrowserOnlyStorage({ downloads });
+  const { blobs } = withBrowserOnlyStorage({ downloads });
 
-  await exportDocument({
+  const exported = await exportDocument({
     filename: "auto-pages.md",
     format: "pdf",
     autoPaginate: true,
@@ -293,10 +294,10 @@ author: Codex
 
 Documento lungo.`
   });
-  const downloadedBlob = await downloads[0].blob.text();
+  const printableBlob = await blobs.get(exported.outputs[1].url).text();
 
-  assert.match(downloadedBlob, /data-auto-paginate="true"/);
-  assert.match(downloadedBlob, /paginatePreviewPages/);
+  assert.match(printableBlob, /data-auto-paginate="true"/);
+  assert.match(printableBlob, /paginatePreviewPages/);
 });
 
 test("browser-only document api can backup and import document archives", async () => {
@@ -458,5 +459,5 @@ function withBrowserStorage({ browserOnly, downloads = [] }) {
       return link;
     }
   };
-  return { downloads };
+  return { downloads, blobs };
 }

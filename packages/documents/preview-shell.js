@@ -1,5 +1,5 @@
 export function renderPreviewDocument(metadata, content, options = {}) {
-  const theme = metadata.theme || "classic-parchment";
+  const theme = metadata.theme || "fifth-edition-compatible";
   const paper = String(metadata.paper || "A4").toLowerCase();
   const title = metadata.title || "Anteprima";
   const pages = splitPreviewPages(content);

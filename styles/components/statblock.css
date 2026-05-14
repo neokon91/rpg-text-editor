@@ -1,25 +1,23 @@
 .statblock {
   position: relative;
 
-  margin: 1.25rem 0;
+  margin: 1rem 0 1.1rem;
 
-  padding: 0.9rem 0.95rem 0.85rem;
+  padding: 0.82rem 0.88rem 0.78rem;
 
   background:
-    linear-gradient(rgba(255,255,255,.66), rgba(255,255,255,.5)),
-    radial-gradient(circle at 86% 10%, rgba(140, 47, 43, 0.17), transparent 24%),
-    radial-gradient(circle at 10% 96%, rgba(54, 113, 107, 0.15), transparent 28%),
-    linear-gradient(135deg, #ead6a4, #fff5d3 48%, #d9bd7e);
+    linear-gradient(rgba(255,255,255,.58), rgba(255,255,255,.42)),
+    linear-gradient(135deg, #ead3a1, #fff3cc 48%, #d5b770);
 
   background-size: cover;
 
   border:
-    1px solid rgba(111, 84, 40, 0.74);
+    1px solid rgba(102, 71, 34, 0.76);
 
-  border-radius: 0;
+  border-radius: 2px;
 
   box-shadow:
-    0 4px 12px rgba(0,0,0,.13),
+    0 4px 10px rgba(0,0,0,.12),
     inset 0 0 0 1px rgba(255,255,255,.24),
     inset 0 0 28px rgba(122, 87, 35, 0.12);
 
@@ -37,7 +35,7 @@
   left: 0;
   right: 0;
 
-  height: 6px;
+  height: 5px;
 
   background:
     linear-gradient(
@@ -55,7 +53,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  height: 5px;
+  height: 4px;
   background:
     linear-gradient(
       to right,
@@ -70,7 +68,7 @@
   margin:
     0
     0
-    .45rem;
+    .36rem;
 
   padding-bottom: .35rem;
 
@@ -78,7 +76,7 @@
     var(--color-accent);
 
   font-size:
-    1.35rem;
+    1.22rem;
 
   letter-spacing:
     0;
@@ -94,7 +92,7 @@
 
 .statblock hr {
   margin:
-    .9rem 0;
+    .74rem 0;
 
   opacity:
     .7;
@@ -108,12 +106,12 @@
   gap: .35rem;
 
   margin-bottom:
-    .7rem;
+    .58rem;
 }
 
 .statline span {
   padding:
-    .2rem .36rem;
+    .16rem .32rem;
 
   background:
     rgba(255,255,255,.35);
@@ -135,12 +133,12 @@
     .25rem;
 
   margin:
-    .7rem 0;
+    .58rem 0;
 }
 
 .stats-grid div {
   padding:
-    .3rem .22rem;
+    .25rem .18rem;
 
   background:
     linear-gradient(

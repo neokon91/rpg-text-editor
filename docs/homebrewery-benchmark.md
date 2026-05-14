@@ -23,7 +23,8 @@ public: false
 ## Decisione Locale
 
 - Usare Homebrewery solo come benchmark UX: Markdown visibile, preview impaginata, snippet rapidi, export centrale.
-- Non importare sintassi `{{...}}`, CSS, font, asset, loghi, cornici o trade dress.
+- Usare codice/licenze idonee solo dove serve davvero; per ora il tema `fifth-edition-compatible` e scritto localmente, senza importare il CSS minificato Homebrewery.
+- Non importare loghi, marchi, illustrazioni o asset ufficiali. Font, titoli, colonne, box e statblock sono trattati come linguaggio editoriale compatibile 5e, non come brand dell'app.
 - Preferire componenti `:::` schema-driven per validazione, snippet, plugin pack e reference generate.
 - Restare browser-first: niente installazione locale per l'utente finale; account, vault, MongoDB, drive/cloud o share pubblico solo se diventano requisiti espliciti.
 
@@ -31,8 +32,9 @@ public: false
 
 - Allineato: React/Vite, CodeMirror 6, preview iframe, toolbar pagina, zoom fit/fill, single/facing/flow, snippet/componenti, metadata/frontmatter, export.
 - Superficie originale: schema componenti, plugin pack, author check, export e persistenza browser-first.
-- Gap attuale: `Auto pages` e collegato anche all'export e i documenti browser hanno backup/import JSON; restano da rifinire persistenza web/cloud e PDF web-native.
+- Output PDF: preset `fifth-edition-compatible` usato da starter, template, libro e render senza tema esplicito; target visivo a due colonne con carta calda, titoli rossi, box editoriali, tabelle e statblock compatti.
+- Gap attuale: resta da rifinire deploy web, persistenza web/cloud opzionale e messaggi di recupero/backup; `Auto pages`, backup/import JSON e PDF browser-native sono collegati all'export.
 
 ## Prossimo Passo
 
-Promuovere la paginazione misurata da esperimento preview a output riproducibile per HTML/PDF, mantenendo `::pagebreak` come override manuale esplicito.
+Portare l'app su un deploy web statico e verificare il flusso browser-only completo su browser reali.

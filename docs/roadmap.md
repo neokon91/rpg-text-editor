@@ -18,6 +18,8 @@ public: false
 
 RPG Text Editor deve essere una web app browser-first per contenuti TTRPG: editor CodeMirror, preview editoriale, componenti schema-driven, check guidati ed export HTML/PDF. L'utente finale non deve installare Node/npm o un'app desktop. Il sorgente resta Markdown leggibile e versionabile.
 
+Il README deve restare orientato a chi deve usare il prodotto. I dettagli tecnici vivono nelle reference dedicate: `docs/editor-reference.md`, `docs/checklist.md`, `docs/homebrewery-benchmark.md` e `docs/next-session.md`.
+
 ## Stato Attuale
 
 - UI React/Vite/CodeMirror in `editor-next/`.
@@ -26,6 +28,7 @@ RPG Text Editor deve essere una web app browser-first per contenuti TTRPG: edito
 - Palette componenti con ricerca, gruppi, preset, pack manifest e pack JSON esterni.
 - Preview iframe con sync editor-preview, toolbar pagine, `::pagebreak`, overflow badge, `Auto break` e `Auto pages`.
 - Adapter browser-only iniziale per documenti, check client-side ed export HTML via download browser.
+- Export PDF browser-native visuale con fallback stampa HTML e preset `fifth-edition-compatible` per output a due colonne.
 - Avvio sviluppo semplificato: `npm start`; preflight sviluppo: `npm run doctor`.
 - Packaging locale disponibile per QA/dev: `npm run package:editor`; package pubblicazione libro: `npm run export:package`.
 - QA aggregata: `npm run check`.
@@ -33,13 +36,13 @@ RPG Text Editor deve essere una web app browser-first per contenuti TTRPG: edito
 ## Prossime Fasi
 
 1. **Paginazione stabile**
-   Portare la misurazione di `Auto pages` nel renderer/export HTML/PDF, mantenendo `::pagebreak` come override manuale.
+   Raffinare casi limite di overflow e regressioni visuali, mantenendo `::pagebreak` come override manuale.
 
 2. **Web app finale**
-   Rendere l'editor deployabile e usabile da browser senza installazione locale, completando persistenza web/browser ed export PDF web.
+   Rendere l'editor deployabile e usabile da browser senza installazione locale, con verifica asset/cache e browser reali.
 
 3. **Onboarding e recovery**
-   Rifinire primo avvio, messaggi errore, recupero draft, esempi iniziali e indicazioni export.
+   Rifinire messaggi errore, recupero draft, backup e indicazioni export.
 
 4. **Hardening QA**
    Mantenere `npm run check` verde, ridurre flakiness UI e aggiungere casi su documenti lunghi, immagini e pagine multiple.
@@ -49,4 +52,4 @@ RPG Text Editor deve essere una web app browser-first per contenuti TTRPG: edito
 - Installer desktop come percorso principale per l'utente finale.
 - Account/cloud/share pubblico finche non richiesti.
 - Sintassi proprietaria nascosta al posto del Markdown.
-- Copia di trade dress, font, asset o layout riconoscibili di Homebrewery/manuali ufficiali.
+- Copia di loghi, marchi, illustrazioni o asset ufficiali.

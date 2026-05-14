@@ -3,7 +3,7 @@ body {
   margin: 0;
   color: var(--color-ink);
   font-family: var(--font-body);
-  font-size: 16px;
+  font-size: 15.6px;
   line-height: var(--line-body);
   background: #2a241f;
   overflow-wrap: break-word;
@@ -18,10 +18,12 @@ body {
   column-count: 2;
   column-gap: var(--column-gap);
   column-fill: auto;
-  column-rule: 1px solid rgba(122, 87, 35, 0.16);
+  column-rule: 1px solid rgba(104, 71, 34, 0.22);
   background:
-    linear-gradient(rgba(255, 253, 246, 0.92), rgba(255, 250, 238, 0.92)),
-    linear-gradient(115deg, var(--color-paper-light), var(--color-paper) 70%, #ead8b6);
+    radial-gradient(circle at 12% 8%, rgba(255, 255, 255, 0.58), transparent 28%),
+    radial-gradient(circle at 86% 96%, rgba(155, 112, 41, 0.12), transparent 32%),
+    linear-gradient(rgba(255, 253, 245, 0.88), rgba(255, 247, 225, 0.9)),
+    linear-gradient(118deg, var(--color-paper-light), var(--color-paper) 72%, #e4cfa1);
   box-shadow: var(--shadow-page);
   overflow: hidden;
 }
@@ -44,15 +46,25 @@ body {
 }
 
 .page-shell::before {
-  display: none;
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(93, 60, 26, 0.1), transparent 2.5mm, transparent calc(100% - 2.5mm), rgba(93, 60, 26, 0.08)),
+    linear-gradient(rgba(255, 255, 255, 0.16), transparent 18mm);
+  mix-blend-mode: multiply;
 }
 
 .page-shell::after {
   content: "";
   position: absolute;
-  inset: 8mm;
+  inset: 7.5mm;
   pointer-events: none;
-  border: 1px solid rgba(105, 69, 38, 0.18);
+  border: 1px solid rgba(105, 69, 38, 0.2);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.26),
+    inset 0 0 22mm rgba(120, 82, 35, 0.05);
 }
 
 .page-shell > * {

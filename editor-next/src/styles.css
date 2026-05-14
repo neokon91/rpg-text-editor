@@ -56,7 +56,7 @@ button:disabled {
 
 .next-shell {
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-rows: auto auto minmax(0, 1fr);
   height: 100vh;
   min-width: 0;
   outline: 0 solid transparent;
@@ -220,6 +220,54 @@ button:disabled {
   border-color: #1f6f78;
   background: #dcecdf;
   font-weight: 700;
+}
+
+.onboarding-panel {
+  display: grid;
+  grid-template-columns: minmax(210px, 1fr) minmax(280px, 1.4fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-bottom: 1px solid #d8d0c2;
+  background: #fffaf1;
+}
+
+.onboarding-panel div:first-child {
+  display: grid;
+  gap: 3px;
+}
+
+.onboarding-panel strong {
+  font-size: 13px;
+}
+
+.onboarding-panel span,
+.onboarding-panel li {
+  color: #5d5144;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.onboarding-panel ol {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.onboarding-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: end;
+  gap: 6px;
+}
+
+.onboarding-actions button {
+  min-height: 26px;
+  padding: 0 8px;
+  font-size: 12px;
 }
 
 .next-workspace {
@@ -819,6 +867,19 @@ button:disabled {
   .next-status {
     justify-content: start;
     overflow-x: auto;
+  }
+
+  .onboarding-panel {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+
+  .onboarding-panel ol {
+    grid-template-columns: 1fr;
+  }
+
+  .onboarding-actions {
+    justify-content: start;
   }
 
   .next-workspace {

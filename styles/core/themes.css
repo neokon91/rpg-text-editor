@@ -1,17 +1,38 @@
 .theme-classic-parchment {
   --color-ink: #241f1b;
   --color-muted: #625546;
-  --color-paper: #f2e4c6;
-  --color-paper-light: #fff8e2;
-  --color-rule: #bfa05a;
+  --color-paper: #efe0be;
+  --color-paper-light: #fff8e5;
+  --color-rule: #b88a3a;
   --color-accent: #8c2f2b;
-  --color-accent-dark: #4b1716;
-  --color-gold: #a77c2f;
-  --color-border: #6f5428;
+  --color-accent-dark: #421616;
+  --color-gold: #9b7029;
+  --color-border: #664722;
   --color-green: #255948;
   --color-blue: #274d70;
   --color-verdigris: #36716b;
   --color-plum: #4a314f;
+}
+
+.theme-fifth-edition-compatible {
+  --page-padding: 14.2mm;
+  --column-gap: 8.4mm;
+  --color-ink: #2b2118;
+  --color-muted: #5f5140;
+  --color-paper: #e7d3a9;
+  --color-paper-light: #fff1c9;
+  --color-rule: #b78a35;
+  --color-accent: #9a1f1c;
+  --color-accent-dark: #5c1513;
+  --color-gold: #9f6d20;
+  --color-border: #68451e;
+  --color-green: #2f5c4c;
+  --color-blue: #2c536f;
+  --color-verdigris: #2f6f64;
+  --color-plum: #4c253b;
+  --shadow-page: 0 18px 46px rgba(24, 17, 10, 0.34);
+  --shadow-box: 0 4px 11px rgba(65, 42, 18, 0.14);
+  --line-body: 1.34;
 }
 
 .theme-dark-arcane {
@@ -86,6 +107,155 @@
     radial-gradient(circle at 16% 12%, rgba(215, 162, 74, 0.16), transparent 28%),
     radial-gradient(circle at 88% 18%, rgba(146, 166, 207, 0.12), transparent 26%),
     linear-gradient(135deg, var(--color-paper-light), var(--color-paper));
+}
+
+.theme-fifth-edition-compatible .page-shell {
+  background:
+    linear-gradient(rgba(255, 248, 221, 0.76), rgba(255, 244, 209, 0.66)),
+    linear-gradient(117deg, var(--color-paper-light), var(--color-paper) 72%, #d8b977);
+  column-rule-color: rgba(104, 69, 30, 0.34);
+}
+
+.theme-fifth-edition-compatible .page-shell::before {
+  background:
+    linear-gradient(90deg, rgba(101, 61, 25, 0.11), transparent 2.2mm, transparent calc(100% - 2.2mm), rgba(101, 61, 25, 0.08)),
+    linear-gradient(rgba(255, 255, 255, 0.18), transparent 16mm);
+  mix-blend-mode: multiply;
+}
+
+.theme-fifth-edition-compatible .page-shell::after {
+  inset: 6.5mm;
+  border-color: rgba(104, 69, 30, 0.24);
+}
+
+.theme-fifth-edition-compatible h1 {
+  margin-bottom: 0.78rem;
+  padding-bottom: 0.46rem;
+  color: var(--color-accent-dark);
+  font-size: 2.46rem;
+  line-height: 0.98;
+}
+
+.theme-fifth-edition-compatible h1::after {
+  height: 8px;
+  margin-top: 0.5rem;
+  background:
+    linear-gradient(90deg, var(--color-accent-dark), var(--color-accent) 34%, var(--color-rule) 34%, var(--color-rule) 58%, transparent 58%),
+    linear-gradient(90deg, transparent calc(58% + 7px), rgba(104, 69, 30, 0.5), transparent 100%);
+  background-size: 100% 5px, 100% 1px;
+  background-position: left top, left bottom;
+  background-repeat: no-repeat;
+}
+
+.theme-fifth-edition-compatible h2 {
+  margin-top: 1.05rem;
+  padding-bottom: 0.14rem;
+  color: var(--color-accent);
+  font-size: 1.35rem;
+  border-bottom: 2px solid rgba(154, 31, 28, 0.36);
+}
+
+.theme-fifth-edition-compatible h3 {
+  margin-top: 0.82rem;
+  color: var(--color-accent-dark);
+  font-size: 1.08rem;
+}
+
+.theme-fifth-edition-compatible h4 {
+  margin-bottom: 0.12rem;
+  color: var(--color-border);
+  font-size: 0.78rem;
+}
+
+.theme-fifth-edition-compatible .subtitle,
+.theme-fifth-edition-compatible .lead {
+  color: #594634;
+}
+
+.theme-fifth-edition-compatible table {
+  border-color: rgba(104, 69, 30, 0.5);
+  font-size: 0.76rem;
+}
+
+.theme-fifth-edition-compatible thead {
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.18), transparent),
+    rgba(154, 31, 28, 0.14);
+  color: var(--color-accent-dark);
+}
+
+.theme-fifth-edition-compatible tbody tr:nth-child(even) {
+  background: rgba(154, 31, 28, 0.055);
+}
+
+.theme-fifth-edition-compatible .readaloud,
+.theme-fifth-edition-compatible .note,
+.theme-fifth-edition-compatible .treasure,
+.theme-fifth-edition-compatible .encounter,
+.theme-fifth-edition-compatible .rules-card,
+.theme-fifth-edition-compatible .random-table {
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.32)),
+    linear-gradient(135deg, #fff0c5, #dfbd76);
+  border-color: rgba(104, 69, 30, 0.58);
+  border-radius: 1px;
+}
+
+.theme-fifth-edition-compatible .readaloud {
+  border-left-color: var(--color-verdigris);
+}
+
+.theme-fifth-edition-compatible .readaloud::before {
+  background: linear-gradient(to right, transparent, rgba(47, 111, 100, 0.86), transparent);
+}
+
+.theme-fifth-edition-compatible .note {
+  border-left-color: var(--color-blue);
+}
+
+.theme-fifth-edition-compatible .treasure {
+  border-left-color: var(--color-gold);
+}
+
+.theme-fifth-edition-compatible .encounter {
+  border-left-color: var(--color-accent);
+}
+
+.theme-fifth-edition-compatible .readaloud__label,
+.theme-fifth-edition-compatible .note__label,
+.theme-fifth-edition-compatible .treasure__label,
+.theme-fifth-edition-compatible .encounter__label,
+.theme-fifth-edition-compatible .statblock__label {
+  color: var(--color-accent-dark);
+  font-size: 0.68rem;
+}
+
+.theme-fifth-edition-compatible .statblock {
+  padding: 0.72rem 0.78rem 0.74rem;
+  background:
+    linear-gradient(rgba(255, 248, 224, 0.7), rgba(255, 248, 224, 0.44)),
+    linear-gradient(135deg, #e4c582, #fff0bd 49%, #cda458);
+  border-color: rgba(104, 69, 30, 0.78);
+  border-radius: 1px;
+  box-shadow:
+    0 3px 9px rgba(44, 28, 12, 0.16),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.25),
+    inset 0 0 22px rgba(123, 76, 22, 0.12);
+}
+
+.theme-fifth-edition-compatible .statblock::before,
+.theme-fifth-edition-compatible .statblock::after {
+  background: linear-gradient(to right, var(--color-accent), var(--color-gold), var(--color-accent));
+}
+
+.theme-fifth-edition-compatible .statblock h2 {
+  color: var(--color-accent);
+  font-size: 1.28rem;
+  border-bottom-color: rgba(154, 31, 28, 0.42);
+}
+
+.theme-fifth-edition-compatible .stats-grid strong {
+  color: var(--color-accent-dark);
 }
 
 .theme-clean-guild .page-shell,

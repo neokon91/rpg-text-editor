@@ -1,274 +1,92 @@
 # RPG Text Editor
 
-Suite editoriale leggera per scrivere homebrew fantasy in Markdown ed esportarli in HTML e PDF pronti per la stampa.
+Editor browser-first per scrivere contenuti TTRPG in Markdown ed esportarli in HTML/PDF con resa editoriale compatibile 5e/5.5e.
 
-## Comandi
+L'app ha una propria identita, ma l'output finale e pensato per risultare familiare a chi usa manuali fantasy 5e/5.5e: pagine A4, due colonne, titoli rossi, box descrittivi, tabelle e statblock. Non include loghi, marchi o illustrazioni ufficiali.
 
-```sh
-npm run build
-npm run build:pdf
-npm run build:all
-npm run build:book
-npm run build:book:pdf
-npm run build:site
-npm run export:package
-npm run export:package:pdf
-npm run qa:pdf
-npm run doctor
-npm run check:legal
-npm run check:editorial
-npm run check:assets
-npm run check:includes
-npm run check:components
-npm run check:documents
-npm run check:schema-artifacts
-npm run test:rendering
-npm run test:editor-next-ui
-npm run check
-npm run generate:schema-artifacts
-npm run new -- adventure "La Torre Sommersa"
-npm run preview
-npm run preview:expanded
-npm run preview:watch
-npm start
-npm run editor
-npm run editor:next:build
-npm run package:editor
-```
+## Per chi scrive
 
-- `npm run build` genera `dist/santuario-sepolto.html`.
-- `npm run build:pdf` genera anche il PDF usando Brave/Chrome in modalità headless, se disponibile.
-- `npm run build:book` genera `dist/book/santuario-sepolto-book.html` usando `book.json`.
-- `npm run build:book:pdf` genera anche il PDF unico multi-capitolo da `book.json`.
-- `npm run build:site` genera `dist/site/`, pronta per una repo GitHub Pages.
-- `npm run export:package` crea uno ZIP di pubblicazione da `book.json` con HTML, asset, crediti e manifest verificabile.
-- `npm run export:package:pdf` include anche il PDF nel package, se Brave/Chrome headless e disponibile.
-- `npm run qa:pdf` genera il PDF, rasterizza tutte le pagine in PNG e crea `dist/qa/pdf/index.html` per controllare il layout.
-- `npm run doctor` controlla prerequisiti locali: Node/npm, dipendenze, browser Chromium/Brave/Chrome e porta dell'editor.
-- `npm run check:legal` segnala termini rischiosi o marchi da trattare con cautela nei sorgenti Markdown.
-- `npm run check:editorial` controlla metadati, gerarchia titoli, CD, GS, danni medi e ricompense.
-- `npm run check:assets` valida il registro asset e verifica che i file dichiarati esistano.
-- `npm run check:includes` verifica che gli include riusabili puntino a file esistenti.
-- `npm run check:components` valida manifest e plugin pack dei componenti.
-- `npm run check:documents` valida i blocchi `:::` in `docs/` contro lo schema componenti.
-- `npm run check:schema-artifacts` verifica che reference e snippet generati siano aggiornati.
-- `npm run test:rendering` costruisce una fixture HTML e verifica il rendering strutturato di componenti core e plugin pack.
-- `npm run test:editor-next-ui` avvia il nuovo editor e browser headless, poi verifica preview, check ed export HTML.
-- `npm run check` esegue controlli legali/editoriali, asset, include, componenti, documenti, artefatti schema e rendering.
-- `npm run generate:schema-artifacts` rigenera `docs/reference.md` e `.vscode/rpg.schema.code-snippets` dallo schema componenti.
-- `npm run new -- adventure "Titolo"` crea un nuovo documento da template. Tipi disponibili: `adventure`, `bestiary`, `item`, `reference`.
-- `npm run preview` serve la cartella `dist` su `http://127.0.0.1:8081`.
-- `npm run preview:expanded` rigenera `dist/site/` e serve una preview navigabile con `<rpg-include>` gia espansi.
-- `npm run preview:watch` mantiene la preview espansa aggiornata mentre modifichi sorgenti, stili, template e asset.
-- `npm start` avvia la UI editor e apre automaticamente il browser sull'URL locale corretto.
-- `npm run editor` avvia la UI React/CodeMirror su `http://127.0.0.1:5173/editor-next/` con API locali per documenti, check ed export.
-- `npm run editor:next:build` genera la build statica di `editor-next`.
-- `npm run package:editor` crea uno ZIP applicativo locale con editor, sorgenti, script, istruzioni di avvio e manifest.
-
-## Authoring in VS Code
-
-Per il flusso pratico completo vedi `docs/authoring.md`. Per creare pack componenti vedi `docs/plugin-packs.md`. Per lo stato della UI vedi `docs/editor-reference.md`; per il benchmark Homebrewery vedi `docs/homebrewery-benchmark.md`; per priorita e QA usa `docs/checklist.md`.
-
-## Editor UI
-
-La UI locale vive in `editor-next/` e si avvia con:
+Apri l'editor:
 
 ```sh
 npm install
-npm run doctor
 npm start
 ```
 
-L'editor mantiene il Markdown come sorgente primaria, usa CodeMirror 6, salva bozze in `localStorage` e mostra una preview live in iframe con `styles/main.css`, `page-shell`, tema e formato carta del frontmatter. Il server locale integra le API per aprire documenti da `docs/`, salvare la bozza corrente, eseguire check guidati ed esportare HTML/PDF in `dist/`.
+Poi usa il browser:
 
-Per l'integrazione web, la UI include una prima modalita browser-only: se le API locali non sono disponibili, documenti, check client-side ed export HTML usano storage/download del browser. L'export PDF resta da collegare a print browser o backend web.
+1. Scrivi o importa un documento Markdown.
+2. Controlla la preview a destra.
+3. Usa `Check` prima dell'export.
+4. Usa `PDF` per scaricare il PDF; l'HTML stampabile resta disponibile come fallback.
+5. Usa `Backup` se lavori in modalita browser-only.
 
-Per preparare un pacchetto consegnabile dell'app locale usa:
+Guida breve per utenti non tecnici: [docs/user-guide.md](docs/user-guide.md).
+
+## Stato Prodotto
+
+- UI principale: `editor-next/`.
+- Sorgente principale: Markdown leggibile, non formato proprietario.
+- Output primario: PDF A4 compatibile 5e/5.5e.
+- Tema output consigliato: `fifth-edition-compatible`.
+- Modalita locale: salva/apre documenti in `docs/` tramite server locale.
+- Modalita browser-only: usa IndexedDB/download del browser quando non ci sono API locali.
+- Export browser-only: genera PDF web-native dalla preview e un fallback `.print.html`.
+
+Non e ancora una web app pubblica deployata per utenti finali: manca la verifica completa su deploy reale e browser reali.
+
+## Comandi Essenziali
 
 ```sh
-npm run package:editor
+npm start                 # avvia editor locale
+npm run doctor            # controlla prerequisiti
+npm run check             # controlli progetto principali
+npm run editor:next:build # build statica editor
+npm run build:book:pdf    # genera libro/PDF da book.json
+npm run qa:pdf            # crea anteprime PNG del PDF per controllo layout
 ```
 
-Lo ZIP viene scritto in `dist/editor-app/` e include `START_HERE.md` con i passaggi minimi `npm install`, `npm run doctor`, `npm start`.
-
-I moduli condivisi vivono in `packages/`:
-
-- `packages/components`: renderer, validazione e loader schema;
-- `packages/documents`: frontmatter, shell preview e API client;
-- `packages/markdown`: outline, azioni editor e utilita Markdown.
-
-La vecchia shell vanilla `editor/` e stata rimossa: `editor-next/` e l'unica UI applicativa.
-
-I plugin pack vivono in `schemas/plugins/<pack-id>/pack.json` e dichiarano nome, versione, compatibilita e componenti esportati. `npm run check:components` valida campi obbligatori e collisioni di `id`/`container`. La palette componenti React legge lo stesso schema, supporta pack manifest/esterni, preset rapidi e sottogruppi preset dichiarati nei componenti.
-
-`npm run generate:schema-artifacts` usa lo stesso manifest per rigenerare la reference componenti e gli snippet rapidi in `.vscode/rpg.schema.code-snippets`. `npm run check:schema-artifacts` fallisce se questi file non sono allineati allo schema.
-
-La direzione prodotto e tracciata in `docs/roadmap.md`.
-
-La repo include snippet in `.vscode/rpg.code-snippets` per creare rapidamente frontmatter e blocchi TTRPG. I prefissi principali sono:
-
-- `frontttrpg`
-- `monster`
-- `spell`
-- `magicitem`
-- `npc`
-- `location`
-- `hazard`
-- `randomtable`
-- `readaloud`
-- `encounter`
-- `treasure`
-- `note`
-- `quote`
-- `map`
-- `image`
-- `include`
-- `qreadaloud`
-- `qencounter`
-- `qtreasure`
-- `qnote`
-- `qmap`
-- `qimage`
-
-Se usi Markdown Preview, `.vscode/settings.json` aggancia `styles/preview.css` alla preview. Per vedere i componenti renderizzati direttamente nella preview usa gli snippet HTML di `.vscode/rpg.code-snippets`; la vecchia sintassi `:::` resta supportata dal build finale, ma Markdown Preview la mostra come testo.
-
-`docs/reference.md` è una pagina kitchen sink con tutti i componenti principali, utile per controllare temi e CSS.
-
-## Nuovi Documenti
-
-Usa il generatore per partire da file già coerenti con Markdown Preview e build finale:
+Comandi utili durante authoring:
 
 ```sh
 npm run new -- adventure "La Torre Sommersa"
-npm run new -- bestiary "Bestiario delle Rovine"
-npm run new -- item "Reliquie Minori"
-npm run new -- reference "Appunti Campagna"
+npm run preview:expanded
+npm run preview:watch
 ```
 
-I template vivono in `templates/markdown/`. Puoi modificarli per adattarli al tuo stile personale.
+Comandi per package/pubblicazione:
 
-## Libreria Riusabile
-
-I componenti ricorrenti possono vivere in `content/` ed essere richiamati dai documenti:
-
-```html
-<rpg-include src="content/monsters/custode-ossa.html"></rpg-include>
+```sh
+npm run export:package
+npm run export:package:pdf
+npm run package:editor
 ```
 
-Il build espande gli include in HTML/PDF/sito. Markdown Preview mostra il tag non espanso, quindi usa `docs/reference.md` o `npm run build` per controllare la resa finale quando lavori con contenuti inclusi. `npm run check:includes` segnala percorsi mancanti o non consentiti.
+## Dove Lavorare
 
-## Asset e crediti
+- `docs/`: documenti Markdown.
+- `templates/markdown/`: modelli per nuovi documenti.
+- `book.json`: capitoli e metadati per libro unico.
+- `styles/`: visual system dell'output PDF/HTML.
+- `assets/manifest.json`: crediti/licenze di font, immagini e SVG.
+- `content/`: blocchi riusabili inclusi con `<rpg-include>`.
+- `editor-next/`: app React/CodeMirror.
+- `packages/`: logica condivisa tra editor, preview ed export.
+- `scripts/`: build, check, export e server locale.
 
-Ogni asset usato stabilmente dalla suite dovrebbe essere dichiarato in `assets/manifest.json`:
+## Moduli Chiave
 
-```json
-{
-  "path": "fonts/Cinzel-Regular.ttf",
-  "title": "Cinzel Regular",
-  "author": "Natanael Gama",
-  "license": "OFL-1.1",
-  "source": "Bundled local font file",
-  "usage": "Headings"
-}
-```
+- `packages/components`: schema componenti, renderer e validazione.
+- `packages/documents`: frontmatter, preview shell, API client ed export browser.
+- `packages/markdown`: outline e azioni Markdown/page break.
+- `styles/core`: pagina, temi, tipografia e variabili.
+- `styles/components`: box, statblock, tabelle, media e ornamenti.
 
-La build include questi crediti nella sezione finale “Legal & Attribution”. Prima di pubblicare, usa `npm run check`.
+Questa separazione evita che editor UI, rendering PDF e validazione Markdown si mescolino.
 
-## Mappe e immagini
+## Flusso Documento
 
-Usa componenti HTML preview-safe con file dichiarati in `assets/manifest.json`:
-
-```html
-<figure class="rpg-map no-break">
-  <img src="../assets/images/maps/santuario-sepolto-map.svg" alt="Mappa del Santuario Sepolto">
-  <figcaption>Mappa del Santuario Sepolto</figcaption>
-</figure>
-
-<figure class="rpg-image no-break">
-  <img src="../assets/images/handouts/sigillo-antico.webp" alt="Handout del Sigillo Antico">
-  <figcaption>Handout per i giocatori</figcaption>
-</figure>
-```
-
-`npm run check:assets` verifica che ogni `<img src="...">` locale in `docs/` e `content/` sia presente nel manifest. La build copia gli asset dichiarati dentro `dist/` e `dist/site/`, così preview, sito, libro ed export ZIP restano portabili.
-
-## Visual System
-
-Il layer decorativo vive in `styles/components/ornaments.css` e usa SVG sorgenti in `assets/svg/`:
-
-- `assets/svg/dividers/`: separatori editoriali.
-- `assets/svg/corners/`: ornamenti di cornice pagina.
-- `assets/svg/icons/`: icone per etichette di componenti.
-- `assets/svg/seals/`: sigilli per copertina o colophon.
-
-Gli SVG sono tracciati in `assets/manifest.json`. Il CSS usa data URI derivate dagli SVG per mantenere portabili gli HTML generati in `dist/`, `dist/book/` e `dist/site/`.
-
-## Libri Multi-Capitolo
-
-Per generare un volume unico, modifica `book.json`:
-
-```json
-{
-  "title": "Il Santuario Sepolto",
-  "slug": "santuario-sepolto-book",
-  "summary": "Volume TTRPG compatibile 5e/5.5e.",
-  "author": "Andrea",
-  "compatibility": "5e/5.5e",
-  "license_mode": "srd-5.2-cc",
-  "theme": "classic-parchment",
-  "paper": "A4",
-  "chapters": [
-    { "path": "docs/esempio.md" }
-  ]
-}
-```
-
-`npm run build:book` crea copertina, indice automatico da `#`/`##`, capitoli concatenati e appendice legale finale. Aggiungi altri file Markdown a `chapters` quando il progetto cresce.
-
-## Package Export
-
-`npm run export:package` genera `dist/packages/<slug>-v<version>.zip` partendo da `book.json`.
-
-Il package contiene:
-
-- `book/<slug>.html`: output pubblicabile con CSS inline.
-- `assets/` e `fonts/`: file dichiarati in `assets/manifest.json`, copiati mantenendo i percorsi originali.
-- `credits.md`: riepilogo leggibile di compatibilità, attribuzione e asset.
-- `package-manifest.json`: schema, metadati libro, capitoli, output, asset, dimensioni e checksum SHA-256.
-
-Lo script esegue la build del libro prima di comprimere e valida lo ZIP con `unzip -t`. Usa `npm run export:package:pdf` quando vuoi forzare anche la generazione e inclusione del PDF.
-
-## Editorial Checks
-
-`npm run check:editorial` aggiunge controlli leggeri da revisione TTRPG:
-
-- frontmatter minimo per i documenti in `docs/`;
-- presenza di un titolo H1 e gerarchia titoli senza salti;
-- CD fuori scala o molto alte;
-- confronto indicativo tra GS, CD e danno medio massimo delle formule tipo `2d6 + 3`;
-- ricompense PE/PX/XP molto elevate.
-
-I problemi strutturali sono errori e bloccano `npm run check`. Le valutazioni di bilanciamento sono avvisi, perché dipendono da contesto, numero di personaggi, azioni disponibili e obiettivi di design.
-
-## Preview Expanded
-
-`npm run preview:expanded` esegue una build HTML del sito e poi avvia il server locale. La home punta a `dist/site/index.html`, quindi puoi controllare i documenti con include gia espansi senza generare PDF.
-
-`npm run preview:watch` usa la stessa preview, ma ricostruisce automaticamente quando salvi file in `docs/`, `content/`, `styles/`, `templates/`, `assets/` o `book.json`. Dopo il rebuild aggiorna il browser.
-
-La preview resta uno strumento di lavoro: il target primario e il PDF A4. Prima di chiudere una modifica di layout, componenti o CSS usa `npm run build:book:pdf` e controlla che box, tabelle, immagini, cornici e titoli non si sovrappongano.
-
-Per un controllo piu rapido dell'intero PDF usa `npm run qa:pdf`: produce una PNG per pagina e una contact sheet HTML in `dist/qa/pdf/index.html`.
-
-Percorsi utili:
-
-- `http://127.0.0.1:8081/`: indice dei documenti pubblici.
-- `http://127.0.0.1:8081/site/santuario-sepolto/`: avventura renderizzata con contenuti da `content/`.
-- `http://127.0.0.1:8081/site/reference-componenti/`: reference componenti, anche se non pubblica nell'indice.
-
-## Scrivere un documento
-
-Ogni file Markdown in `docs/` può iniziare con metadati:
+Ogni documento puo iniziare con frontmatter:
 
 ```md
 ---
@@ -280,96 +98,77 @@ tags: dungeon, livello-1, non-morti
 compatibility: 5e/5.5e
 license_mode: srd-5.2-cc
 author: Andrea
-theme: classic-parchment
+theme: fifth-edition-compatible
 paper: A4
 public: true
 ---
 ```
 
-Con `license_mode: srd-5.2-cc`, la build aggiunge una sezione finale di attribuzione per materiale compatibile 5e/5.5e basato su SRD in Creative Commons.
+Il tema `fifth-edition-compatible` e il preset raccomandato per output manuale fantasy 5e/5.5e. Gli altri temi restano disponibili per varianti editoriali:
 
-Temi disponibili:
+- `classic-parchment`
+- `dark-arcane`
+- `clean-guild`
+- `modern-5-5`
+- `printer-friendly`
 
-- `classic-parchment`: fantasy classico su carta calda.
-- `dark-arcane`: tono cupo, rituale e sotterraneo.
-- `clean-guild`: supplemento moderno, leggibile e ordinato.
-- `printer-friendly`: alto contrasto, poco inchiostro.
+Con `license_mode: srd-5.2-cc`, la build aggiunge l'appendice di attribuzione per materiale compatibile SRD/Creative Commons.
 
-Componenti editoriali preview-safe:
+## Componenti Editoriali
 
-```md
-<aside class="readaloud no-break">
-  <div class="readaloud__label">Da leggere al tavolo</div>
-  <p>Testo descrittivo da leggere ai giocatori.</p>
-</aside>
+Per contenuti ricorrenti usa gli snippet o la palette componenti dell'editor:
 
-<aside class="encounter no-break">
-  <div class="encounter__label">Incontro</div>
-  <p>Dettagli tattici o conseguenze.</p>
-</aside>
+- `Readaloud`: testo da leggere al tavolo.
+- `Incontro`: scena o combattimento.
+- `Tesoro`: ricompense.
+- `Nota`: regola, avviso o dettaglio GM.
+- `Statblock`: creature e PNG.
+- `Tabella`: risultati casuali o riepiloghi.
 
-<aside class="treasure no-break">
-  <div class="treasure__label">Tesoro</div>
-  <ul>
-    <li>Monete</li>
-    <li>Oggetti</li>
-  </ul>
-</aside>
+Il renderer supporta sia blocchi HTML preview-safe sia blocchi `:::` schema-driven. Per lavoro quotidiano in editor e Markdown Preview, gli snippet HTML sono i piu prevedibili.
 
-<aside class="quote no-break">
-  <div class="quote__label">Fonte</div>
-  <p>"Citazione in stile manuale."</p>
-</aside>
+## Qualita Prima Dell'Export
+
+Prima di considerare pronto un PDF:
+
+```sh
+npm run check
+npm run qa:pdf
 ```
 
-Puoi continuare a usare HTML inline quando serve controllo tipografico preciso, per esempio `<p class="dropcap">`.
+Controlla in particolare:
 
-## Componenti TTRPG strutturati
+- nessun overflow pagina residuo;
+- titoli e box non spezzati male;
+- statblock e tabelle leggibili;
+- immagini dichiarate in `assets/manifest.json`;
+- appendice crediti presente quando serve.
 
-Per avere layout coerenti e visibili nella Markdown Preview, usa gli snippet HTML. Esempio:
+## Reference
 
-```md
-<aside class="spell rules-card no-break">
-  <div class="spell__label rules-card__label">Formula rituale</div>
-  <h3>Sigillo della Porta Muta</h3>
-  <p><em>Trucchetto rituale, abiurazione</em></p>
-  <p class="rules-line"><strong>Tempo di lancio.</strong> 1 azione</p>
-  <p class="rules-line"><strong>Gittata.</strong> contatto</p>
-  <p class="rules-line"><strong>Componenti.</strong> V, S, M</p>
-  <p class="rules-line"><strong>Durata.</strong> 1 ora</p>
-  <p>Descrizione dell'effetto.</p>
-</aside>
-```
+- [docs/user-guide.md](docs/user-guide.md): guida per utente non tecnico.
+- [docs/editor-reference.md](docs/editor-reference.md): stato operativo dell'editor.
+- [docs/checklist.md](docs/checklist.md): checklist prodotto.
+- [docs/homebrewery-benchmark.md](docs/homebrewery-benchmark.md): benchmark UX/output stile Homebrewery/GM Binder.
+- [docs/roadmap.md](docs/roadmap.md): direzione prodotto.
+- [docs/plugin-packs.md](docs/plugin-packs.md): creare pack componenti.
+- [docs/reference.md](docs/reference.md): kitchen sink componenti.
 
-Il renderer conserva il supporto ai blocchi `:::` per file vecchi o bozze rapide, ma per il lavoro quotidiano con Markdown Preview conviene usare gli snippet HTML.
+## Pronto Per Utente Finale?
 
-## Struttura
+Quasi, ma non ancora solo deploy.
 
-- `docs/`: sorgenti Markdown.
-- `book.json`: manifest per PDF/HTML multi-capitolo.
-- `content/`: componenti riusabili richiamabili con `<rpg-include>`.
-- `styles/`: sistema tipografico e componenti.
-- `assets/`: manifest per font, immagini e risorse con crediti/licenze.
-- `assets/svg/`: sorgenti ornamentali del visual system.
-- `templates/`: scheletro HTML.
-- `templates/markdown/`: template sorgente per nuovi documenti.
-- `scripts/`: build HTML/PDF e preview locale.
-- `dist/`: output generati.
-- `.vscode/`: impostazioni Markdown Preview e snippet workspace.
+Gia pronto:
 
-## Mini Checklist Migliorie
+- editor locale usabile;
+- browser-only con IndexedDB, import/export e backup;
+- PDF web-native con fallback stampa;
+- output 5e/5.5e coerente tramite `fifth-edition-compatible`;
+- controlli tecnici principali.
 
-- [x] Generare un indice interno automatico per PDF lunghi.
-- [x] Supportare build multi-capitolo in un PDF unico.
-- [x] Aggiungere template per nuovi documenti.
-- [x] Aggiungere un database locale riusabile per mostri, PNG, luoghi e oggetti.
-- [x] Aggiungere un visual system SVG coerente per cornici, icone, separatori e cover.
-- [x] Creare un export `.zip` di pubblicazione con HTML, PDF, asset e crediti.
-- [x] Aggiungere controlli di bilanciamento per GS, danni medi, CD e ricompense.
-- [ ] Aggiungere temi specializzati per hexcrawl, investigativo, grimdark e fiabesco.
-- [x] Aggiungere componenti immagine/mappe/handout con manifest asset obbligatorio.
-- [x] Aggiungere preview espansa per `<rpg-include>` senza passare dal PDF.
+Da chiudere prima del rilascio pubblico:
 
-## Obiettivo editoriale
-
-La suite privilegia documenti A4 leggibili, box narrativi, blocchi statistiche, tabelle, colonne e colori adatti a homebrew fantasy. Il tema non copia layout proprietari: evoca un manuale fantasy classico mantenendo una base personalizzabile.
+- deploy web statico reale;
+- smoke su Chrome/Brave/Safari/Firefox;
+- controllo PDF su documenti lunghi;
+- messaggi recovery/backup ancora piu guidati per utenti non tecnici.

@@ -16,7 +16,7 @@ public: false
 
 ## Avvio
 
-Target prodotto: l'utente finale deve usare l'editor nel browser senza installare Node/npm o un'app desktop. I comandi sotto sono per sviluppo e QA locale.
+Target prodotto: l'utente finale deve usare l'editor nel browser senza installare Node/npm o un'app desktop. I comandi sotto sono per sviluppo e QA locale; per il flusso non tecnico vedi `docs/user-guide.md`.
 
 ```sh
 npm install
@@ -42,7 +42,7 @@ npm start
 - Frontmatter compatto, outline da heading Markdown e salto alla riga sorgente.
 - Check guidato con diagnostiche schema e author check.
 - Export HTML/PDF in `dist/`, con stato busy/error e log export nel tooltip.
-- Modalita browser-only iniziale: se le API locali non esistono, documenti/check/export HTML usano storage e download del browser; export PDF scarica un HTML stampabile per `Salva come PDF`.
+- Modalita browser-only: se le API locali non esistono, documenti/check/export usano storage e download del browser; export PDF genera un PDF web-native dalla preview renderizzata e mantiene un `.print.html` come fallback.
 - Backup/import JSON dei documenti browser-only per migrazione e salvataggio esterno; i conflitti vengono rinominati invece di sovrascrivere.
 - Status bar con conteggio documenti browser e dimensione storage per capire quando fare backup.
 - Persistenza browser documenti su IndexedDB quando disponibile, con fallback e migrazione automatica da `localStorage`.
@@ -56,14 +56,14 @@ npm start
 - La topbar espone il toggle `Browser-only`; la status bar indica il runtime documenti: `Server locale` oppure `Browser-only`.
 - Palette componenti schema-driven con ricerca, gruppi, preset, pack manifest e pack JSON esterni.
 - Form componenti generati dallo schema, con liste, preset e validazione inline.
-- Preview iframe con tema/carta da frontmatter, zoom, fit/fill, pagina corrente/totale, prev/next, single/facing/flow.
+- Preview iframe con tema/carta da frontmatter, zoom, fit/fill, pagina corrente/totale, prev/next, single/facing/flow. Il tema output raccomandato e `fifth-edition-compatible`.
 - Sync editor-preview: toggle `Sync`, scroll preview dalla linea cursore, click preview verso sorgente.
 - Paginazione manuale: `::pagebreak`, bottone `Break`, overflow badge e revisione post-break.
 - Paginazione assistita: `Auto break` predittivo e `Auto pages` misurato in preview, inoltrato anche a export HTML/PDF.
 
 ## Auto Pages
 
-`Auto pages` ora partecipa all'export; resta da raffinare la resa PDF web-native e una persistenza cloud opzionale.
+`Auto pages` partecipa all'export HTML/PDF. In browser-only il PDF viene generato lato client dalla preview renderizzata; il fallback HTML stampabile resta disponibile come uscita secondaria.
 
 - Misura le `.page-shell` nell'iframe.
 - Sposta blocchi interi su nuove pagine quando una pagina supera il box carta.
@@ -73,10 +73,10 @@ npm start
 
 ## Mancanze Prioritarie
 
-1. Estendere la modalita browser-only con persistenza backend/cloud opzionale.
-2. Rendere l'export PDF web-native oltre al fallback print.
-3. Rifinire deploy, onboarding e messaggi errore per utente finale non tecnico.
+1. Deploy web statico e verifica su browser reali.
+2. Estendere la modalita browser-only con persistenza backend/cloud opzionale.
+3. Rifinire messaggi di recupero/backup per utente finale non tecnico.
 
 ## Guardrail
 
-Homebrewery resta solo benchmark UX. Non copiare sintassi `{{...}}`, stile PHB, font, asset, loghi o trade dress. Questo editor resta browser-first, schema-driven e Markdown-first.
+Homebrewery e GM Binder restano benchmark UX/output. L'app mantiene identita propria; il PDF deve pero risultare coerente con il linguaggio editoriale dei manuali fantasy 5e/5.5e tramite font liberi, colonne, titoli, box, tabelle e statblock. Restano esclusi loghi, marchi, illustrazioni e asset ufficiali.

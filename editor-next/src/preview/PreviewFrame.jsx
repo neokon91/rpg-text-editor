@@ -157,16 +157,23 @@ export function PreviewFrame({
   }
 
   function selectAutoPageOverflow() {
-    if (!autoPageReport?.firstOverflowPage) return;
-    goToPage(autoPageReport.firstOverflowPage);
-    if (autoPageReport.firstOverflowLine) onSelectLine(autoPageReport.firstOverflowLine);
+    if (!visibleAutoPageReport?.firstOverflowPage) return;
+    goToPage(visibleAutoPageReport.firstOverflowPage);
+    if (visibleAutoPageReport.firstOverflowLine) onSelectLine(visibleAutoPageReport.firstOverflowLine);
   }
 
   const canGoBack = pageState.current > 1;
   const canGoForward = pageState.current < pageState.total;
   const firstOverflow = overflowPages[0];
-  const autoPageSummary = autoPageReport
-    ? `Auto ${autoPageReport.totalPages}p (+${autoPageReport.generatedPages})`
+  const visibleAutoPageReport = autoPageReport || (autoPaginate ? {
+    totalPages: pageState.total,
+    generatedPages: 0,
+    overflowPages: overflowPages.length,
+    firstOverflowPage: firstOverflow?.page || 0,
+    firstOverflowLine: firstOverflow?.line || 0
+  } : null);
+  const autoPageSummary = visibleAutoPageReport
+    ? `Auto ${visibleAutoPageReport.totalPages}p (+${visibleAutoPageReport.generatedPages})`
     : "";
 
   return (
@@ -187,16 +194,16 @@ export function PreviewFrame({
         >
           Auto pages
         </button>
-        {autoPaginate && autoPageReport ? (
-          autoPageReport.overflowPages ? (
+        {autoPaginate && visibleAutoPageReport ? (
+          visibleAutoPageReport.overflowPages ? (
             <button
               type="button"
               className="preview-auto-pages"
               data-state="warning"
-              title={`Prima pagina auto overflow: ${autoPageReport.firstOverflowPage}, riga ${autoPageReport.firstOverflowLine}`}
+              title={`Prima pagina auto overflow: ${visibleAutoPageReport.firstOverflowPage}, riga ${visibleAutoPageReport.firstOverflowLine}`}
               onClick={selectAutoPageOverflow}
             >
-              {autoPageSummary} · {autoPageReport.overflowPages} overflow
+              {autoPageSummary} · {visibleAutoPageReport.overflowPages} overflow
             </button>
           ) : (
             <span className="preview-auto-pages" data-state="ok" title="Pagine generate dalla preview automatica">

@@ -44,6 +44,7 @@ export function TopMenu({
   onToggleDocumentRuntimeMode,
   onTogglePreview,
   onToggleSyncPreview,
+  onToggleOnboarding,
   onMobilePanelChange,
   onViewportChange,
   onZoomChange,
@@ -120,8 +121,9 @@ export function TopMenu({
           {isChecking ? "Check..." : "Check"}
         </button>
         <button type="button" disabled={isChecking} onClick={() => onExport("html")}>HTML</button>
-        <button type="button" disabled={isChecking} onClick={() => onExport("pdf")}>PDF</button>
+        <button type="button" disabled={isChecking} title="Scarica PDF; in browser-only resta disponibile anche il fallback stampabile" onClick={() => onExport("pdf")}>PDF</button>
         <span className="next-separator" />
+        <button type="button" onClick={onToggleOnboarding}>Guida</button>
         <label>
           <span>Vista</span>
           <select value={viewport} onChange={(event) => onViewportChange(event.target.value)}>

@@ -1,23 +1,25 @@
 table {
   width: 100%;
 
-  margin: 0.9rem 0 1rem;
+  margin: 0.72rem 0 0.86rem;
 
   border-collapse: separate;
   border-spacing: 0;
 
   overflow: hidden;
 
-  font-size: 0.82rem;
+  font-size: 0.78rem;
 
-  border: 1px solid rgba(122, 87, 35, 0.34);
-  border-radius: 0;
+  border: 1px solid rgba(102, 71, 34, 0.38);
+  border-radius: 2px;
   box-shadow: none;
   table-layout: fixed;
 }
 
 thead {
-  background: rgba(111, 84, 40, 0.16);
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.18), transparent),
+    rgba(102, 71, 34, 0.18);
   color: var(--color-accent-dark);
   font-family: var(--font-heading);
   font-size: 0.76rem;
@@ -26,7 +28,7 @@ thead {
 
 th,
 td {
-  padding: 0.36rem 0.45rem;
+  padding: 0.3rem 0.38rem;
 
   border: 1px solid rgba(122, 87, 35, 0.18);
   border-width: 0 1px 1px 0;

@@ -1,4 +1,5 @@
 import { renderMarkdown } from "../components/preview.js";
+import { makeBrowserPdfBlob, makePrintablePdfHtml } from "./browser-pdf.js";
 import { parseFrontmatter } from "./frontmatter.js";
 import { renderPreviewDocument } from "./preview-shell.js";
 
@@ -392,7 +393,7 @@ async function renameBrowserDocument(filename, nextFilename) {
   return documents[index];
 }
 
-function exportBrowserDocument({ filename, content, format, autoPaginate = false }) {
+async function exportBrowserDocument({ filename, content, format, autoPaginate = false }) {
   const parsed = parseFrontmatter(content);
   const html = renderPreviewDocument(
     parsed.metadata,
@@ -401,11 +402,24 @@ function exportBrowserDocument({ filename, content, format, autoPaginate = false
   );
 
   if (format === "pdf") {
-    const outputName = safeMarkdownFilename(filename).replace(/\.md$/i, ".print.html");
-    const blob = new Blob([makePrintablePdfHtml(html)], { type: "text/html;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    triggerDownload(url, outputName);
-    return { outputs: [{ path: `browser-download/${outputName}`, url }] };
+    const pdfName = safeMarkdownFilename(filename).replace(/\.md$/i, ".pdf");
+    const pdfBlob = await makeBrowserPdfBlob({
+      html,
+      title: parsed.metadata.title || readMarkdownTitle(parsed.body) || pdfName.replace(/\.pdf$/i, ""),
+      markdown: parsed.body
+    });
+    const pdfUrl = URL.createObjectURL(pdfBlob);
+    triggerDownload(pdfUrl, pdfName);
+
+    const printName = safeMarkdownFilename(filename).replace(/\.md$/i, ".print.html");
+    const printBlob = new Blob([makePrintablePdfHtml(html)], { type: "text/html;charset=utf-8" });
+    const printUrl = URL.createObjectURL(printBlob);
+    return {
+      outputs: [
+        { format: "pdf", path: `browser-download/${pdfName}`, url: pdfUrl },
+        { format: "print-html", path: `browser-fallback/${printName}`, url: printUrl }
+      ]
+    };
   }
 
   const outputName = safeMarkdownFilename(filename).replace(/\.md$/i, ".html");
@@ -415,42 +429,15 @@ function exportBrowserDocument({ filename, content, format, autoPaginate = false
   return { outputs: [{ path: `browser-download/${outputName}`, url }] };
 }
 
-function makePrintablePdfHtml(html) {
-  const printTools = `
-    <style id="rpg-browser-pdf-print">
-      .browser-print-banner {
-        position: sticky;
-        top: 0;
-        z-index: 20;
-        margin: -24px -24px 24px;
-        padding: 12px 16px;
-        background: #12343b;
-        color: #f8f3df;
-        font: 700 14px/1.4 system-ui, sans-serif;
-        text-align: center;
-      }
-      @media print {
-        body { background: #fff !important; padding: 0 !important; zoom: 1 !important; }
-        .browser-print-banner { display: none !important; }
-        .preview-pages { gap: 0 !important; }
-        .page-shell { box-shadow: none !important; margin: 0 !important; break-after: page; }
-      }
-    </style>
-    <div class="browser-print-banner">Usa Stampa / Salva come PDF del browser per completare l'export.</div>
-    <script>
-      window.addEventListener("load", function() {
-        window.setTimeout(function() { window.print(); }, 250);
-      });
-    </script>`;
-
-  return html.replace("</body>", `${printTools}\n  </body>`);
-}
-
 function triggerDownload(url, filename) {
   const link = document.createElement("a");
   link.href = url;
   link.download = filename;
   link.click();
+}
+
+function readMarkdownTitle(markdown) {
+  return String(markdown).match(/^#\s+(.+)$/m)?.[1]?.trim() || "";
 }
 
 function checkBrowserDocument(source) {

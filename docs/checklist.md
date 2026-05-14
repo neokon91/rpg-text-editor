@@ -23,6 +23,7 @@ public: false
 - [x] Branch `main` usato come linea principale.
 - [x] Commit e push effettuati per ogni incremento.
 - [x] Riferimenti compatti canonici: `docs/next-session.md`, `docs/editor-reference.md`, `docs/homebrewery-benchmark.md`.
+- [x] README ridotto a percorso chiaro per utente/autore e guida non tecnica in `docs/user-guide.md`.
 - [x] Riferimento duplicato `docs/homebrewery-gap.md` rimosso.
 
 ## Editor UI
@@ -42,7 +43,7 @@ public: false
 - [x] Modalita browser-only iniziale per salvataggio/lista/check/export HTML senza API locali.
 - [x] Indicatore runtime documenti in status bar: `Server locale`/`Browser-only`.
 - [x] Toggle esplicito `Browser-only` nella topbar per forzare storage, check ed export HTML nel browser.
-- [x] Fallback PDF browser-only come HTML stampabile con `Salva come PDF` del browser.
+- [x] Export PDF browser-only web-native ad alta fedelta, con fallback HTML stampabile.
 - [x] Backup/import archivio JSON dei documenti salvati nello storage browser.
 - [x] Import archivio browser senza sovrascrittura silenziosa: conflitti rinominati automaticamente.
 - [x] Indicatore uso storage browser con avviso backup quando cresce.
@@ -56,6 +57,7 @@ public: false
 - [x] Drag & drop `.md`/JSON sullo shell editor per import browser-only.
 - [x] Label documento coerente col runtime: `docs/` per server locale, `browser/` per storage browser.
 - [x] Export HTML/PDF guidato dal workflow autore locale.
+- [x] Preset output `fifth-edition-compatible` per starter/template/render/PDF con stile fantasy 5e-like senza asset o marchi ufficiali.
 - [x] Overwrite esplicito.
 - [x] Salva nuovo con nome unico.
 - [x] Conferma prima di perdere modifiche non salvate.
@@ -161,5 +163,5 @@ public: false
 
 ## Prossimi passi consigliati
 
-1. Rifinire persistenza backend web/cloud per documenti utente reali.
-2. Rendere export PDF web-native oltre al fallback print del browser.
+1. Deploy web statico e verifica su browser reali.
+2. Rifinire persistenza backend web/cloud opzionale per documenti utente reali.

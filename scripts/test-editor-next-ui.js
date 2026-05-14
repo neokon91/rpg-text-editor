@@ -148,15 +148,38 @@ try {
   await waitFor(() => evalInPage("document.body.textContent.includes('Backup browser pronto')"));
   await waitFor(() => evalInPage("Array.from(document.querySelectorAll('.next-status a')).some((link) => link.textContent.includes('browser-documents'))"));
   await evalInPage(`
-    window.localStorage.setItem('rpg-text-editor-next:draft', '---\\ntitle: Browser PDF Fallback\\nslug: browser-pdf-fallback\\nsummary: Documento valido per fallback PDF browser\\ncompatibility: 5e/5.5e\\nlicense_mode: srd-5.2-cc\\nauthor: Codex\\ntheme: classic-parchment\\npaper: A4\\n---\\n\\n# Browser PDF Fallback\\n\\nDocumento valido per export PDF browser-only.');
+    window.localStorage.setItem('rpg-text-editor-next:draft', '---\\ntitle: Browser PDF Fallback\\nslug: browser-pdf-fallback\\nsummary: Documento valido per fallback PDF browser\\ncompatibility: 5e/5.5e\\nlicense_mode: srd-5.2-cc\\nauthor: Codex\\ntheme: fifth-edition-compatible\\npaper: A4\\n---\\n\\n# Browser PDF Fallback\\n\\nDocumento valido per export PDF browser-only.');
   `);
   await reloadPage();
   await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.querySelector('.page-shell h1')?.textContent.includes('Browser PDF Fallback')"));
   await clickButton("Auto pages");
   await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.body?.dataset.autoPaginate === 'true'"));
+  await evalInPage(`
+    {
+      window.__rpgDownloadBlobs = [];
+      if (!window.__rpgOriginalCreateObjectUrl) {
+        window.__rpgOriginalCreateObjectUrl = URL.createObjectURL.bind(URL);
+        URL.createObjectURL = (blob) => {
+          const url = window.__rpgOriginalCreateObjectUrl(blob);
+          window.__rpgDownloadBlobs.push({ url, blob, type: blob.type, size: blob.size });
+          return url;
+        };
+      }
+    }
+  `);
   await clickTopbarButton("PDF");
   await waitFor(() => evalInPage("document.body.textContent.includes('Export PDF pronto')"));
+  await waitFor(() => evalInPage("Array.from(document.querySelectorAll('.next-status a')).some((link) => link.textContent.includes('.pdf'))"));
   await waitFor(() => evalInPage("Array.from(document.querySelectorAll('.next-status a')).some((link) => link.textContent.includes('.print.html'))"));
+  await waitFor(() => evalInPage(`
+    (async () => {
+      const pdf = window.__rpgDownloadBlobs?.find((item) => item.type === 'application/pdf');
+      if (!pdf) return false;
+      const text = await pdf.blob.text();
+      window.__rpgPdfDebug = { size: pdf.size, startsPdf: text.startsWith('%PDF-1.4'), hasImage: text.includes('/Subtype /Image'), head: text.slice(0, 180) };
+      return window.__rpgPdfDebug.startsPdf && window.__rpgPdfDebug.hasImage;
+    })()
+  `), 12000, "PDF browser-only visuale");
   await clickButton("Auto pages");
   await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.body?.dataset.autoPaginate === 'false'"));
   await clickTopbarButton("Browser-only");
@@ -416,7 +439,7 @@ try {
   await waitFor(() => evalInPage("window.localStorage.getItem('rpg-text-editor-next:draft')?.includes('::pagebreak')"));
   await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.querySelectorAll('.page-shell').length > 1"));
   await evalInPage(`
-    window.localStorage.setItem('rpg-text-editor-next:draft', '---\\ntitle: Codex PDF UI\\nslug: codex-pdf-ui\\nsummary: Documento temporaneo export PDF UI\\ncompatibility: 5e/5.5e\\nlicense_mode: srd-5.2-cc\\nauthor: Codex\\ntheme: classic-parchment\\npaper: A4\\n---\\n\\n# Codex PDF UI\\n\\nDocumento valido per export PDF.');
+    window.localStorage.setItem('rpg-text-editor-next:draft', '---\\ntitle: Codex PDF UI\\nslug: codex-pdf-ui\\nsummary: Documento temporaneo export PDF UI\\ncompatibility: 5e/5.5e\\nlicense_mode: srd-5.2-cc\\nauthor: Codex\\ntheme: fifth-edition-compatible\\npaper: A4\\n---\\n\\n# Codex PDF UI\\n\\nDocumento valido per export PDF.');
   `);
   await rm(join(root, "dist", "codex-pdf-ui.pdf"), { force: true });
   await reloadPage();
@@ -867,6 +890,8 @@ async function readUiDiagnostics() {
         status: document.querySelector('.next-status')?.textContent.trim() || '',
         componentForm: document.querySelector('.component-form')?.textContent.trim().slice(0, 300) || '',
         buttons: Array.from(document.querySelectorAll('button')).map((button) => button.textContent.trim()).slice(0, 40),
+        pdfDebug: window.__rpgPdfDebug || null,
+        visualPdfStatus: window.__rpgVisualPdfStatus || null,
         errors: window.__editorNextErrors || []
       }))()
     `);

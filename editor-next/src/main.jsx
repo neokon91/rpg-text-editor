@@ -30,7 +30,7 @@ tags: demo, avventura, ttrpg
 compatibility: 5e/5.5e
 license_mode: srd-5.2-cc
 author: Andrea
-theme: classic-parchment
+theme: fifth-edition-compatible
 paper: A4
 public: true
 ---
@@ -75,6 +75,7 @@ function App() {
   const [previewSpread, setPreviewSpread] = useState(() => localStorage.getItem(`${workspaceStoragePrefix}:preview-spread`) || "single");
   const [autoPaginatePreview, setAutoPaginatePreview] = useState(() => loadBooleanWorkspaceSetting("auto-paginate-preview", false));
   const [syncPreview, setSyncPreview] = useState(() => loadBooleanWorkspaceSetting("sync-preview", false));
+  const [onboardingVisible, setOnboardingVisible] = useState(() => loadBooleanWorkspaceSetting("onboarding-visible", true));
   const [mobilePanel, setMobilePanel] = useState(() => localStorage.getItem(`${workspaceStoragePrefix}:mobile-panel`) || "editor");
   const [activeComponentGroup, setActiveComponentGroup] = useState(() => localStorage.getItem(`${workspaceStoragePrefix}:component-group`) || "all");
   const [cursorLine, setCursorLine] = useState(null);
@@ -180,6 +181,10 @@ function App() {
   useEffect(() => {
     localStorage.setItem(`${workspaceStoragePrefix}:sync-preview`, syncPreview ? "true" : "false");
   }, [syncPreview]);
+
+  useEffect(() => {
+    localStorage.setItem(`${workspaceStoragePrefix}:onboarding-visible`, onboardingVisible ? "true" : "false");
+  }, [onboardingVisible]);
 
   useEffect(() => {
     localStorage.setItem(`${workspaceStoragePrefix}:mobile-panel`, mobilePanel);
@@ -546,6 +551,13 @@ function App() {
     setStatus("Download Markdown pronto");
   }
 
+  function openStarterGuide() {
+    setPreviewVisible(true);
+    setMobilePanel("editor");
+    setSelectedLine(1);
+    setStatus("Guida: modifica a sinistra, controlla la preview, poi esporta PDF");
+  }
+
   async function exportBrowserArchive() {
     const result = await exportBrowserDocumentsArchive();
     setExportOutputs([{ path: result.path, url: result.url }]);
@@ -719,6 +731,7 @@ function App() {
         onToggleDocumentRuntimeMode={toggleDocumentRuntimeMode}
         onTogglePreview={() => setPreviewVisible((value) => !value)}
         onToggleSyncPreview={() => setSyncPreview((value) => !value)}
+        onToggleOnboarding={() => setOnboardingVisible((value) => !value)}
         onMobilePanelChange={setMobilePanel}
         onViewportChange={setViewport}
         onZoomChange={setZoom}
@@ -735,6 +748,25 @@ function App() {
         hidden
         onChange={importBrowserArchive}
       />
+      {onboardingVisible ? (
+        <section className="onboarding-panel" aria-label="Guida rapida">
+          <div>
+            <strong>Parti da qui</strong>
+            <span>Scrivi nel pannello centrale, controlla la pagina a destra e usa Check prima dell'export.</span>
+          </div>
+          <ol>
+            <li><strong>Salva</strong> conserva una copia nel browser o nei documenti locali.</li>
+            <li><strong>Importa</strong> carica documenti Markdown o backup senza configurare nulla.</li>
+            <li><strong>PDF</strong> scarica un file PDF; il link stampabile resta come fallback.</li>
+          </ol>
+          <div className="onboarding-actions">
+            <button type="button" onClick={openStarterGuide}>Mostra esempio</button>
+            <button type="button" onClick={selectBrowserArchive}>Importa file</button>
+            <button type="button" onClick={() => exportChecked("pdf")} disabled={isChecking}>Esporta PDF</button>
+            <button type="button" onClick={() => setOnboardingVisible(false)}>Nascondi</button>
+          </div>
+        </section>
+      ) : null}
       <section className="next-workspace">
         <ComponentPalette
           schema={schema}

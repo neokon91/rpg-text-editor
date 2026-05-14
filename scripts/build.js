@@ -92,7 +92,7 @@ async function renderDocument(document, css, template, assetManifest) {
   const slug = metadata.slug || basenameWithoutExt(document.path);
   const documentClass = [
     metadata.class || "homebrew-document",
-    metadata.theme ? `theme-${metadata.theme}` : "theme-classic-parchment",
+    metadata.theme ? `theme-${metadata.theme}` : "theme-fifth-edition-compatible",
     metadata.paper ? `paper-${metadata.paper.toLowerCase()}` : ""
   ].filter(Boolean).join(" ");
   const rendered = withAutoPages(template
@@ -149,7 +149,7 @@ async function renderBook(css, template, assetManifest) {
     author: book.author || "Autore indipendente",
     compatibility: book.compatibility || "5e/5.5e",
     license_mode: book.license_mode || "srd-5.2-cc",
-    theme: book.theme || "classic-parchment",
+    theme: book.theme || "fifth-edition-compatible",
     paper: book.paper || "A4"
   };
 

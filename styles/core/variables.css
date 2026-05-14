@@ -1,18 +1,18 @@
 :root {
   --page-width: 210mm;
-  --page-padding: 16mm;
+  --page-padding: 15mm;
   --content-width: calc(var(--page-width) - (var(--page-padding) * 2));
-  --column-gap: 8.5mm;
+  --column-gap: 9.5mm;
 
   --color-ink: #241f1b;
   --color-muted: #625c53;
-  --color-paper: #f2e4c6;
-  --color-paper-light: #fff8e2;
-  --color-rule: #bfa05a;
-  --color-accent: #8c2f2b;
-  --color-accent-dark: #4b1716;
-  --color-gold: #a77c2f;
-  --color-border: #6f5428;
+  --color-paper: #efe0be;
+  --color-paper-light: #fff8e5;
+  --color-rule: #b88a3a;
+  --color-accent: #8d2f2b;
+  --color-accent-dark: #421616;
+  --color-gold: #9b7029;
+  --color-border: #664722;
   --color-green: #255948;
   --color-blue: #274d70;
   --color-verdigris: #36716b;
@@ -27,7 +27,7 @@
   --font-ui: system-ui, sans-serif;
   --font-mono: "Courier New", monospace;
 
-  --line-body: 1.42;
+  --line-body: 1.37;
   --line-tight: 1.25;
 
   --radius-small: 4px;

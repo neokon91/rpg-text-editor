@@ -33,7 +33,8 @@ export function DocumentOutline({
             <MetadataField label="Autore" fieldKey="author" value={metadata.author} onChange={onMetadataChange} />
             <label>
               <span>Tema</span>
-              <select value={metadata.theme || "classic-parchment"} onChange={(event) => onMetadataChange?.("theme", event.target.value)}>
+              <select value={metadata.theme || "fifth-edition-compatible"} onChange={(event) => onMetadataChange?.("theme", event.target.value)}>
+                <option value="fifth-edition-compatible">fifth-edition-compatible</option>
                 <option value="classic-parchment">classic-parchment</option>
                 <option value="dark-arcane">dark-arcane</option>
                 <option value="clean-guild">clean-guild</option>
