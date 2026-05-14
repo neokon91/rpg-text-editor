@@ -263,6 +263,18 @@ try {
   await waitFor(() => evalInPage("Boolean(document.querySelector('.component-palette input[type=\"search\"]'))"));
   await setComponentSearch("");
   await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 15"));
+  const draftBeforeComponentForm = await evalInPage("window.localStorage.getItem('rpg-text-editor-next:draft')");
+  await clickComponentCard("Incantesimo");
+  await waitFor(() => evalInPage("document.querySelector('.component-form')?.textContent.includes('spell')"));
+  await waitFor(() => componentFormHasField("Nome"));
+  await setComponentFormField("Nome", "Dardo Codex");
+  await setComponentFormField("Descrizione", "Un frammento di luce colpisce una creatura visibile.");
+  await clickComponentFormSubmit();
+  await waitFor(() => evalInPage("window.localStorage.getItem('rpg-text-editor-next:draft')?.includes('name: Dardo Codex')"));
+  await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.body?.textContent.includes('Dardo Codex')"));
+  await evalInPage(`window.localStorage.setItem('rpg-text-editor-next:draft', ${JSON.stringify(draftBeforeComponentForm)})`);
+  await reloadPage();
+  await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 15"));
   await clickButton("Combattimento");
   await waitFor(() => evalInPage("window.localStorage.getItem('rpg-text-editor-next:draft')?.includes('Scheggia Astrale')"));
   await waitFor(() => evalInPage("document.readyState === 'complete' && Boolean(document.querySelector('.next-actions'))"));
@@ -380,7 +392,9 @@ async function evalInPage(expression) {
     awaitPromise: true,
     returnByValue: true
   });
-  if (result.exceptionDetails) throw new Error(result.exceptionDetails.text || "Valutazione browser fallita");
+  if (result.exceptionDetails) {
+    throw new Error(result.exceptionDetails.exception?.description || result.exceptionDetails.text || "Valutazione browser fallita");
+  }
   return result.result?.value;
 }
 
@@ -431,6 +445,51 @@ async function setComponentSearch(value) {
       const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set;
       setter.call(input, ${JSON.stringify(value)});
       input.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+  `);
+}
+
+async function clickComponentCard(label) {
+  await evalInPage(`
+    {
+      const button = Array.from(document.querySelectorAll('.component-card-main'))
+        .find((item) => item.querySelector('span')?.textContent.trim() === ${JSON.stringify(label)});
+      if (!button) throw new Error('Component card not found: ${label}');
+      button.click();
+    }
+  `);
+}
+
+async function setComponentFormField(label, value) {
+  await evalInPage(`
+    {
+      const field = Array.from(document.querySelectorAll('.component-form label'))
+        .find((item) => item.querySelector('span')?.textContent.trim().replace(/ \\*$/, '') === ${JSON.stringify(label)});
+      if (!field) throw new Error('Component field not found: ${label}');
+      const control = field.querySelector('input, textarea');
+      if (!control) throw new Error('Component control not found: ${label}');
+      const prototype = control instanceof HTMLTextAreaElement ? HTMLTextAreaElement.prototype : HTMLInputElement.prototype;
+      const setter = Object.getOwnPropertyDescriptor(prototype, 'value').set;
+      setter.call(control, ${JSON.stringify(value)});
+      control.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+  `);
+}
+
+async function componentFormHasField(label) {
+  return evalInPage(`
+    Array.from(document.querySelectorAll('.component-form label'))
+      .some((item) => item.querySelector('span')?.textContent.trim().replace(/ \\*$/, '') === ${JSON.stringify(label)})
+  `);
+}
+
+async function clickComponentFormSubmit() {
+  await waitFor(() => evalInPage("Boolean(document.querySelector('.component-form .primary-action'))"));
+  await evalInPage(`
+    {
+      const button = document.querySelector('.component-form .primary-action');
+      if (!button) throw new Error('Component form submit not found');
+      button.click();
     }
   `);
 }

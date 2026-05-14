@@ -112,6 +112,7 @@ public: false
 - [x] Test UI per open con modifiche non salvate: annulla e conferma.
 - [x] Test UI per errore save su file esistente e export bloccato dai diagnostici.
 - [x] Test UI per export PDF con stato in corso e file generato.
+- [x] Test UI per component insertion da form con campi modificati e preview aggiornata.
 
 ## Output editoriale
 
@@ -126,5 +127,5 @@ public: false
 
 ## Prossimi passi consigliati
 
-1. Test UI piu ampi per component insertion e sync preview.
+1. Test UI piu ampi per sync preview.
 2. Palette/componenti e preview come workspace persistenti.

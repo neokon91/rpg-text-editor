@@ -65,7 +65,7 @@ public: false
 ## Gap Prioritari
 
 1. Paginazione automatica piu evoluta oltre agli split manuali `::pagebreak`.
-2. Test UI per component insertion e sync preview.
+2. Test UI per sync preview.
 
 ## Non Obiettivi
 
