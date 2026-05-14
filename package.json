@@ -5,6 +5,8 @@
   "type": "module",
   "description": "Suite editoriale Markdown per homebrew fantasy in HTML e PDF.",
   "scripts": {
+    "start": "node scripts/start-editor.js",
+    "start:check": "node scripts/start-editor.js --check",
     "build": "node scripts/build.js",
     "build:html": "node scripts/build.js --html",
     "build:pdf": "node scripts/build.js --pdf",

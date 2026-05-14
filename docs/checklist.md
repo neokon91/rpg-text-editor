@@ -125,6 +125,7 @@ public: false
 - [x] Build libro.
 - [x] Export package.
 - [x] Preflight locale `npm run doctor` per prerequisiti editor/export.
+- [x] Avvio guidato `npm start` con apertura automatica browser sull'editor locale.
 - [x] QA PDF disponibile.
 - [x] Pass visuale completo su PDF dopo redesign finale.
 - [x] Template ulteriormente raffinato verso qualita manuale fantasy professionale, con identita visuale originale.
@@ -133,4 +134,4 @@ public: false
 ## Prossimi passi consigliati
 
 1. Paginazione automatica piu predittiva prima del render overflow.
-2. Packaging/distribuzione installabile oltre al preflight locale.
+2. Packaging/distribuzione installabile oltre all'avvio guidato locale.

@@ -30,6 +30,7 @@ npm run new -- adventure "La Torre Sommersa"
 npm run preview
 npm run preview:expanded
 npm run preview:watch
+npm start
 npm run editor
 npm run editor:next:build
 ```
@@ -58,6 +59,7 @@ npm run editor:next:build
 - `npm run preview` serve la cartella `dist` su `http://127.0.0.1:8081`.
 - `npm run preview:expanded` rigenera `dist/site/` e serve una preview navigabile con `<rpg-include>` gia espansi.
 - `npm run preview:watch` mantiene la preview espansa aggiornata mentre modifichi sorgenti, stili, template e asset.
+- `npm start` avvia la UI editor e apre automaticamente il browser sull'URL locale corretto.
 - `npm run editor` avvia la UI React/CodeMirror su `http://127.0.0.1:5173/editor-next/` con API locali per documenti, check ed export.
 - `npm run editor:next:build` genera la build statica di `editor-next`.
 
@@ -72,7 +74,7 @@ La UI locale vive in `editor-next/` e si avvia con:
 ```sh
 npm install
 npm run doctor
-npm run editor
+npm start
 ```
 
 L'editor mantiene il Markdown come sorgente primaria, usa CodeMirror 6, salva bozze in `localStorage` e mostra una preview live in iframe con `styles/main.css`, `page-shell`, tema e formato carta del frontmatter. Il server locale integra le API per aprire documenti da `docs/`, salvare la bozza corrente, eseguire check guidati ed esportare HTML/PDF in `dist/`.
