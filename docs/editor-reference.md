@@ -73,7 +73,7 @@ Il server apre `editor-next/` su `http://127.0.0.1:5173/editor-next/` e combina 
 
 ## Mancanze Verso Homebrewery
 
-- Test UI piu ampi per component insertion, sync preview e export PDF.
+- Test UI piu ampi per component insertion e sync preview.
 
 ## Guardrail
 

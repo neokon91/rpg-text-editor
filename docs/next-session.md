@@ -84,7 +84,7 @@ Vite + React + CodeMirror 6 + iframe preview
 
 Proseguire con page break piu intelligenti o palette avanzata:
 
-1. Test UI piu ampi per component insertion, sync preview e export PDF.
+1. Test UI piu ampi per component insertion e sync preview.
 2. Oppure workspace persistente per palette/componenti e preview.
 3. Mantenere `npm run test:editor-next-ui` come smoke minimo per ogni tranche.
 

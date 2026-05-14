@@ -317,6 +317,18 @@ try {
   await clickTopbarButton("Break");
   await waitFor(() => evalInPage("window.localStorage.getItem('rpg-text-editor-next:draft')?.includes('::pagebreak')"));
   await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.querySelectorAll('.page-shell').length > 1"));
+  await evalInPage(`
+    window.localStorage.setItem('rpg-text-editor-next:draft', '---\\ntitle: Codex PDF UI\\nslug: codex-pdf-ui\\nsummary: Documento temporaneo export PDF UI\\ncompatibility: 5e/5.5e\\nlicense_mode: srd-5.2-cc\\nauthor: Codex\\ntheme: classic-parchment\\npaper: A4\\n---\\n\\n# Codex PDF UI\\n\\nDocumento valido per export PDF.');
+  `);
+  await rm(join(root, "dist", "codex-pdf-ui.pdf"), { force: true });
+  await reloadPage();
+  await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.querySelector('.page-shell h1')?.textContent.includes('Codex PDF UI')"));
+  await clickTopbarButton("PDF");
+  await waitFor(() => evalInPage("document.body.textContent.includes('Export PDF in corso')"));
+  await waitFor(() => exportedFileExists("codex-pdf-ui.pdf"), 90000);
+  await rm(join(root, "dist", "codex-pdf-ui.pdf"), { force: true });
+  await rm(join(root, "dist", "codex-pdf-ui.html"), { force: true });
+  await rm(join(root, ".tmp", "editor-export", "codex-pdf-ui.md"), { force: true });
 
   const errors = await evalInPage("Array.from(window.__editorNextErrors || [])");
   if (errors.length) throw new Error(`Errori console browser: ${errors.join("; ")}`);
