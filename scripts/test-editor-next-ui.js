@@ -13,6 +13,8 @@ const saveConflictFile = "codex-save-conflict.md";
 const renameSourceFile = "codex-rename-temp.md";
 const renameTargetFile = "codex-rename-temp-renamed.md";
 const openGuardFile = "codex-open-guard.md";
+const suites = ["browser-storage", "documents-layout", "components", "preview-export"];
+const requestedSuite = readSuiteArgument();
 
 let server;
 let browser;
@@ -36,13 +38,17 @@ class CdpConnection {
     });
   }
 
-  send(method, params = {}) {
+  send(method, params = {}, timeout = 30000) {
     const id = ++this.id;
     const payload = { id, method, params };
     if (this.sessionId && !method.startsWith("Target.")) payload.sessionId = this.sessionId;
 
     return new Promise((resolve, reject) => {
-      this.pending.set(id, { resolve, reject });
+      const timer = setTimeout(() => {
+        this.pending.delete(id);
+        reject(new Error(`Timeout CDP ${method} dopo ${timeout}ms.`));
+      }, timeout);
+      this.pending.set(id, { resolve, reject, timer });
       this.socket.send(JSON.stringify(payload));
     });
   }
@@ -53,6 +59,7 @@ class CdpConnection {
 
     const pending = this.pending.get(message.id);
     this.pending.delete(message.id);
+    clearTimeout(pending.timer);
     if (message.error) {
       pending.reject(new Error(message.error.message));
     } else {
@@ -62,6 +69,7 @@ class CdpConnection {
 
   rejectPending(error) {
     for (const pending of this.pending.values()) {
+      clearTimeout(pending.timer);
       pending.reject(error);
     }
     this.pending.clear();
@@ -72,7 +80,33 @@ class CdpConnection {
   }
 }
 
-try {
+if (requestedSuite) {
+  if (!suites.includes(requestedSuite)) {
+    throw new Error(`Suite non riconosciuta: ${requestedSuite}. Valori: ${suites.join(", ")}`);
+  }
+  await runSuite(requestedSuite);
+} else {
+  for (const suite of suites) {
+    await runChildSuite(suite);
+  }
+  console.log("Editor Next UI smoke test: ok");
+}
+
+async function runChildSuite(suite) {
+  await new Promise((resolvePromise, reject) => {
+    const child = spawn(process.execPath, [new URL(import.meta.url).pathname, `--suite=${suite}`], {
+      cwd: root,
+      stdio: "inherit"
+    });
+    child.on("error", reject);
+    child.on("exit", (code) => {
+      code === 0 ? resolvePromise() : reject(new Error(`Suite ${suite} fallita con codice ${code}.`));
+    });
+  });
+}
+
+async function runSuite(suite) {
+  try {
   server = spawn(process.execPath, ["scripts/serve-editor-next.js"], {
     cwd: root,
     env: { ...process.env, PORT: String(editorPort) },
@@ -99,92 +133,66 @@ try {
   await cdp.send("Runtime.enable");
   await cdp.send("Page.enable");
   await installBrowserErrorCapture();
+  await openEditor();
+
+  await runNamedSuite(suite);
+
+  const errors = await evalInPage("Array.from(window.__editorNextErrors || [])");
+  if (errors.length) throw new Error(`Errori console browser: ${errors.join("; ")}`);
+
+  console.log(`Editor Next UI smoke test [${suite}]: ok`);
+  } finally {
+    cdp?.close();
+    browser?.kill();
+    await cleanupTestDocument(saveConflictFile);
+    await cleanupTestDocument(renameSourceFile);
+    await cleanupTestDocument(renameTargetFile);
+    await cleanupTestDocument(openGuardFile);
+    server?.kill();
+    if (userDataDir) await rm(userDataDir, { recursive: true, force: true, maxRetries: 3, retryDelay: 100 });
+  }
+}
+
+async function openEditor() {
   await cdp.send("Page.navigate", { url: `${baseUrl}/editor-next/` });
+  await waitForEditorReady();
+}
+
+async function waitForEditorReady() {
   await waitFor(() => evalInPage("document.readyState === 'complete'"));
   await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.querySelector('.page-shell h1')?.textContent.toLowerCase().includes('nuova avventura')"));
   await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.body.textContent.includes('Santuario sotto la pioggia')"));
   await waitFor(() => evalInPage("!document.querySelector('.next-brand span')?.textContent.includes('*')"));
   await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.querySelector('p[data-source-end-line]')?.dataset.sourceEndLine"));
   await waitFor(() => evalInPage("document.body.textContent.includes('Server locale')"));
+}
+
+async function runNamedSuite(suite) {
+  if (suite === "browser-storage") return testBrowserStorage();
+  if (suite === "documents-layout") return testDocumentsAndLayout();
+  if (suite === "components") return testComponents();
+  if (suite === "preview-export") return testPreviewAndExport();
+  throw new Error(`Suite non riconosciuta: ${suite}`);
+}
+
+async function testBrowserStorage() {
+  logStep("browser-storage: enable browser-only");
   await clickTopbarButton("Browser-only");
   await waitFor(() => evalInPage("window.localStorage.getItem('rpg-text-editor-next:browser-only') === 'true'"));
   await waitFor(() => evalInPage("document.body.textContent.includes('Browser-only')"));
   await waitFor(() => evalInPage("/Browser \\d+ doc \\/ \\d+ (B|KB|MB)/.test(document.body.textContent)"));
   await waitFor(() => evalInPage("document.querySelector('.next-actions button[aria-pressed=\"true\"]')?.textContent.trim() === 'Browser-only'"));
-  await evalInPage(`
-    window.localStorage.setItem('rpg-text-editor-next:browser-documents', JSON.stringify([
-      { filename: 'legacy-localstorage.md', content: '# Legacy LocalStorage', updatedAt: '2026-05-14T00:00:00.000Z' }
-    ]));
-  `);
-  await reloadPage();
-  await waitFor(() => evalInPage("document.body.textContent.includes('Browser-only')"));
-  await waitFor(() => evalInPage("!window.localStorage.getItem('rpg-text-editor-next:browser-documents')"));
-  await waitFor(() => evalInPage(`
-    new Promise((resolve, reject) => {
-      const request = indexedDB.open('rpg-text-editor-next', 1);
-      request.onerror = () => reject(request.error);
-      request.onsuccess = () => {
-        const db = request.result;
-        const list = db.transaction('documents', 'readonly').objectStore('documents').getAll();
-        list.onerror = () => reject(list.error);
-        list.onsuccess = () => resolve(list.result.some((document) => document.filename === 'legacy-localstorage.md'));
-      };
-    })
-  `));
-  await waitFor(() => evalInPage("document.body.textContent.includes('Browser 1 doc')"));
-  await importBrowserMarkdownDocuments();
-  await waitFor(() => evalInPage("document.body.textContent.includes('Import Markdown completato: 2 documenti')"));
-  await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.querySelector('.page-shell h1')?.textContent.includes('Browser Import One')"));
-  await waitFor(() => evalInPage("document.querySelector('.next-brand span')?.textContent.includes('browser/browser-import-one.md')"));
-  await waitFor(() => evalInPage("Array.from(document.querySelector('.next-actions select')?.options || []).some((item) => item.textContent.includes('Browser Import Two'))"));
-  await waitFor(() => evalInPage("document.body.textContent.includes('Browser 3 doc')"));
-  await dropBrowserMarkdownDocument();
-  await waitFor(() => evalInPage("document.body.textContent.includes('Import Markdown completato: 1 documenti')"));
-  await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.querySelector('.page-shell h1')?.textContent.includes('Browser Drop Import')"));
-  await waitFor(() => evalInPage("document.querySelector('.next-brand span')?.textContent.includes('browser/browser-drop-import.md')"));
-  await waitFor(() => evalInPage("Array.from(document.querySelector('.next-actions select')?.options || []).some((item) => item.textContent.includes('Browser Drop Import'))"));
-  await waitFor(() => evalInPage("document.body.textContent.includes('Browser 4 doc')"));
+  logStep("browser-storage: backup archive");
   await clickTopbarButton("Backup");
   await waitFor(() => evalInPage("document.body.textContent.includes('Backup browser pronto')"));
   await waitFor(() => evalInPage("Array.from(document.querySelectorAll('.next-status a')).some((link) => link.textContent.includes('browser-documents'))"));
-  await evalInPage(`
-    window.localStorage.setItem('rpg-text-editor-next:draft', '---\\ntitle: Browser PDF Fallback\\nslug: browser-pdf-fallback\\nsummary: Documento valido per fallback PDF browser\\ncompatibility: 5e/5.5e\\nlicense_mode: srd-5.2-cc\\nauthor: Codex\\ntheme: fifth-edition-compatible\\npaper: A4\\n---\\n\\n# Browser PDF Fallback\\n\\nDocumento valido per export PDF browser-only.');
-  `);
-  await reloadPage();
-  await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.querySelector('.page-shell h1')?.textContent.includes('Browser PDF Fallback')"));
-  await clickButton("Auto pages");
-  await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.body?.dataset.autoPaginate === 'true'"));
-  await evalInPage(`
-    {
-      window.__rpgDownloadBlobs = [];
-      if (!window.__rpgOriginalCreateObjectUrl) {
-        window.__rpgOriginalCreateObjectUrl = URL.createObjectURL.bind(URL);
-        URL.createObjectURL = (blob) => {
-          const url = window.__rpgOriginalCreateObjectUrl(blob);
-          window.__rpgDownloadBlobs.push({ url, blob, type: blob.type, size: blob.size });
-          return url;
-        };
-      }
-    }
-  `);
-  await clickTopbarButton("PDF");
-  await waitFor(() => evalInPage("document.body.textContent.includes('Export PDF pronto')"));
-  await waitFor(() => evalInPage("Array.from(document.querySelectorAll('.next-status a')).some((link) => link.textContent.includes('.pdf'))"));
-  await waitFor(() => evalInPage("Array.from(document.querySelectorAll('.next-status a')).some((link) => link.textContent.includes('.print.html'))"));
-  await waitFor(() => evalInPage(`
-    (async () => {
-      const pdf = window.__rpgDownloadBlobs?.find((item) => item.type === 'application/pdf');
-      if (!pdf) return false;
-      const text = await pdf.blob.text();
-      window.__rpgPdfDebug = { size: pdf.size, startsPdf: text.startsWith('%PDF-1.4'), hasImage: text.includes('/Subtype /Image'), head: text.slice(0, 180) };
-      return window.__rpgPdfDebug.startsPdf && window.__rpgPdfDebug.hasImage;
-    })()
-  `), 12000, "PDF browser-only visuale");
-  await clickButton("Auto pages");
-  await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.body?.dataset.autoPaginate === 'false'"));
+  logStep("browser-storage: disable browser-only");
   await clickTopbarButton("Browser-only");
   await waitFor(() => evalInPage("!window.localStorage.getItem('rpg-text-editor-next:browser-only')"));
   await waitFor(() => evalInPage("document.body.textContent.includes('Server locale')"));
+}
+
+async function testDocumentsAndLayout() {
   await saveTestDocument(saveConflictFile, "---\ntitle: Codex Save Conflict\nslug: codex-save-conflict\nsummary: Documento temporaneo conflitto save\ncompatibility: 5e/5.5e\nlicense_mode: srd-5.2-cc\nauthor: Codex\n---\n\n# Codex Save Conflict\n\nDocumento gia presente.");
   await evalInPage(`
     window.localStorage.setItem('rpg-text-editor-next:draft', '---\\ntitle: Codex Save Conflict\\nslug: codex-save-conflict\\nsummary: Documento temporaneo conflitto save\\ncompatibility: 5e/5.5e\\nlicense_mode: srd-5.2-cc\\nauthor: Codex\\n---\\n\\n# Codex Save Conflict\\n\\nTentativo di sovrascrittura non confermata.');
@@ -267,6 +275,9 @@ try {
   await waitFor(() => evalInPage("Boolean(document.querySelector('.metadata-fields'))"));
   await clickButton("Mostra outline");
   await waitFor(() => evalInPage("Boolean(document.querySelector('.outline-list'))"));
+}
+
+async function testComponents() {
   await setViewport(1180, 820);
   await waitFor(() => evalInPage("document.querySelector('select')?.options.length > 1"));
   await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 15"));
@@ -367,7 +378,9 @@ try {
   await clickButton("Combattimento");
   await waitFor(() => evalInPage("window.localStorage.getItem('rpg-text-editor-next:draft')?.includes('Scheggia Astrale')"));
   await waitFor(() => evalInPage("document.readyState === 'complete' && Boolean(document.querySelector('.next-actions'))"));
+}
 
+async function testPreviewAndExport() {
   await clickTopbarButton("Scena");
   await waitFor(() => evalInPage("document.body.textContent.includes('Nuova scena')"));
   await clickTopbarButton("Nota");
@@ -451,20 +464,6 @@ try {
   await rm(join(root, "dist", "codex-pdf-ui.pdf"), { force: true });
   await rm(join(root, "dist", "codex-pdf-ui.html"), { force: true });
   await rm(join(root, ".tmp", "editor-export", "codex-pdf-ui.md"), { force: true });
-
-  const errors = await evalInPage("Array.from(window.__editorNextErrors || [])");
-  if (errors.length) throw new Error(`Errori console browser: ${errors.join("; ")}`);
-
-  console.log("Editor Next UI smoke test: ok");
-} finally {
-  cdp?.close();
-  browser?.kill();
-  await cleanupTestDocument(saveConflictFile);
-  await cleanupTestDocument(renameSourceFile);
-  await cleanupTestDocument(renameTargetFile);
-  await cleanupTestDocument(openGuardFile);
-  server?.kill();
-  if (userDataDir) await rm(userDataDir, { recursive: true, force: true, maxRetries: 3, retryDelay: 100 });
 }
 
 async function openTarget() {
@@ -808,6 +807,34 @@ async function importBrowserMarkdownDocuments() {
   `);
 }
 
+async function seedBrowserDocuments(documents) {
+  await evalInPage(`
+    new Promise((resolve, reject) => {
+      const incoming = ${JSON.stringify(documents)}.map((document) => ({
+        filename: document.filename,
+        content: document.content,
+        updatedAt: new Date().toISOString()
+      }));
+      const request = indexedDB.open('rpg-text-editor-next', 1);
+      request.onupgradeneeded = () => {
+        const db = request.result;
+        if (!db.objectStoreNames.contains('documents')) {
+          db.createObjectStore('documents', { keyPath: 'filename' });
+        }
+      };
+      request.onerror = () => reject(request.error);
+      request.onsuccess = () => {
+        const db = request.result;
+        const transaction = db.transaction('documents', 'readwrite');
+        const store = transaction.objectStore('documents');
+        for (const document of incoming) store.put(document);
+        transaction.oncomplete = () => resolve(true);
+        transaction.onerror = () => reject(transaction.error);
+      };
+    })
+  `);
+}
+
 async function dropBrowserMarkdownDocument() {
   await evalInPage(`
     {
@@ -905,6 +932,10 @@ async function assertEqual(actual, expected, label) {
   if (actual !== expected) throw new Error(`${label}: atteso ${expected}, ricevuto ${actual}`);
 }
 
+function logStep(message) {
+  console.log(message);
+}
+
 async function fetchJson(url, options) {
   const response = await fetch(url, options);
   if (!response.ok) throw new Error(`HTTP ${response.status}: ${url}`);
@@ -924,6 +955,11 @@ function findBrowser() {
   const browser = candidates.find((candidate) => existsSync(candidate) || !candidate.startsWith("/"));
   if (!browser) throw new Error("Nessun browser Chromium/Brave trovato per i test UI.");
   return browser;
+}
+
+function readSuiteArgument() {
+  const flag = process.argv.find((argument) => argument.startsWith("--suite="));
+  return flag ? flag.slice("--suite=".length) : "";
 }
 
 function findFreePort(startPort) {

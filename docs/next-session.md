@@ -19,10 +19,10 @@ public: false
 - Branch di lavoro: `codex/vscode-preview-rendering`.
 - UI unica: `editor-next/` con React, Vite, CodeMirror 6 e preview iframe.
 - Target utente finale: web app browser-first, senza installazione locale.
-- Avvio sviluppo: `npm start`; preflight sviluppo: `npm run doctor`; pacchetto locale solo per QA/dev: `npm run package:editor`.
+- Avvio sviluppo: `npm start`; preflight sviluppo: `npm run doctor`; deploy candidate: `npm run deploy:check`; pacchetto locale solo per QA/dev: `npm run package:editor`.
 - Verifica completa richiesta prima di chiudere tranche: `npm run check`.
 - Smoke minimo durante sviluppo UI: `npm run test:editor-next-ui`.
-- Reference operative da leggere prima del codice: `README.md`, `docs/user-guide.md`, `docs/editor-reference.md`, `docs/checklist.md`, `docs/homebrewery-benchmark.md`.
+- Reference operative da leggere prima del codice: `README.md`, `docs/user-guide.md`, `docs/deploy.md`, `docs/editor-reference.md`, `docs/checklist.md`, `docs/homebrewery-benchmark.md`.
 
 ## Cosa Funziona
 

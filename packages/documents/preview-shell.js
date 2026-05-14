@@ -4,6 +4,7 @@ export function renderPreviewDocument(metadata, content, options = {}) {
   const title = metadata.title || "Anteprima";
   const pages = splitPreviewPages(content);
   const autoPaginate = options.autoPaginate === true;
+  const assetBase = normalizeAssetBase(options.assetBase || "/");
   const documentClass = [
     "homebrew-document",
     `theme-${theme}`,
@@ -16,7 +17,7 @@ export function renderPreviewDocument(metadata, content, options = {}) {
     <meta charset="utf-8">
     <base href="/">
     <title>${escapeHtml(title)}</title>
-    <link rel="stylesheet" href="/styles/main.css">
+    <link rel="stylesheet" href="${assetBase}styles/main.css">
     <style>
       html, body { min-height: 100%; }
       body { background: #1c1510; padding: 24px; }
@@ -155,6 +156,11 @@ ${page}
     </script>
   </body>
 </html>`;
+}
+
+function normalizeAssetBase(value) {
+  const base = String(value || "/");
+  return base.endsWith("/") ? base : `${base}/`;
 }
 
 function splitPreviewPages(content) {

@@ -24,6 +24,7 @@ public: false
 - [x] Commit e push effettuati per ogni incremento.
 - [x] Riferimenti compatti canonici: `docs/next-session.md`, `docs/editor-reference.md`, `docs/homebrewery-benchmark.md`.
 - [x] README ridotto a percorso chiaro per utente/autore e guida non tecnica in `docs/user-guide.md`.
+- [x] Guida deploy web dedicata in `docs/deploy.md`, con confine esplicito per futura integrazione `srd-reference`.
 - [x] Riferimento duplicato `docs/homebrewery-gap.md` rimosso.
 
 ## Editor UI

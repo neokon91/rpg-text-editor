@@ -25,7 +25,8 @@ const includeEntries = [
   "package.json",
   "package-lock.json",
   "README.md",
-  "vite.config.js"
+  "vite.config.js",
+  "vite.deploy.config.js"
 ];
 
 async function main() {

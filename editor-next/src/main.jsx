@@ -1,14 +1,19 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { renderMarkdown } from "../../packages/components/preview.js";
-import { renderComponentValidation } from "../../packages/components/validation.js";
 import { loadComponentSchema, loadEnabledPacks, manifestUrl, fetchJson, saveEnabledPacks } from "../../packages/components/schema.js";
 import { renderPreviewDocument } from "../../packages/documents/preview-shell.js";
 import { parseFrontmatter, serializeFrontmatter } from "../../packages/documents/frontmatter.js";
 import { checkDocument, deleteDocument, exportBrowserDocumentsArchive, exportDocument, getBrowserDocumentStorageStats, getDocument, getDocumentRuntimeMode, importBrowserDocumentsArchive, importBrowserMarkdownDocuments, listDocuments, renameDocument, saveDocument, setBrowserOnlyMode } from "../../packages/documents/api.js";
 import { countWords, downloadMarkdown } from "../../packages/markdown/editor-actions.js";
 import { slugifyDocumentName } from "../../scripts/lib/component-schema.js";
+import { collectDiagnostics, sameOverflowPages } from "./app/diagnostics.js";
+import { enabledPacksStorageKey, starterDocument } from "./app/constants.js";
+import { loadExternalPacks, normalizeExternalPack, saveExternalPacks, validateExternalPack } from "./app/externalPacks.js";
+import { loadBooleanWorkspaceSetting, loadNumberWorkspaceSetting, saveBooleanWorkspaceSetting, workspaceKey } from "./app/workspaceSettings.js";
+import { AppDialog } from "./components/AppDialog.jsx";
 import { ComponentPalette } from "./components/ComponentPalette.jsx";
+import { OnboardingPanel } from "./components/OnboardingPanel.jsx";
 import { MarkdownEditor } from "./editor/MarkdownEditor.jsx";
 import { insertPageBreakBeforeLine, insertPageBreaksBeforeLines, predictPageBreakLines } from "./editor/pageBreaks.js";
 import { DocumentOutline } from "./outline/DocumentOutline.jsx";
@@ -16,47 +21,6 @@ import { PreviewFrame } from "./preview/PreviewFrame.jsx";
 import { TopMenu } from "./shell/TopMenu.jsx";
 import { clearDraft, loadDraft, saveDraft } from "./storage/localDrafts.js";
 import "./styles.css";
-
-const enabledPacksStorageKey = "rpg-text-editor:enabled-packs";
-const externalPacksStorageKey = "rpg-text-editor:external-packs";
-const workspaceStoragePrefix = "rpg-text-editor-next";
-
-const starterDocument = `---
-title: Nuova Avventura
-slug: nuova-avventura
-summary: Bozza creata dall'editor Next.
-category: avventure
-tags: demo, avventura, ttrpg
-compatibility: 5e/5.5e
-license_mode: srd-5.2-cc
-author: Andrea
-theme: fifth-edition-compatible
-paper: A4
-public: true
----
-
-# Nuova Avventura
-
-<p class="subtitle">Il Santuario sotto la pioggia.</p>
-
-## Scena iniziale
-
-La strada termina davanti a un arco spezzato. Le lanterne del villaggio tremano dietro gli alberi, mentre dal santuario arriva un rintocco senza campana.
-
-::: readaloud Da leggere al tavolo
-La pietra bagnata riflette una luce verde pallida. Oltre l'arco, una scala scende nel buio e porta con se odore di terra smossa.
-:::
-
-::: note Spunto per il master
-Il primo indizio e inciso sul bordo dell'arco: tre lune, una chiave e un nome cancellato.
-:::
-
-## Incontro
-
-::: encounter Guardiani della soglia
-body: Due custodi scheletrici proteggono la scala. Non attaccano chi pronuncia il nome cancellato.
-:::
-`;
 
 function App() {
   const editorRef = useRef(null);
@@ -70,14 +34,14 @@ function App() {
   const [schema, setSchema] = useState({ components: [] });
   const [schemaState, setSchemaState] = useState("Caricamento schema");
   const [previewVisible, setPreviewVisible] = useState(() => loadBooleanWorkspaceSetting("preview-visible", true));
-  const [zoom, setZoom] = useState(() => localStorage.getItem(`${workspaceStoragePrefix}:zoom`) || "1");
-  const [viewport, setViewport] = useState(() => localStorage.getItem(`${workspaceStoragePrefix}:viewport`) || "desktop");
-  const [previewSpread, setPreviewSpread] = useState(() => localStorage.getItem(`${workspaceStoragePrefix}:preview-spread`) || "single");
+  const [zoom, setZoom] = useState(() => localStorage.getItem(workspaceKey("zoom")) || "1");
+  const [viewport, setViewport] = useState(() => localStorage.getItem(workspaceKey("viewport")) || "desktop");
+  const [previewSpread, setPreviewSpread] = useState(() => localStorage.getItem(workspaceKey("preview-spread")) || "single");
   const [autoPaginatePreview, setAutoPaginatePreview] = useState(() => loadBooleanWorkspaceSetting("auto-paginate-preview", false));
   const [syncPreview, setSyncPreview] = useState(() => loadBooleanWorkspaceSetting("sync-preview", false));
   const [onboardingVisible, setOnboardingVisible] = useState(() => loadBooleanWorkspaceSetting("onboarding-visible", true));
-  const [mobilePanel, setMobilePanel] = useState(() => localStorage.getItem(`${workspaceStoragePrefix}:mobile-panel`) || "editor");
-  const [activeComponentGroup, setActiveComponentGroup] = useState(() => localStorage.getItem(`${workspaceStoragePrefix}:component-group`) || "all");
+  const [mobilePanel, setMobilePanel] = useState(() => localStorage.getItem(workspaceKey("mobile-panel")) || "editor");
+  const [activeComponentGroup, setActiveComponentGroup] = useState(() => localStorage.getItem(workspaceKey("component-group")) || "all");
   const [cursorLine, setCursorLine] = useState(null);
   const [selectedLine, setSelectedLine] = useState(() => loadNumberWorkspaceSetting("selected-line"));
   const [documentPanels, setDocumentPanels] = useState(() => ({
@@ -159,58 +123,62 @@ function App() {
   }, []);
 
   useEffect(() => {
-    localStorage.setItem(`${workspaceStoragePrefix}:preview-visible`, previewVisible ? "true" : "false");
+    saveBooleanWorkspaceSetting("preview-visible", previewVisible);
   }, [previewVisible]);
 
   useEffect(() => {
-    localStorage.setItem(`${workspaceStoragePrefix}:zoom`, zoom);
+    localStorage.setItem(workspaceKey("zoom"), zoom);
   }, [zoom]);
 
   useEffect(() => {
-    localStorage.setItem(`${workspaceStoragePrefix}:viewport`, viewport);
+    localStorage.setItem(workspaceKey("viewport"), viewport);
   }, [viewport]);
 
   useEffect(() => {
-    localStorage.setItem(`${workspaceStoragePrefix}:preview-spread`, previewSpread);
+    localStorage.setItem(workspaceKey("preview-spread"), previewSpread);
   }, [previewSpread]);
 
   useEffect(() => {
-    localStorage.setItem(`${workspaceStoragePrefix}:auto-paginate-preview`, autoPaginatePreview ? "true" : "false");
+    saveBooleanWorkspaceSetting("auto-paginate-preview", autoPaginatePreview);
   }, [autoPaginatePreview]);
 
   useEffect(() => {
-    localStorage.setItem(`${workspaceStoragePrefix}:sync-preview`, syncPreview ? "true" : "false");
+    saveBooleanWorkspaceSetting("sync-preview", syncPreview);
   }, [syncPreview]);
 
   useEffect(() => {
-    localStorage.setItem(`${workspaceStoragePrefix}:onboarding-visible`, onboardingVisible ? "true" : "false");
+    saveBooleanWorkspaceSetting("onboarding-visible", onboardingVisible);
   }, [onboardingVisible]);
 
   useEffect(() => {
-    localStorage.setItem(`${workspaceStoragePrefix}:mobile-panel`, mobilePanel);
+    localStorage.setItem(workspaceKey("mobile-panel"), mobilePanel);
   }, [mobilePanel]);
 
   useEffect(() => {
-    localStorage.setItem(`${workspaceStoragePrefix}:component-group`, activeComponentGroup);
+    localStorage.setItem(workspaceKey("component-group"), activeComponentGroup);
   }, [activeComponentGroup]);
 
   useEffect(() => {
     if (selectedLine) {
-      localStorage.setItem(`${workspaceStoragePrefix}:selected-line`, String(selectedLine));
+      localStorage.setItem(workspaceKey("selected-line"), String(selectedLine));
     } else {
-      localStorage.removeItem(`${workspaceStoragePrefix}:selected-line`);
+      localStorage.removeItem(workspaceKey("selected-line"));
     }
   }, [selectedLine]);
 
   useEffect(() => {
-    localStorage.setItem(`${workspaceStoragePrefix}:frontmatter-panel`, documentPanels.frontmatter ? "true" : "false");
-    localStorage.setItem(`${workspaceStoragePrefix}:outline-panel`, documentPanels.outline ? "true" : "false");
+    saveBooleanWorkspaceSetting("frontmatter-panel", documentPanels.frontmatter);
+    saveBooleanWorkspaceSetting("outline-panel", documentPanels.outline);
   }, [documentPanels]);
 
   const parsed = useMemo(() => parseFrontmatter(markdown), [markdown]);
   const previewHtml = useMemo(() => {
     const content = renderMarkdown(parsed.body, schema, { startLine: parsed.bodyStartLine });
-    return renderPreviewDocument(parsed.metadata, content, { viewport, autoPaginate: autoPaginatePreview });
+    return renderPreviewDocument(parsed.metadata, content, {
+      viewport,
+      autoPaginate: autoPaginatePreview,
+      assetBase: runtimeAssetBase()
+    });
   }, [autoPaginatePreview, parsed, schema, viewport]);
   const diagnostics = useMemo(() => collectDiagnostics(markdown, schema), [markdown, schema]);
   const activeAuthorDiagnostics = checkedMarkdown === markdown ? authorDiagnostics : [];
@@ -749,23 +717,13 @@ function App() {
         onChange={importBrowserArchive}
       />
       {onboardingVisible ? (
-        <section className="onboarding-panel" aria-label="Guida rapida">
-          <div>
-            <strong>Parti da qui</strong>
-            <span>Scrivi nel pannello centrale, controlla la pagina a destra e usa Check prima dell'export.</span>
-          </div>
-          <ol>
-            <li><strong>Salva</strong> conserva una copia nel browser o nei documenti locali.</li>
-            <li><strong>Importa</strong> carica documenti Markdown o backup senza configurare nulla.</li>
-            <li><strong>PDF</strong> scarica un file PDF; il link stampabile resta come fallback.</li>
-          </ol>
-          <div className="onboarding-actions">
-            <button type="button" onClick={openStarterGuide}>Mostra esempio</button>
-            <button type="button" onClick={selectBrowserArchive}>Importa file</button>
-            <button type="button" onClick={() => exportChecked("pdf")} disabled={isChecking}>Esporta PDF</button>
-            <button type="button" onClick={() => setOnboardingVisible(false)}>Nascondi</button>
-          </div>
-        </section>
+        <OnboardingPanel
+          isChecking={isChecking}
+          onShowExample={openStarterGuide}
+          onImport={selectBrowserArchive}
+          onExportPdf={() => exportChecked("pdf")}
+          onHide={() => setOnboardingVisible(false)}
+        />
       ) : null}
       <section className="next-workspace">
         <ComponentPalette
@@ -823,124 +781,10 @@ function App() {
   );
 }
 
-function AppDialog({ dialog, onCancel, onConfirm }) {
-  const [value, setValue] = useState(dialog.defaultValue || "");
-
-  return (
-    <div className="app-dialog-backdrop" role="presentation">
-      <form
-        className="app-dialog"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="app-dialog-title"
-        onSubmit={(event) => {
-          event.preventDefault();
-          onConfirm(dialog.kind === "prompt" ? value.trim() : true);
-        }}
-      >
-        <header>
-          <strong id="app-dialog-title">{dialog.title}</strong>
-          <button type="button" aria-label="Chiudi dialog" onClick={onCancel}>×</button>
-        </header>
-        <p>{dialog.message}</p>
-        {dialog.kind === "prompt" ? (
-          <input autoFocus value={value} onChange={(event) => setValue(event.target.value)} />
-        ) : null}
-        <footer>
-          <button type="button" onClick={onCancel}>Annulla</button>
-          <button type="submit" className="primary-action">{dialog.confirmLabel || "Conferma"}</button>
-        </footer>
-      </form>
-    </div>
-  );
-}
-
-function collectDiagnostics(markdown, schema) {
-  const target = document.createElement("div");
-  return renderComponentValidation(markdown, schema, target, () => {}) || [];
-}
-
 createRoot(document.querySelector("#root")).render(<App />);
 
-function loadBooleanWorkspaceSetting(key, fallback) {
-  const value = localStorage.getItem(`${workspaceStoragePrefix}:${key}`);
-  if (value === "true") return true;
-  if (value === "false") return false;
-  return fallback;
-}
-
-function loadNumberWorkspaceSetting(key) {
-  const value = Number(localStorage.getItem(`${workspaceStoragePrefix}:${key}`));
-  return Number.isInteger(value) && value > 0 ? value : null;
-}
-
-function loadExternalPacks() {
-  try {
-    const stored = JSON.parse(localStorage.getItem(externalPacksStorageKey) || "[]");
-    if (!Array.isArray(stored)) return [];
-    return stored.map(normalizeExternalPack);
-  } catch {
-    localStorage.removeItem(externalPacksStorageKey);
-    return [];
-  }
-}
-
-function saveExternalPacks(packs) {
-  localStorage.setItem(externalPacksStorageKey, JSON.stringify(packs));
-}
-
-function sameOverflowPages(left, right) {
-  if (left.length !== right.length) return false;
-  return left.every((item, index) => item.page === right[index].page && item.line === right[index].line);
-}
-
-function normalizeExternalPack(pack) {
-  if (!pack || typeof pack !== "object") throw new Error("Pack esterno non valido.");
-  if (!pack.id || !pack.name || !Array.isArray(pack.components)) {
-    throw new Error("Il pack richiede id, name e components.");
-  }
-  return {
-    id: String(pack.id),
-    name: String(pack.name),
-    schema: {
-      ...pack,
-      components: pack.components
-    }
-  };
-}
-
-function validateExternalPack(pack, { manifest, schema, externalPacks }) {
-  const manifestPackIds = new Set((manifest?.packs || []).map((item) => item.id));
-  if (manifestPackIds.has(pack.id)) throw new Error(`Pack id gia dichiarato nel manifest: ${pack.id}.`);
-
-  for (const component of pack.schema.components) {
-    validateExternalComponent(component);
-  }
-
-  const replacingIds = new Set([pack.id]);
-  const externalIds = new Set(externalPacks.map((item) => item.id));
-  if (externalIds.has(pack.id)) replacingIds.add(pack.id);
-
-  const existingComponents = (schema.components || []).filter((component) => !replacingIds.has(component.source));
-  const componentIds = new Set(existingComponents.map((component) => component.id));
-  const containers = new Set(existingComponents.map((component) => component.container));
-
-  for (const component of pack.schema.components) {
-    if (componentIds.has(component.id)) throw new Error(`Component id duplicato: ${component.id}.`);
-    if (containers.has(component.container)) throw new Error(`Container duplicato: ${component.container}.`);
-    componentIds.add(component.id);
-    containers.add(component.container);
-  }
-}
-
-function validateExternalComponent(component) {
-  for (const key of ["id", "label", "group", "description", "container", "fields"]) {
-    if (!component[key]) throw new Error(`Componente esterno senza campo obbligatorio: ${key}.`);
-  }
-  if (!Array.isArray(component.fields)) throw new Error(`${component.id}: fields deve essere un array.`);
-  for (const field of component.fields) {
-    if (!field.key || !field.label || !field.type) {
-      throw new Error(`${component.id}: ogni field richiede key, label e type.`);
-    }
-  }
+function runtimeAssetBase() {
+  const viteBase = import.meta.env?.BASE_URL || "/";
+  if (viteBase === "./" || viteBase === "") return new URL("./", window.location.href).href;
+  return viteBase;
 }

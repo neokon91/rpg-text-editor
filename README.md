@@ -41,7 +41,8 @@ Non e ancora una web app pubblica deployata per utenti finali: manca la verifica
 npm start                 # avvia editor locale
 npm run doctor            # controlla prerequisiti
 npm run check             # controlli progetto principali
-npm run editor:next:build # build statica editor
+npm run deploy:build      # build statica finale in dist/web
+npm run deploy:check      # gate stabile prima di deploy
 npm run build:book:pdf    # genera libro/PDF da book.json
 npm run qa:pdf            # crea anteprime PNG del PDF per controllo layout
 ```
@@ -147,6 +148,7 @@ Controlla in particolare:
 ## Reference
 
 - [docs/user-guide.md](docs/user-guide.md): guida per utente non tecnico.
+- [docs/deploy.md](docs/deploy.md): checklist deploy web e confini SRD-reference.
 - [docs/editor-reference.md](docs/editor-reference.md): stato operativo dell'editor.
 - [docs/checklist.md](docs/checklist.md): checklist prodotto.
 - [docs/homebrewery-benchmark.md](docs/homebrewery-benchmark.md): benchmark UX/output stile Homebrewery/GM Binder.

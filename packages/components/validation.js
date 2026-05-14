@@ -1,4 +1,4 @@
-import { validateMarkdownBlocks } from "/scripts/lib/component-schema.js";
+import { validateMarkdownBlocks } from "../../scripts/lib/component-schema.js";
 
 export function renderComponentValidation(markdown, schema, validationPanel, onSelectLine) {
   const diagnostics = validateMarkdownBlocks(markdown, schema);

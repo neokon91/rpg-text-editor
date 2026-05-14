@@ -30,6 +30,7 @@ Il README deve restare orientato a chi deve usare il prodotto. I dettagli tecnic
 - Adapter browser-only iniziale per documenti, check client-side ed export HTML via download browser.
 - Export PDF browser-native visuale con fallback stampa HTML e preset `fifth-edition-compatible` per output a due colonne.
 - Avvio sviluppo semplificato: `npm start`; preflight sviluppo: `npm run doctor`.
+- Preparazione deploy: `npm run deploy:build` genera `dist/web/`; `npm run deploy:check` esegue il gate stabile.
 - Packaging locale disponibile per QA/dev: `npm run package:editor`; package pubblicazione libro: `npm run export:package`.
 - QA aggregata: `npm run check`.
 
