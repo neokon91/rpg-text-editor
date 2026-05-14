@@ -10,7 +10,7 @@ import {
 import { insertPageBreakBeforeLine, insertPageBreaksBeforeLines, predictPageBreakLines } from "../../editor-next/src/editor/pageBreaks.js";
 import { renderMarkdown } from "../../packages/components/preview.js";
 import { renderPreviewDocument } from "../../packages/documents/preview-shell.js";
-import { checkDocument, getDocumentRuntimeMode, listDocuments, saveDocument } from "../../packages/documents/api.js";
+import { checkDocument, getDocumentRuntimeMode, listDocuments, saveDocument, setBrowserOnlyMode } from "../../packages/documents/api.js";
 import { parseMarkdownOutline } from "../../packages/markdown/outline.js";
 
 test("parseMarkdownOutline ignores fenced headings and strips inline HTML", () => {
@@ -223,11 +223,25 @@ CD 31`;
   assert.equal(checked.diagnostics.some((item) => item.message.includes("CD 31 fuori scala")), true);
 });
 
+test("document api can force browser-only runtime from browser storage", () => {
+  withBrowserStorage({ browserOnly: false });
+
+  assert.equal(getDocumentRuntimeMode(), "server");
+  setBrowserOnlyMode(true);
+  assert.equal(getDocumentRuntimeMode(), "browser");
+  setBrowserOnlyMode(false);
+  assert.equal(getDocumentRuntimeMode(), "server");
+});
+
 function withBrowserOnlyStorage() {
+  withBrowserStorage({ browserOnly: true });
+}
+
+function withBrowserStorage({ browserOnly }) {
   const store = new Map();
   globalThis.window = {
-    location: { search: "?browser-only" },
-    __RPG_TEXT_EDITOR_BROWSER_ONLY__: true
+    location: { search: browserOnly ? "?browser-only" : "" },
+    __RPG_TEXT_EDITOR_BROWSER_ONLY__: browserOnly
   };
   globalThis.localStorage = {
     getItem: (key) => store.get(key) || null,

@@ -105,6 +105,14 @@ try {
   await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.body.textContent.includes('Santuario sotto la pioggia')"));
   await waitFor(() => evalInPage("!document.querySelector('.next-brand span')?.textContent.includes('*')"));
   await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.querySelector('p[data-source-end-line]')?.dataset.sourceEndLine"));
+  await waitFor(() => evalInPage("document.body.textContent.includes('Server locale')"));
+  await clickTopbarButton("Browser-only");
+  await waitFor(() => evalInPage("window.localStorage.getItem('rpg-text-editor-next:browser-only') === 'true'"));
+  await waitFor(() => evalInPage("document.body.textContent.includes('Browser-only')"));
+  await waitFor(() => evalInPage("document.querySelector('.next-actions button[aria-pressed=\"true\"]')?.textContent.trim() === 'Browser-only'"));
+  await clickTopbarButton("Browser-only");
+  await waitFor(() => evalInPage("!window.localStorage.getItem('rpg-text-editor-next:browser-only')"));
+  await waitFor(() => evalInPage("document.body.textContent.includes('Server locale')"));
   await saveTestDocument(saveConflictFile, "---\ntitle: Codex Save Conflict\nslug: codex-save-conflict\nsummary: Documento temporaneo conflitto save\ncompatibility: 5e/5.5e\nlicense_mode: srd-5.2-cc\nauthor: Codex\n---\n\n# Codex Save Conflict\n\nDocumento gia presente.");
   await evalInPage(`
     window.localStorage.setItem('rpg-text-editor-next:draft', '---\\ntitle: Codex Save Conflict\\nslug: codex-save-conflict\\nsummary: Documento temporaneo conflitto save\\ncompatibility: 5e/5.5e\\nlicense_mode: srd-5.2-cc\\nauthor: Codex\\n---\\n\\n# Codex Save Conflict\\n\\nTentativo di sovrascrittura non confermata.');

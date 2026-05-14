@@ -5,7 +5,7 @@ import { renderComponentValidation } from "../../packages/components/validation.
 import { loadComponentSchema, loadEnabledPacks, manifestUrl, fetchJson, saveEnabledPacks } from "../../packages/components/schema.js";
 import { renderPreviewDocument } from "../../packages/documents/preview-shell.js";
 import { parseFrontmatter, serializeFrontmatter } from "../../packages/documents/frontmatter.js";
-import { checkDocument, deleteDocument, exportDocument, getDocument, getDocumentRuntimeMode, listDocuments, renameDocument, saveDocument } from "../../packages/documents/api.js";
+import { checkDocument, deleteDocument, exportDocument, getDocument, getDocumentRuntimeMode, listDocuments, renameDocument, saveDocument, setBrowserOnlyMode } from "../../packages/documents/api.js";
 import { countWords, downloadMarkdown } from "../../packages/markdown/editor-actions.js";
 import { slugifyDocumentName } from "../../scripts/lib/component-schema.js";
 import { ComponentPalette } from "./components/ComponentPalette.jsx";
@@ -394,6 +394,18 @@ function App() {
     }
   }
 
+  async function toggleDocumentRuntimeMode() {
+    const enableBrowserOnly = documentRuntimeMode !== "browser";
+    setBrowserOnlyMode(enableBrowserOnly);
+    setDocumentRuntimeMode(getDocumentRuntimeMode());
+    setDocuments([]);
+    setCurrentDocument("");
+    setLastSavedContent(markdown);
+    setExportOutputs([]);
+    setStatus(enableBrowserOnly ? "Modalita Browser-only attiva" : "Tentativo server locale");
+    await refreshDocuments();
+  }
+
   async function openDocument(nextFilename) {
     if (!nextFilename) return;
     if (isDirty) {
@@ -609,6 +621,7 @@ function App() {
         onCheck={runCheck}
         onExport={exportChecked}
         onRefreshDocuments={refreshDocuments}
+        onToggleDocumentRuntimeMode={toggleDocumentRuntimeMode}
         onTogglePreview={() => setPreviewVisible((value) => !value)}
         onToggleSyncPreview={() => setSyncPreview((value) => !value)}
         onMobilePanelChange={setMobilePanel}

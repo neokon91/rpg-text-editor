@@ -38,6 +38,7 @@ export function TopMenu({
   onCheck,
   onExport,
   onRefreshDocuments,
+  onToggleDocumentRuntimeMode,
   onTogglePreview,
   onToggleSyncPreview,
   onMobilePanelChange,
@@ -88,6 +89,14 @@ export function TopMenu({
         <button type="button" disabled={!currentDocument || isDirty} onClick={onRename}>Rinomina</button>
         <button type="button" disabled={!currentDocument} onClick={onDelete}>Elimina</button>
         <button type="button" onClick={onDownloadMarkdown}>MD</button>
+        <button
+          type="button"
+          aria-pressed={documentRuntimeMode === "browser"}
+          title="Forza salvataggio, check ed export HTML nel browser"
+          onClick={onToggleDocumentRuntimeMode}
+        >
+          Browser-only
+        </button>
         <span className="next-separator" />
         <button type="button" onClick={() => onInsertSnippet(snippets.scene)}>Scena</button>
         <button type="button" onClick={() => onInsertSnippet(snippets.readaloud)}>Readaloud</button>

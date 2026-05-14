@@ -81,6 +81,16 @@ export function getDocumentRuntimeMode() {
   return browserOnlyMode() ? "browser" : "server";
 }
 
+export function setBrowserOnlyMode(enabled) {
+  try {
+    if (enabled) {
+      localStorage.setItem(browserModeStorageKey, "true");
+    } else {
+      localStorage.removeItem(browserModeStorageKey);
+    }
+  } catch {}
+}
+
 async function withServerFallback(serverAction, browserAction) {
   if (browserOnlyMode()) return browserAction();
   try {
@@ -120,9 +130,7 @@ function browserOnlyMode() {
 }
 
 function activateBrowserOnlyMode() {
-  try {
-    localStorage.setItem(browserModeStorageKey, "true");
-  } catch {}
+  setBrowserOnlyMode(true);
 }
 
 function browserDocuments() {
