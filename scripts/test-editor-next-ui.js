@@ -305,6 +305,7 @@ async function testComponents() {
   await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 1 && document.body.textContent.includes('Fazione')"));
   await assertEqual(await evalInPage("window.localStorage.getItem('rpg-text-editor-next:component-palette:query')"), "Congrega", "component search persisted");
   await reloadPage();
+  await waitFor(() => evalInPage("document.readyState === 'complete'"));
   await waitFor(() => evalInPage("document.querySelector('.component-palette input[type=\"search\"]')?.value === 'Congrega' && document.querySelectorAll('.component-card').length === 1"));
   await waitFor(() => evalInPage("document.querySelector('.component-form optgroup[label=\"Tono\"]') || Array.from(document.querySelectorAll('.component-preset-group-label')).some((node) => node.textContent.trim() === 'Tono')"));
   await dispatchDocumentKey("k", { ctrlKey: true });
@@ -369,6 +370,9 @@ async function testComponents() {
   await openComponentForm("Incantesimo", "spell");
   await waitFor(() => componentFormHasField("Nome"), 12000, "component form Nome field");
   await setComponentFormField("Nome", "Dardo Codex");
+  await reloadPage();
+  await waitFor(() => evalInPage("document.querySelector('.component-form')?.textContent.includes('spell')"));
+  await waitFor(() => componentFormHasFieldValue("Nome", "Dardo Codex"), 12000, "component form persisted Nome field");
   await clickComponentFormSubmit();
   await waitFor(() => evalInPage("window.localStorage.getItem('rpg-text-editor-next:draft')?.includes('name: Dardo Codex')"));
   await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.body?.textContent.includes('Dardo Codex')"));
@@ -474,7 +478,7 @@ async function openTarget() {
     } catch {
       return false;
     }
-  }, 15000, "browser CDP ready");
+  }, 30000, "browser CDP ready");
 
   const version = await fetchJson(`http://127.0.0.1:${cdpPort}/json/version`);
   const connection = new CdpConnection(version.webSocketDebuggerUrl);
@@ -624,6 +628,16 @@ async function componentFormHasField(label) {
   return evalInPage(`
     Array.from(document.querySelectorAll('.component-form label'))
       .some((item) => item.querySelector('span')?.textContent.trim().startsWith(${JSON.stringify(label)}))
+  `);
+}
+
+async function componentFormHasFieldValue(label, value) {
+  return evalInPage(`
+    Array.from(document.querySelectorAll('.component-form label'))
+      .some((item) => {
+        if (!item.querySelector('span')?.textContent.trim().startsWith(${JSON.stringify(label)})) return false;
+        return item.querySelector('input, textarea')?.value === ${JSON.stringify(value)};
+      })
   `);
 }
 

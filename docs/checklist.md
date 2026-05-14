@@ -68,7 +68,7 @@ public: false
 - [x] Toolbar estesa per tabelle, immagini, callout e include nella UI React.
 - [x] Navigatore documento da heading Markdown con salto alla riga sorgente.
 - [x] Sync editor-preview base: toggle, scroll preview dalla linea cursore e click preview verso linea sorgente.
-- [ ] Palette/componenti e preview come workspace persistenti.
+- [x] Palette/componenti e preview come workspace persistenti.
 
 ## Preview
 

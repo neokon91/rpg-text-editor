@@ -29,6 +29,7 @@ export function ComponentPalette({
     () => (schema.components || []).find((component) => component.id === selectedId) || null,
     [schema, selectedId]
   );
+  const [restoredDraft, setRestoredDraft] = useState(() => loadPaletteJsonSetting("draft-values", null));
   const [draftValues, setDraftValues] = useState(null);
   const componentGroups = useMemo(() => {
     const groups = new Set((schema.components || []).map((component) => component.group || "Componenti"));
@@ -59,6 +60,30 @@ export function ComponentPalette({
   useEffect(() => {
     if (selectedId && schema.components?.length && !selectedComponent) setSelectedId("");
   }, [schema, selectedComponent, selectedId]);
+  useEffect(() => {
+    if (restoredDraft && !draftValues) return;
+    if (!selectedId || !draftValues) {
+      savePaletteJsonSetting("draft-values", null);
+      return;
+    }
+    savePaletteJsonSetting("draft-values", {
+      componentId: selectedId,
+      values: draftValues
+    });
+  }, [draftValues, restoredDraft, selectedId]);
+  useEffect(() => {
+    if (selectedId && !selectedComponent && !schema.components?.length) return;
+    if (!selectedComponent) {
+      setDraftValues(null);
+      return;
+    }
+    if (restoredDraft?.componentId === selectedComponent.id) {
+      setDraftValues(normalizeDraftValues(selectedComponent, restoredDraft.values));
+      setRestoredDraft(null);
+      return;
+    }
+    if (!draftValues) setDraftValues(defaultComponentValues(selectedComponent));
+  }, [draftValues, restoredDraft, schema, selectedComponent, selectedId]);
   useEffect(() => {
     function handleShortcut(event) {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
@@ -210,6 +235,44 @@ function savePaletteSetting(key, value) {
       localStorage.removeItem(storageKey);
     }
   } catch {}
+}
+
+function loadPaletteJsonSetting(key, fallback) {
+  try {
+    const value = localStorage.getItem(`${componentPaletteStoragePrefix}:${key}`);
+    return value ? JSON.parse(value) : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+function savePaletteJsonSetting(key, value) {
+  try {
+    const storageKey = `${componentPaletteStoragePrefix}:${key}`;
+    if (value) {
+      localStorage.setItem(storageKey, JSON.stringify(value));
+    } else {
+      localStorage.removeItem(storageKey);
+    }
+  } catch {}
+}
+
+function normalizeDraftValues(component, values) {
+  const fallback = defaultComponentValues(component);
+  return {
+    fields: {
+      ...fallback.fields,
+      ...(values?.fields || {})
+    },
+    label: values?.label || fallback.label,
+    lists: Array.isArray(values?.lists)
+      ? values.lists.filter(Boolean).map((item) => ({
+        key: item.key || fallback.lists[0]?.key || "item",
+        name: item.name ?? "",
+        text: item.text ?? ""
+      }))
+      : fallback.lists
+  };
 }
 
 function ExternalPackControls({ packs, error, onError, onImport, onRemove }) {
