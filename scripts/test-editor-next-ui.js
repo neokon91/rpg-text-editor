@@ -135,11 +135,13 @@ try {
   await importBrowserMarkdownDocuments();
   await waitFor(() => evalInPage("document.body.textContent.includes('Import Markdown completato: 2 documenti')"));
   await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.querySelector('.page-shell h1')?.textContent.includes('Browser Import One')"));
+  await waitFor(() => evalInPage("document.querySelector('.next-brand span')?.textContent.includes('browser/browser-import-one.md')"));
   await waitFor(() => evalInPage("Array.from(document.querySelector('.next-actions select')?.options || []).some((item) => item.textContent.includes('Browser Import Two'))"));
   await waitFor(() => evalInPage("document.body.textContent.includes('Browser 3 doc')"));
   await dropBrowserMarkdownDocument();
   await waitFor(() => evalInPage("document.body.textContent.includes('Import Markdown completato: 1 documenti')"));
   await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.querySelector('.page-shell h1')?.textContent.includes('Browser Drop Import')"));
+  await waitFor(() => evalInPage("document.querySelector('.next-brand span')?.textContent.includes('browser/browser-drop-import.md')"));
   await waitFor(() => evalInPage("Array.from(document.querySelector('.next-actions select')?.options || []).some((item) => item.textContent.includes('Browser Drop Import'))"));
   await waitFor(() => evalInPage("document.body.textContent.includes('Browser 4 doc')"));
   await clickTopbarButton("Backup");
@@ -567,7 +569,10 @@ async function openComponentForm(label, expectedText) {
   while (Date.now() - started < 12000) {
     await clickComponentCard(label);
     const opened = await evalInPage(`
-      document.querySelector('.component-form')?.textContent.includes(${JSON.stringify(expectedText)}) || false
+      Boolean(document.querySelector('.component-form'))
+        && document.querySelector('.component-form')?.textContent.includes(${JSON.stringify(expectedText)})
+        && Array.from(document.querySelectorAll('.component-form label'))
+          .some((item) => item.querySelector('span')?.textContent.trim().startsWith('Nome'))
     `);
     if (opened) return;
     await new Promise((resolve) => setTimeout(resolve, 150));

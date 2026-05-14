@@ -56,6 +56,7 @@ export function TopMenu({
   const warnings = diagnostics.filter((item) => item.severity === "warning").length;
   const checkStatus = errors ? `${errors} errori` : warnings ? `${warnings} avvisi` : "Check ok";
   const runtimeLabel = documentRuntimeMode === "browser" ? "Browser-only" : "Server locale";
+  const documentScope = documentRuntimeMode === "browser" ? "browser" : "docs";
   const browserStorageLabel = `Browser ${browserStorageStats.count} doc / ${browserStorageStats.label}`;
   const visibleZoomOptions = zoomOptions.includes(zoom) ? zoomOptions : [...zoomOptions, zoom];
   const statusState = statusDetail || /non riuscito|bloccato|errore|errori|non disponibile/i.test(status)
@@ -70,7 +71,7 @@ export function TopMenu({
     <header className="next-topbar">
       <div className="next-brand">
         <strong>RPG Text Editor Next</strong>
-        <span>{currentDocument ? `docs/${currentDocument}` : title}{isDirty ? " *" : ""}</span>
+        <span>{currentDocument ? `${documentScope}/${currentDocument}` : title}{isDirty ? " *" : ""}</span>
       </div>
       <nav className="next-actions" aria-label="Controlli editor">
         <label>

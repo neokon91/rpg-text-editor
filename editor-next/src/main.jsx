@@ -416,6 +416,10 @@ function App() {
     await refreshDocuments();
   }
 
+  function documentLabel(filename) {
+    return `${getDocumentRuntimeMode() === "browser" ? "browser" : "docs"}/${filename}`;
+  }
+
   async function openDocument(nextFilename) {
     if (!nextFilename) return;
     if (isDirty) {
@@ -435,7 +439,7 @@ function App() {
       setAuthorDiagnostics([]);
       setCheckedMarkdown("");
       setExportOutputs([]);
-      setStatus(`Aperto docs/${document.filename}`);
+      setStatus(`Aperto ${documentLabel(document.filename)}`);
     } catch {
       setStatus("Import non riuscito");
     } finally {
@@ -454,7 +458,7 @@ function App() {
       setLastSavedContent(markdown);
       clearDraft();
       await refreshDocuments();
-      setStatus(`Salvato docs/${result.filename}`);
+      setStatus(`Salvato ${documentLabel(result.filename)}`);
     } catch (error) {
       setStatus(error.status === 409 ? "File gia esistente: usa Salva copia" : "Salvataggio non riuscito");
     } finally {
@@ -473,7 +477,7 @@ function App() {
       setLastSavedContent(markdown);
       clearDraft();
       await refreshDocuments();
-      setStatus(`Salvato nuovo docs/${result.filename}`);
+      setStatus(`Salvato nuovo ${documentLabel(result.filename)}`);
     } catch {
       setStatus("Salva copia non riuscito");
     } finally {
@@ -503,7 +507,7 @@ function App() {
       const result = await renameDocument(currentDocument, nextName);
       setCurrentDocument(result.filename);
       await refreshDocuments();
-      setStatus(`Rinominato docs/${result.filename}`);
+      setStatus(`Rinominato ${documentLabel(result.filename)}`);
     } catch (error) {
       setStatus(error.status === 409 ? "Rename non riuscito: file gia esistente" : "Rename non riuscito");
     } finally {
@@ -518,7 +522,7 @@ function App() {
     }
     const confirmed = await requestConfirm({
       title: "Elimina documento",
-      message: `Eliminare definitivamente docs/${currentDocument}?`,
+      message: `Eliminare definitivamente ${documentLabel(currentDocument)}?`,
       confirmLabel: "Elimina"
     });
     if (!confirmed) return;
@@ -529,7 +533,7 @@ function App() {
       setCurrentDocument("");
       setLastSavedContent(markdown);
       await refreshDocuments();
-      setStatus(`Eliminato docs/${deleted}`);
+      setStatus(`Eliminato ${documentLabel(deleted)}`);
     } catch {
       setStatus("Eliminazione non riuscita");
     } finally {

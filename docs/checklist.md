@@ -54,6 +54,7 @@ public: false
 - [x] Dopo import browser-only, apertura automatica del primo documento importato e refresh lista titoli.
 - [x] Smoke UI reale per import multiplo Markdown browser-only e apertura immediata.
 - [x] Drag & drop `.md`/JSON sullo shell editor per import browser-only.
+- [x] Label documento coerente col runtime: `docs/` per server locale, `browser/` per storage browser.
 - [x] Export HTML/PDF guidato dal workflow autore locale.
 - [x] Overwrite esplicito.
 - [x] Salva nuovo con nome unico.
