@@ -71,8 +71,9 @@ Quando il pack diventa stabile, mettilo in `schemas/plugins/<pack-id>/pack.json`
 - `default_label`: etichetta proposta nel blocco.
 - `fields`: campi del form.
 - `lists`: liste ripetibili opzionali.
+- `presets`: varianti rapide opzionali mostrate sulle card e nel form.
 
-`id` e `container` devono essere unici tra core e tutti i pack attivi. Se due pack dichiarano lo stesso valore, la validazione fallisce.
+`id` e `container` devono essere unici tra core e tutti i pack attivi. Se due pack dichiarano lo stesso valore, la validazione fallisce. Anche i preset vengono controllati: `fields` deve usare chiavi dichiarate dal componente e ogni voce `lists` deve riferirsi a una lista esistente.
 
 ## Fields
 
@@ -125,20 +126,43 @@ hook: Suono | Un anello vibra quando qualcuno mente.
 
 La validazione segnala una lista malformata se manca il separatore `|`.
 
-## Prova rapida nella UI
+## Presets
 
-1. Avvia l'editor.
+I preset permettono a core e plugin pack di proporre varianti pronte senza cambiare il renderer. Ogni preset puo dichiarare campi, liste e un `group` visibile nella palette:
+
+```json
+{
+  "id": "secret-cabal",
+  "label": "Congrega segreta",
+  "group": "Tono",
+  "fields": {
+    "name": "Congrega della Soglia",
+    "goal": "Aprire un varco controllato verso una camera sigillata."
+  },
+  "lists": [
+    { "key": "hook", "name": "Segnale", "text": "Il simbolo appare su tre porte nella stessa notte." }
+  ]
+}
+```
+
+La UI raggruppa i preset per `group`; se manca, usa `Preset`. La ricerca della palette considera anche `id`, `label`, `group` e valori dei campi dei preset.
+
+## Prova rapida
+
+La UI React carica i pack dichiarati in `schemas/components.json` e li mostra nella palette componenti. I toggle nella palette attivano/disattivano i pack manifest e salvano la scelta in `localStorage`.
+
+Per provare un pack versionato:
 
 ```sh
+npm run check:components
+npm run generate:schema-artifacts
+npm run check:schema-artifacts
 npm run editor
 ```
 
-2. Nel pannello Componenti usa `Pack esterno` e seleziona il tuo `pack.json`.
-3. Controlla che i componenti appaiano nella palette.
-4. Inserisci un componente e verifica preview e diagnostiche.
-5. Usa `Rimuovi esterni` per tornare ai soli pack versionati.
+Poi apri l'editor, usa i toggle sotto la ricerca componenti e verifica che le card del pack compaiano o spariscano.
 
-Il caricamento esterno e solo locale alla sessione editor: non modifica il manifest e non entra nella build.
+Per provare un pack non versionato, usa `Importa pack JSON` nella palette componenti. Il pack viene salvato nel `localStorage` del browser, mostra una piccola anteprima dei componenti inclusi e puo essere rimosso dalla stessa sezione. Se dichiara `id` o `container` in collisione con core o altri pack attivi, la palette mostra l'errore prima di salvare il pack.
 
 ## Versionare un pack
 
@@ -175,7 +199,7 @@ npm run check:schema-artifacts
 
 ```sh
 npm run test:rendering
-npm run test:editor-ui
+npm run test:editor-next-ui
 npm run check
 ```
 

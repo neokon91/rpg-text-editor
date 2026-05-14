@@ -19,11 +19,12 @@ public: false
 ## Flusso consigliato
 
 1. Crea un documento da template.
-2. Avvia la preview espansa in watch.
-3. Scrivi in `docs/` usando snippet HTML o sintassi breve.
-4. Salva il file e aggiorna il browser.
-5. Prima dell'export esegui `npm run check`.
-6. Prima di considerare chiuso il layout genera il PDF.
+2. Apri la Markdown Preview di VS Code per il controllo rapido del testo.
+3. Avvia la preview espansa in watch quando usi include o sintassi breve.
+4. Scrivi in `docs/` usando snippet HTML per VS Code o sintassi breve per schema/build.
+5. Salva il file e aggiorna il browser.
+6. Prima dell'export esegui `npm run check`.
+7. Prima di considerare chiuso il layout genera il PDF.
 
 ```sh
 npm run new -- adventure "La Torre Sommersa"
@@ -45,7 +46,7 @@ Nel PDF nessun box dovrebbe sovrapporsi a testo, cornici, immagini o tabelle. Se
 
 ## Due modi di scrivere
 
-Usa gli snippet HTML quando vuoi che anche la Markdown Preview nativa di VS Code mostri il componente gia stilizzato:
+Usa gli snippet HTML quando vuoi che anche la Markdown Preview nativa di VS Code mostri il componente gia stilizzato. Questa e la modalita migliore per scrittura lunga in VS Code:
 
 ```html
 <aside class="readaloud no-break">
@@ -54,7 +55,7 @@ Usa gli snippet HTML quando vuoi che anche la Markdown Preview nativa di VS Code
 </aside>
 ```
 
-Usa la sintassi breve quando vuoi scrivere piu rapidamente e controllare tutto nella preview espansa:
+Usa la sintassi breve quando vuoi scrivere piu rapidamente e controllare tutto nella preview espansa, nell'editor locale e nella build:
 
 ```md
 ::: readaloud Da leggere al tavolo
@@ -100,7 +101,11 @@ Metti componenti ricorrenti in `content/` e includili nei documenti:
 <rpg-include src="content/monsters/custode-ossa.html"></rpg-include>
 ```
 
-La Markdown Preview nativa mostra il tag. `npm run preview:watch` mostra invece il contenuto espanso.
+La Markdown Preview nativa mostra un placeholder leggibile per il tag. `npm run preview:watch` mostra invece il contenuto espanso.
+
+## Guardrail visuali e licenza
+
+Il progetto punta a output `5E compatible` con identita originale. Non usare loghi, marchi, impaginati o asset proprietari del publisher ufficiale. I criteri operativi sono raccolti in `docs/design-guardrails.md`.
 
 ## Mappe e immagini
 

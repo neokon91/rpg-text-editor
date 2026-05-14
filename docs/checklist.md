@@ -22,25 +22,52 @@ public: false
 - [x] Repository visibile dal connector GitHub.
 - [x] Branch `main` usato come linea principale.
 - [x] Commit e push effettuati per ogni incremento.
+- [x] Riferimenti compatti canonici: `docs/next-session.md`, `docs/editor-reference.md`, `docs/homebrewery-benchmark.md`.
+- [x] README ridotto a percorso chiaro per utente/autore e guida non tecnica in `docs/user-guide.md`.
+- [x] Riferimento duplicato `docs/homebrewery-gap.md` rimosso.
 
 ## Editor UI
 
-- [x] Editor locale avviabile con `npm run editor`.
+- [x] Target prodotto chiarito: web app browser-first, senza installazione locale per utente finale.
+- [x] Editor React/CodeMirror avviabile con `npm run editor`.
 - [x] Markdown sempre visibile come sorgente.
-- [x] Form frontmatter.
-- [x] Toolbar Markdown base.
-- [x] Palette componenti da schema.
-- [x] Toggle plugin pack.
+- [x] Form frontmatter nella UI React.
+- [x] Snippet Markdown base.
+- [x] Palette componenti da schema nella UI React.
+- [x] Benchmark Homebrewery/V3 documentato in `docs/homebrewery-benchmark.md`.
+- [x] Toggle plugin pack nella UI React.
 - [x] Import documenti da `docs/`.
 - [x] Salvataggio con file corrente.
 - [x] Dirty state.
+- [x] Autosave locale.
+- [x] Modalita browser-only iniziale per salvataggio/lista/check/export HTML senza API locali.
+- [x] Indicatore runtime documenti in status bar: `Server locale`/`Browser-only`.
+- [x] Toggle esplicito `Browser-only` nella topbar per forzare storage, check ed export HTML nel browser.
+- [x] Export PDF browser-only web-native ad alta fedelta, con fallback HTML stampabile.
+- [x] Backup/import archivio JSON dei documenti salvati nello storage browser.
+- [x] Import archivio browser senza sovrascrittura silenziosa: conflitti rinominati automaticamente.
+- [x] Indicatore uso storage browser con avviso backup quando cresce.
+- [x] Persistenza browser documenti su IndexedDB con fallback/migrazione da `localStorage`.
+- [x] Smoke UI reale per migrazione documenti legacy da `localStorage` a IndexedDB.
+- [x] Lista documenti browser-only allineata al server con `filename` e titolo leggibile.
+- [x] Import diretto di file Markdown in storage browser-only, con rinomina conflitti.
+- [x] Import multiplo di file Markdown in storage browser-only.
+- [x] Dopo import browser-only, apertura automatica del primo documento importato e refresh lista titoli.
+- [x] Smoke UI reale per import multiplo Markdown browser-only e apertura immediata.
+- [x] Drag & drop `.md`/JSON sullo shell editor per import browser-only.
+- [x] Label documento coerente col runtime: `docs/` per server locale, `browser/` per storage browser.
+- [x] Export HTML/PDF guidato dal workflow autore locale.
+- [x] Preset output `fifth-edition-compatible` per starter/template/render/PDF con stile fantasy 5e-like senza asset o marchi ufficiali.
 - [x] Overwrite esplicito.
 - [x] Salva nuovo con nome unico.
 - [x] Conferma prima di perdere modifiche non salvate.
-- [x] Rename documento.
-- [x] Delete documento.
-- [x] Conferme custom non native.
-- [x] Toolbar estesa per tabelle, immagini, callout e include.
+- [x] Rename documento nella UI React.
+- [x] Delete documento nella UI React.
+- [x] Conferme custom non native per reset, cambio documento, rename e delete.
+- [x] Toolbar estesa per tabelle, immagini, callout e include nella UI React.
+- [x] Navigatore documento da heading Markdown con salto alla riga sorgente.
+- [x] Sync editor-preview base: toggle, scroll preview dalla linea cursore e click preview verso linea sorgente.
+- [ ] Palette/componenti e preview come workspace persistenti.
 
 ## Preview
 
@@ -49,8 +76,31 @@ public: false
 - [x] Preview con `styles/main.css`.
 - [x] Preview con `page-shell`.
 - [x] Tema e carta letti dal frontmatter.
-- [x] Verifica visuale automatizzata stabile via browser.
+- [x] Smoke test automatizzato via browser per editor React.
 - [x] Controllo layout PDF/pagine integrato nel flusso editor.
+- [x] Markdown Preview VS Code allineata ai token visuali del template.
+- [x] Sync editor-preview piu fine su blocchi multi-linea tramite range sorgente.
+- [x] Preview locale con zoom persistente e marker `::pagebreak` visibile.
+- [x] Workspace persistente per visibilita preview, zoom, viewport, spread, sync, filtro gruppo componenti, ricerca palette e categoria preset.
+- [x] Workspace persistente per collasso pannelli frontmatter/outline e riga outline selezionata.
+- [x] Prima toolbar pagina/spread nella UI React: pagina corrente/totale, prev/next, input pagina, fit page/fill width e modalita single/facing/flow.
+- [x] Preview multipagina reale basata su `::pagebreak`, con una `page-shell` per pagina.
+- [x] Indicatore overflow pagine nella toolbar preview, con salto alla prima pagina e selezione della riga da spezzare.
+- [x] Inserimento assistito `::pagebreak` dalla riga overflow selezionata.
+- [x] Inserimento page break block-aware, evitando di spezzare paragrafi/liste/tabelle nel mezzo.
+- [x] Stato page break esplicito: dopo inserimento viene selezionato il marker creato e tracciata la riga del contenuto spostato.
+- [x] Badge overflow con riga sorgente del prossimo intervento.
+- [x] Revisione post-break: se resta overflow seleziona la prossima riga da spezzare.
+- [x] Auto break da overflow preview: inserisce piu `::pagebreak` block-aware in una passata.
+- [x] Auto break predittivo: dopo la prima riga overflow pianifica altri break euristici nel resto del documento lungo.
+- [x] Modalita `Auto pages` nella preview: misura l'iframe e crea pagine fisiche spostando blocchi interi su nuove `page-shell`.
+- [x] Smoke UI su `Auto pages`: toggle toolbar, stato iframe e generazione pagine fisiche.
+- [x] Feedback `Auto pages` in toolbar con conteggio pagine generato dalla preview misurata.
+- [x] Feedback residui `Auto pages`: segnala se restano pagine in overflow dopo la ripaginazione.
+- [x] Navigazione residui `Auto pages`: click sul badge overflow auto porta alla prima pagina/riga problematica.
+- [x] Feedback pagine create `Auto pages`: mostra quante pagine sono state aggiunte dalla ripaginazione misurata.
+- [x] `Auto pages` inoltrato a export HTML/PDF server e fallback browser-only.
+- [x] Tema originale `modern-5-5` per resa 5.5-compatible piu moderna e pulita.
 
 ## Componenti e schema
 
@@ -58,10 +108,22 @@ public: false
 - [x] Manifest aggregatore.
 - [x] Plugin pack `fantasy-classic`.
 - [x] Validazione collisioni `id` e `container`.
-- [x] Palette generata da schema.
-- [x] Form componenti generati da schema.
+- [x] Palette generata da schema nella UI React.
+- [x] Form componenti generati da schema nella UI React, con preset, rimozione righe lista e validazione inline.
+- [x] Azioni preset rapide sulle card componenti.
+- [x] Sottogruppi preset visibili sulle card componenti.
+- [x] Filtro categorie preset dedicato nella palette componenti.
+- [x] Filtri rapidi per gruppo nella palette componenti.
+- [x] Breakpoint desktop compatti per evitare overflow orizzontale dei pannelli.
+- [x] Switch pannelli mobile per Editor, Componenti, Preview e Documento.
+- [x] Preset dichiarati anche da plugin pack versionati.
+- [x] Ricerca palette estesa a label, gruppi e valori dei preset.
+- [x] Shortcut palette: `Ctrl/Cmd+K` focus ricerca, `Escape` pulisce filtro attivo.
 - [x] Renderer build allineato ai plugin pack.
-- [x] UI per caricare pack esterni non versionati.
+- [x] UI React per attivare/disattivare pack dichiarati nel manifest.
+- [x] UI React per caricare pack esterni non versionati.
+- [x] Validazione locale pack esterni per campi minimi e collisioni `id`/`container`.
+- [x] Anteprima componenti inclusi nei pack esterni importati.
 - [x] Documentazione dedicata per creare nuovi pack.
 
 ## Validazione e QA
@@ -77,6 +139,13 @@ public: false
 - [x] `npm run check` aggregato.
 - [x] Fixture diagnostiche per casi limite della validazione.
 - [x] Test UI automatizzati affidabili.
+- [x] Test UI per open con modifiche non salvate: annulla e conferma.
+- [x] Test UI per errore save su file esistente e export bloccato dai diagnostici.
+- [x] Test UI per export PDF con stato in corso e file generato.
+- [x] Test UI per component insertion da form con campi modificati e preview aggiornata.
+- [x] Test UI per sync preview da cursore editor verso anteprima.
+- [x] Badge status con severita `warning`/`busy`/`error` per save/export e log export nel tooltip.
+- [x] Primo avvio con bozza demo pulita e contenuto starter rappresentativo.
 
 ## Output editoriale
 
@@ -84,10 +153,15 @@ public: false
 - [x] Build sito.
 - [x] Build libro.
 - [x] Export package.
+- [x] Preflight locale `npm run doctor` per prerequisiti editor/export.
+- [x] Avvio guidato `npm start` con apertura automatica browser sull'editor locale.
+- [x] ZIP applicativo locale `npm run package:editor` con manifest e istruzioni di primo avvio.
 - [x] QA PDF disponibile.
 - [x] Pass visuale completo su PDF dopo redesign finale.
 - [x] Template ulteriormente raffinato verso qualita manuale fantasy professionale, con identita visuale originale.
+- [x] Guardrail visuali e licenza per output 5E-compatible originale.
 
 ## Prossimi passi consigliati
 
-1. Preparare commit e PR dell'incremento.
+1. Deploy web statico e verifica su browser reali.
+2. Rifinire persistenza backend web/cloud opzionale per documenti utente reali.

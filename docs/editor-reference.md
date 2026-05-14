@@ -1,7 +1,7 @@
 ---
 title: Reference Editor
 slug: reference-editor
-summary: Stato operativo della UI editor e dei flussi disponibili.
+summary: Stato operativo compatto della UI React/CodeMirror.
 category: reference
 tags: editor, ui, workflow, checklist
 compatibility: 5e/5.5e
@@ -14,95 +14,69 @@ public: false
 
 # Reference Editor
 
-<p class="subtitle">Mappa operativa della UI locale e dei comportamenti gia implementati.</p>
-
 ## Avvio
 
-```sh
-npm run editor
-```
-
-L'editor locale si apre su `http://127.0.0.1:8082`. Il Markdown resta il sorgente primario: ogni controllo della UI modifica il testo visibile, non un formato proprietario.
-
-## Documento
-
-- `Nuovo` riparte dal template base e chiede conferma se ci sono modifiche non salvate.
-- `Apri documento` importa file Markdown da `docs/`.
-- `Salva` sovrascrive il file corrente, se esiste.
-- `Salva nuovo` crea una copia con nome unico, evitando overwrite accidentali.
-- `Rinomina` cambia nome al file Markdown corrente in `docs/`.
-- `Elimina` rimuove il file Markdown corrente da `docs/` dopo conferma.
-- `Scarica .md` esporta il Markdown corrente dal browser.
-- `Copia Markdown` mette il sorgente negli appunti.
-
-L'editor mostra il file corrente, lo stato salvato e l'indicatore di modifiche non salvate.
-
-## Frontmatter
-
-Il form metadati copre i campi principali:
-
-- titolo;
-- slug;
-- summary;
-- categoria;
-- tag;
-- autore;
-- tema;
-- formato carta;
-- visibilita pubblica.
-
-I campi tecnici `compatibility` e `license_mode` restano preservati o inseriti con default compatibili 5e/5.5e.
-
-## Scrittura
-
-La toolbar Markdown copre:
-
-- heading H2;
-- grassetto;
-- corsivo;
-- lista;
-- tabella Markdown;
-- readaloud;
-- callout nota;
-- immagine;
-- include riusabile;
-- page break.
-
-La palette componenti e generata da `schemas/components.json`, schema core e plugin pack abilitati.
-
-## Plugin pack
-
-Il pannello componenti mostra i pack dichiarati nel manifest. La selezione e locale in `localStorage`: disattivare un pack rimuove i componenti dalla palette editor e fa emergere diagnostiche sui blocchi gia presenti. Build, check e artefatti generati continuano a usare il manifest versionato.
-
-Il pannello permette anche di caricare un `pack.json` esterno non versionato. Il pack resta attivo solo nella sessione editor corrente e puo essere rimosso con `Rimuovi esterni`; per renderlo parte della suite va dichiarato nel manifest schema.
-
-## Preview
-
-La preview usa un iframe con:
-
-- `styles/main.css`;
-- `page-shell`;
-- tema da frontmatter;
-- formato carta da frontmatter.
-
-Questo mantiene la preview piu vicina all'output HTML/PDF finale senza applicare gli stili del documento alla UI dell'editor.
-
-## Validazione
-
-La validazione live segnala:
-
-- componente sconosciuto;
-- campo obbligatorio mancante;
-- chiave non prevista;
-- lista malformata.
-
-La stessa famiglia di controlli e disponibile da CLI con:
+Target prodotto: l'utente finale deve usare l'editor nel browser senza installare Node/npm o un'app desktop. I comandi sotto sono per sviluppo e QA locale; per il flusso non tecnico vedi `docs/user-guide.md`.
 
 ```sh
-npm run check
+npm install
+npm run doctor
+npm start
 ```
 
-## Limiti noti
+`npm start` apre `editor-next/` sul server locale. `npm run editor` resta disponibile per avviare solo il server editor. Se la porta `5173` e occupata, il server usa automaticamente la successiva.
 
-- La preview e fedele agli stili finali, ma non sostituisce `npm run qa:pdf` per controllo pagina e sovrapposizioni.
-- I componenti sono vicini a convenzioni 5e/5.5e, ma mantengono identita visuale originale.
+## Architettura
+
+- UI: `editor-next/` con React, Vite, CodeMirror 6.
+- API locali: `scripts/serve-editor-next.js` e `scripts/editor-server/*`.
+- Core condiviso: `packages/components`, `packages/documents`, `packages/markdown`.
+- Rendering preview: `packages/documents/preview-shell.js` + `packages/components/preview.js` + `styles/main.css`.
+- Test principale UI: `scripts/test-editor-next-ui.js`.
+
+## Funzioni Disponibili
+
+- Markdown sempre visibile, autosave locale, download Markdown.
+- Documenti da `docs/`: apri, salva, salva copia, rename, delete.
+- Dialog custom per reset, cambio documento, rename e delete.
+- Frontmatter compatto, outline da heading Markdown e salto alla riga sorgente.
+- Check guidato con diagnostiche schema e author check.
+- Export HTML/PDF in `dist/`, con stato busy/error e log export nel tooltip.
+- Modalita browser-only: se le API locali non esistono, documenti/check/export usano storage e download del browser; export PDF genera un PDF web-native dalla preview renderizzata e mantiene un `.print.html` come fallback.
+- Backup/import JSON dei documenti browser-only per migrazione e salvataggio esterno; i conflitti vengono rinominati invece di sovrascrivere.
+- Status bar con conteggio documenti browser e dimensione storage per capire quando fare backup.
+- Persistenza browser documenti su IndexedDB quando disponibile, con fallback e migrazione automatica da `localStorage`.
+- Smoke UI verifica la migrazione dei documenti browser legacy da `localStorage` a IndexedDB.
+- Lista documenti browser-only usa lo stesso formato del server: filename stabile e titolo da frontmatter/H1.
+- `Importa` accetta archivi JSON e uno o piu file `.md`, salvandoli nello storage browser con rinomina conflitti.
+- Dopo import browser-only, il primo documento importato viene aperto subito e la lista file viene ricaricata con i titoli.
+- Smoke UI copre import multiplo `.md`, apertura immediata del primo documento e titoli nel menu File.
+- Drag & drop sullo shell editor usa lo stesso import browser-only di `Importa`.
+- Brand e status distinguono documenti locali `docs/` da documenti browser `browser/`.
+- La topbar espone il toggle `Browser-only`; la status bar indica il runtime documenti: `Server locale` oppure `Browser-only`.
+- Palette componenti schema-driven con ricerca, gruppi, preset, pack manifest e pack JSON esterni.
+- Form componenti generati dallo schema, con liste, preset e validazione inline.
+- Preview iframe con tema/carta da frontmatter, zoom, fit/fill, pagina corrente/totale, prev/next, single/facing/flow. Il tema output raccomandato e `fifth-edition-compatible`.
+- Sync editor-preview: toggle `Sync`, scroll preview dalla linea cursore, click preview verso sorgente.
+- Paginazione manuale: `::pagebreak`, bottone `Break`, overflow badge e revisione post-break.
+- Paginazione assistita: `Auto break` predittivo e `Auto pages` misurato in preview, inoltrato anche a export HTML/PDF.
+
+## Auto Pages
+
+`Auto pages` partecipa all'export HTML/PDF. In browser-only il PDF viene generato lato client dalla preview renderizzata; il fallback HTML stampabile resta disponibile come uscita secondaria.
+
+- Misura le `.page-shell` nell'iframe.
+- Sposta blocchi interi su nuove pagine quando una pagina supera il box carta.
+- Mostra `Auto Np (+M) · ok` quando risolve.
+- Mostra `Auto Np (+M) · X overflow` quando restano residui.
+- Il badge residuo e cliccabile e porta alla prima pagina/riga problematica.
+
+## Mancanze Prioritarie
+
+1. Deploy web statico e verifica su browser reali.
+2. Estendere la modalita browser-only con persistenza backend/cloud opzionale.
+3. Rifinire messaggi di recupero/backup per utente finale non tecnico.
+
+## Guardrail
+
+Homebrewery e GM Binder restano benchmark UX/output. L'app mantiene identita propria; il PDF deve pero risultare coerente con il linguaggio editoriale dei manuali fantasy 5e/5.5e tramite font liberi, colonne, titoli, box, tabelle e statblock. Restano esclusi loghi, marchi, illustrazioni e asset ufficiali.

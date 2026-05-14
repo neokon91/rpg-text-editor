@@ -19,6 +19,7 @@ const buildSite = args.has("--site");
 const buildBook = args.has("--book");
 const buildHtml = args.has("--html") || (!args.has("--pdf") && !buildSite);
 const buildPdf = args.has("--pdf");
+const autoPages = args.has("--auto-pages");
 const sourceArg = [...args].find((arg) => arg.endsWith(".md"));
 const sourcePath = sourceArg ? resolve(root, sourceArg) : join(sourceDir, "esempio.md");
 let componentSchema = { components: [] };
@@ -91,14 +92,14 @@ async function renderDocument(document, css, template, assetManifest) {
   const slug = metadata.slug || basenameWithoutExt(document.path);
   const documentClass = [
     metadata.class || "homebrew-document",
-    metadata.theme ? `theme-${metadata.theme}` : "theme-classic-parchment",
+    metadata.theme ? `theme-${metadata.theme}` : "theme-fifth-edition-compatible",
     metadata.paper ? `paper-${metadata.paper.toLowerCase()}` : ""
   ].filter(Boolean).join(" ");
-  const rendered = template
+  const rendered = withAutoPages(template
     .replaceAll("{{title}}", escapeHtml(title))
     .replace("{{styles}}", css)
     .replace("{{content}}", html)
-    .replace("{{documentClass}}", documentClass);
+    .replace("{{documentClass}}", documentClass));
 
   const htmlPath = join(outDir, `${slug}.html`);
   const pdfPath = join(outDir, `${slug}.pdf`);
@@ -148,7 +149,7 @@ async function renderBook(css, template, assetManifest) {
     author: book.author || "Autore indipendente",
     compatibility: book.compatibility || "5e/5.5e",
     license_mode: book.license_mode || "srd-5.2-cc",
-    theme: book.theme || "classic-parchment",
+    theme: book.theme || "fifth-edition-compatible",
     paper: book.paper || "A4"
   };
 
@@ -169,16 +170,99 @@ async function renderBook(css, template, assetManifest) {
     renderLegalAppendix(metadata, assetManifest)
   ].join("\n");
 
-  const rendered = template
+  const rendered = withAutoPages(template
     .replaceAll("{{title}}", escapeHtml(metadata.title))
     .replace("{{styles}}", css)
     .replace("{{content}}", content)
-    .replace("{{documentClass}}", documentClass);
+    .replace("{{documentClass}}", documentClass));
 
   const htmlPath = join(outDir, "book", `${metadata.slug}.html`);
   const pdfPath = join(outDir, "book", `${metadata.slug}.pdf`);
 
   return { rendered, htmlPath, pdfPath };
+}
+
+function withAutoPages(rendered) {
+  if (!autoPages) return rendered;
+
+  const tools = `
+    <style id="rpg-auto-pages-export">
+      body[data-auto-pages="true"] {
+        padding: 24px 0;
+      }
+      body[data-auto-pages="true"] .page-shell {
+        margin-bottom: 24px;
+      }
+      @media print {
+        body[data-auto-pages="true"] {
+          width: auto;
+          padding: 0;
+        }
+        body[data-auto-pages="true"] .page-shell {
+          min-height: 297mm;
+          margin: 0;
+          overflow: hidden;
+          break-after: page;
+          page-break-after: always;
+        }
+        body[data-auto-pages="true"] .page-shell:last-of-type {
+          break-after: auto;
+          page-break-after: auto;
+        }
+      }
+    </style>
+    <script>
+      window.addEventListener("load", function() {
+        document.body.dataset.autoPages = "true";
+        requestAnimationFrame(paginateExportPages);
+      });
+
+      function paginateExportPages() {
+        var guard = 0;
+
+        while (guard < 120) {
+          guard += 1;
+          var changed = false;
+          var pages = Array.from(document.querySelectorAll("body > .page-shell"));
+
+          for (var index = 0; index < pages.length; index += 1) {
+            var page = pages[index];
+            if (!pageOverflows(page)) continue;
+            var children = Array.from(page.children).filter(function(child) {
+              return !child.classList.contains("page-break");
+            });
+            if (children.length <= 1) continue;
+
+            var nextPage = page.nextElementSibling;
+            if (!nextPage || !nextPage.classList.contains("page-shell")) {
+              nextPage = document.createElement("main");
+              nextPage.className = page.className;
+              page.parentNode.insertBefore(nextPage, page.nextSibling);
+            }
+
+            while (pageOverflows(page) && children.length > 1) {
+              nextPage.insertBefore(children.pop(), nextPage.firstChild);
+              changed = true;
+            }
+          }
+
+          if (!changed) break;
+        }
+
+        document.body.setAttribute("data-auto-pages-ready", "true");
+        document.body.setAttribute("data-auto-pages-total", String(document.querySelectorAll("body > .page-shell").length));
+      }
+
+      function pageOverflows(page) {
+        var style = getComputedStyle(page);
+        var limit = parseFloat(style.minHeight || "0") || parseFloat(style.height || "0") || page.clientHeight;
+        return page.scrollHeight > limit + 4 || page.scrollWidth > page.clientWidth + 4;
+      }
+    </script>`;
+
+  return rendered
+    .replace("<body ", '<body data-auto-pages="true" ')
+    .replace("</body>", `${tools}\n  </body>`);
 }
 
 function parseFrontmatter(markdown) {
@@ -402,6 +486,7 @@ function renderStructuredContainer(name, label, markdown) {
 
 function renderSchemaComponent(component, data, label) {
   const className = component.container;
+  const body = componentBody(data);
   const bodyKeys = new Set(["body", "name"]);
   const title = data.name || label || component.default_label || component.label;
   const lines = (component.fields || [])
@@ -418,7 +503,7 @@ function renderSchemaComponent(component, data, label) {
   return renderRulesCard(className, label || component.default_label || component.label, title, [
     ...lines,
     ...features,
-    data.body.length ? renderMarkdown(data.body.join("\n")) : ""
+    body.length ? renderMarkdown(body.join("\n")) : ""
   ]);
 }
 
@@ -470,6 +555,7 @@ function splitPair(value) {
 }
 
 function renderMonster(data, label) {
+  const body = componentBody(data);
   const abilities = ["str", "dex", "con", "int", "wis", "cha"];
   const hasAbilities = abilities.some((ability) => data[ability]);
 
@@ -490,7 +576,7 @@ function renderMonster(data, label) {
     renderFeatureList(data.actions, "Azioni"),
     renderFeatureList(data.reactions, "Reazioni"),
     renderFeatureList(data.legendary, "Azioni leggendarie"),
-    data.body.length ? renderMarkdown(data.body.join("\n")) : "",
+    body.length ? renderMarkdown(body.join("\n")) : "",
     "</aside>"
   ].join("\n");
 }
@@ -525,44 +611,53 @@ function renderFeatureList(items, title) {
 }
 
 function renderSpell(data, label) {
+  const body = componentBody(data);
   return renderRulesCard("spell", label || "Incantesimo", data.name || "Incantesimo", [
     data.level || data.school ? `<p><em>${renderInline([data.level, data.school].filter(Boolean).join(", "))}</em></p>` : "",
     renderKeyValueList(data, ["casting_time", "range", "components", "duration"]),
-    data.body.length ? renderMarkdown(data.body.join("\n")) : ""
+    body.length ? renderMarkdown(body.join("\n")) : ""
   ]);
 }
 
 function renderMagicItem(data, label) {
+  const body = componentBody(data);
   return renderRulesCard("magicitem", label || "Oggetto magico", data.name || "Oggetto magico", [
     data.rarity || data.type ? `<p><em>${renderInline([data.type, data.rarity].filter(Boolean).join(", "))}</em></p>` : "",
     data.attunement ? `<p class="rules-line"><strong>Sintonia.</strong> ${renderInline(data.attunement)}</p>` : "",
-    data.body.length ? renderMarkdown(data.body.join("\n")) : ""
+    body.length ? renderMarkdown(body.join("\n")) : ""
   ]);
 }
 
 function renderNpc(data, label) {
+  const body = componentBody(data);
   return renderRulesCard("npc", label || "PNG", data.name || "PNG", [
     data.role ? `<p><em>${renderInline(data.role)}</em></p>` : "",
     renderKeyValueList(data, ["motive", "secret", "voice", "appearance"]),
     renderFeatureList(data.hooks, "Spunti"),
-    data.body.length ? renderMarkdown(data.body.join("\n")) : ""
+    body.length ? renderMarkdown(body.join("\n")) : ""
   ]);
 }
 
 function renderLocation(data, label) {
+  const body = componentBody(data);
   return renderRulesCard("location", label || "Luogo", data.name || "Luogo", [
     data.tags ? `<p><em>${renderInline(data.tags)}</em></p>` : "",
     renderKeyValueList(data, ["mood", "danger", "treasure"]),
     renderFeatureList(data.hooks, "Dettagli"),
-    data.body.length ? renderMarkdown(data.body.join("\n")) : ""
+    body.length ? renderMarkdown(body.join("\n")) : ""
   ]);
 }
 
 function renderHazard(data, label) {
+  const body = componentBody(data);
   return renderRulesCard("hazard", label || "Pericolo", data.name || "Pericolo", [
     renderKeyValueList(data, ["trigger", "effect", "countermeasure", "dc"]),
-    data.body.length ? renderMarkdown(data.body.join("\n")) : ""
+    body.length ? renderMarkdown(body.join("\n")) : ""
   ]);
+}
+
+function componentBody(data) {
+  return Array.isArray(data.body) ? data.body : [data.body].filter(Boolean);
 }
 
 function renderRandomTable(data, label) {

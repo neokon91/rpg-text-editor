@@ -7,7 +7,7 @@ tags: %%TAGS%%
 compatibility: 5e/5.5e
 license_mode: srd-5.2-cc
 author: %%AUTHOR%%
-theme: classic-parchment
+theme: fifth-edition-compatible
 paper: A4
 public: false
 ---

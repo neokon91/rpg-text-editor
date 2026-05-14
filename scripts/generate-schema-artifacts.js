@@ -77,7 +77,7 @@ function generateSnippets(schema) {
         "compatibility: 5e/5.5e",
         "license_mode: srd-5.2-cc",
         "author: ${6:Andrea}",
-        "theme: ${7|classic-parchment,dark-arcane,clean-guild,printer-friendly|}",
+        "theme: ${7|fifth-edition-compatible,classic-parchment,dark-arcane,clean-guild,modern-5-5,printer-friendly|}",
         "paper: ${8|A4,Letter|}",
         "public: ${9|true,false|}",
         "---"

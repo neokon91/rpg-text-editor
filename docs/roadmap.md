@@ -1,7 +1,7 @@
 ---
 title: Roadmap Prodotto
 slug: roadmap-prodotto
-summary: Direzione evolutiva della suite editoriale RPG Text Editor.
+summary: Direzione sintetica della suite RPG Text Editor.
 category: reference
 tags: roadmap, editor, plugin, markdown
 compatibility: 5e/5.5e
@@ -14,71 +14,42 @@ public: false
 
 # Roadmap Prodotto
 
-## Stato repository
-
-- Repository GitHub: `neokon91/rpg-text-editor`.
-- Visibilita GitHub: privata.
-- Branch corrente: `main`.
-- Stato locale all'ultimo aggiornamento: pulito e allineato a `origin/main`.
-- Connettore GitHub Codex/GPT: installato sull'account `neokon91` e repository visibile al connector.
-
 ## Direzione
 
-RPG Text Editor deve diventare un ambiente di scrittura Markdown per contenuti TTRPG, con preview editoriale e componenti riusabili descritti da schema. Il formato sorgente resta Markdown leggibile e versionabile; la UI deve aiutare a produrre blocchi corretti senza nascondere il testo.
+RPG Text Editor deve essere una web app browser-first per contenuti TTRPG: editor CodeMirror, preview editoriale, componenti schema-driven, check guidati ed export HTML/PDF. L'utente finale non deve installare Node/npm o un'app desktop. Il sorgente resta Markdown leggibile e versionabile.
 
-## Fase 1 - UI editor Markdown
+Il README deve restare orientato a chi deve usare il prodotto. I dettagli tecnici vivono nelle reference dedicate: `docs/editor-reference.md`, `docs/checklist.md`, `docs/homebrewery-benchmark.md` e `docs/next-session.md`.
 
-- Fatto: UI locale con editor Markdown, preview e palette componenti.
-- Fatto: inserimento guidato di blocchi `:::`.
-- Fatto: form frontmatter e toolbar Markdown rapida.
-- Fatto: preview editor basata sugli stessi CSS, tema e `page-shell` della build finale.
-- Fatto: Markdown come sorgente primaria.
-- Fatto: salvataggio bozze in `localStorage`, senza backend.
-- Fatto: stato documento, dirty indicator, overwrite esplicito e salva come nuovo.
-- Fatto: script `npm run editor`.
+## Stato Attuale
 
-## Fase 2 - Sistema componenti a schema
+- UI React/Vite/CodeMirror in `editor-next/`.
+- API locali per documenti, check ed export in `scripts/editor-server/*`.
+- Componenti core e plugin pack descritti da schema.
+- Palette componenti con ricerca, gruppi, preset, pack manifest e pack JSON esterni.
+- Preview iframe con sync editor-preview, toolbar pagine, `::pagebreak`, overflow badge, `Auto break` e `Auto pages`.
+- Adapter browser-only iniziale per documenti, check client-side ed export HTML via download browser.
+- Export PDF browser-native visuale con fallback stampa HTML e preset `fifth-edition-compatible` per output a due colonne.
+- Avvio sviluppo semplificato: `npm start`; preflight sviluppo: `npm run doctor`.
+- Packaging locale disponibile per QA/dev: `npm run package:editor`; package pubblicazione libro: `npm run export:package`.
+- QA aggregata: `npm run check`.
 
-- Fatto: descrivere componenti come dati.
-- Fatto: modellare campi, liste ripetibili e valori di default.
-- Fatto: generare palette e form dalla definizione schema.
-- Fatto: evitare registry hardcoded in UI per i componenti disponibili.
-- Allineare progressivamente schema UI e renderer Node.
+## Prossime Fasi
 
-Componenti prioritari:
+1. **Paginazione stabile**
+   Raffinare casi limite di overflow e regressioni visuali, mantenendo `::pagebreak` come override manuale.
 
-- `monster`
-- `spell`
-- `magicitem`
-- `npc`
-- `location`
-- `hazard`
-- `random-table`
-- `readaloud`
-- `encounter`
-- `treasure`
-- `note`
-- `map`
-- `image`
+2. **Web app finale**
+   Rendere l'editor deployabile e usabile da browser senza installazione locale, con verifica asset/cache e browser reali.
 
-## Fase 3 - Plugin pack
+3. **Onboarding e recovery**
+   Rifinire messaggi errore, recupero draft, backup e indicazioni export.
 
-- Fatto: separare schema core da schema installabili.
-- Fatto: introdurre manifest per plugin pack con nome, versione, compatibilita e componenti esportati.
-- Fatto: validare collisioni di `id` e `container`.
-- Fatto: aggiungere pack tematico `fantasy-classic`.
-- Fatto: decidere strategia di caricamento pack da UI, con scelta locale in `localStorage` e manifest versionato per build/check.
+4. **Hardening QA**
+   Mantenere `npm run check` verde, ridurre flakiness UI e aggiungere casi su documenti lunghi, immagini e pagine multiple.
 
-## Fase 4 - Validazione e import/export
+## Non Obiettivi
 
-- Fatto: validare blocchi Markdown contro lo schema.
-- Fatto: segnalare campi mancanti, chiavi sconosciute e liste malformate.
-- Fatto: esportare bozze in file Markdown dentro `docs/` dal server editor locale.
-- Fatto: importare documenti esistenti mantenendo frontmatter e contenuti non riconosciuti.
-- Prossimo: aggiungere test fixture per diagnostica e copertura di casi limite.
-
-## Fase 5 - Integrazione build
-
-- Fatto: rendere lo schema una fonte comune per UI, snippet e documentazione.
-- Fatto: generare reference componenti e snippet VS Code a partire dallo schema.
-- Fatto: aggiungere test di regressione per rendering componenti strutturati.
+- Installer desktop come percorso principale per l'utente finale.
+- Account/cloud/share pubblico finche non richiesti.
+- Sintassi proprietaria nascosta al posto del Markdown.
+- Copia di loghi, marchi, illustrazioni o asset ufficiali.

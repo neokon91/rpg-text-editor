@@ -44,9 +44,22 @@ for (const rejected of forbidden) {
   if (html.includes(rejected)) failures.push(`Markup regressivo presente: ${rejected}`);
 }
 
+await execFileAsync(process.execPath, ["scripts/build.js", "--html", "--auto-pages", fixture], { cwd: root });
+const autoPagesHtml = await readFile(output, "utf8");
+const autoPageExpectations = [
+  'data-auto-pages="true"',
+  "function paginateExportPages()",
+  "data-auto-pages-ready",
+  "data-auto-pages-total"
+];
+
+for (const expected of autoPageExpectations) {
+  if (!autoPagesHtml.includes(expected)) failures.push(`Auto pages export manca: ${expected}`);
+}
+
 if (failures.length) {
   for (const failure of failures) console.log(`ERRORE ${failure}`);
   process.exit(1);
 }
 
-console.log(`Rendering componenti strutturati verificato: ${expectations.length} assert.`);
+console.log(`Rendering componenti strutturati verificato: ${expectations.length + autoPageExpectations.length} assert.`);

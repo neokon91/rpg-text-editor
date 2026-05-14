@@ -1,0 +1,560 @@
+import { renderMarkdown } from "../components/preview.js";
+import { makeBrowserPdfBlob, makePrintablePdfHtml } from "./browser-pdf.js";
+import { parseFrontmatter } from "./frontmatter.js";
+import { renderPreviewDocument } from "./preview-shell.js";
+
+const browserDocumentStorageKey = "rpg-text-editor-next:browser-documents";
+const browserModeStorageKey = "rpg-text-editor-next:browser-only";
+const browserDocumentDbName = "rpg-text-editor-next";
+const browserDocumentStoreName = "documents";
+
+export async function listDocuments() {
+  return withServerFallback(
+    () => fetchJson("/api/documents", {}, "Lista documenti non disponibile"),
+    async () => ({ documents: (await browserDocuments()).map(browserDocumentSummary) })
+  );
+}
+
+export async function getDocument(filename) {
+  return withServerFallback(
+    () => fetchJson(`/api/documents/${encodeURIComponent(filename)}`, {}, "Import non riuscito"),
+    async () => {
+      const document = (await browserDocuments()).find((item) => item.filename === filename);
+      if (!document) throw new Error("Documento browser non trovato");
+      return document;
+    }
+  );
+}
+
+export async function saveDocument({ filename, content, overwrite = false, unique = false }) {
+  return withServerFallback(
+    () => fetchJson("/api/documents", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ filename, content, overwrite, unique })
+    }, "Salvataggio non riuscito"),
+    () => saveBrowserDocument({ filename, content, overwrite, unique })
+  );
+}
+
+export async function renameDocument(filename, nextFilename) {
+  return withServerFallback(
+    () => fetchJson(`/api/documents/${encodeURIComponent(filename)}`, {
+      method: "PUT",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ filename: nextFilename })
+    }, "Rename non riuscito"),
+    () => renameBrowserDocument(filename, nextFilename)
+  );
+}
+
+export async function deleteDocument(filename) {
+  return withServerFallback(
+    () => fetchJson(`/api/documents/${encodeURIComponent(filename)}`, { method: "DELETE" }, "Delete non riuscito"),
+    async () => {
+      await saveBrowserDocuments((await browserDocuments()).filter((item) => item.filename !== filename));
+      return { filename };
+    }
+  );
+}
+
+export async function checkDocument({ filename, content }) {
+  return withServerFallback(
+    () => fetchJson("/api/check-document", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ filename, content })
+    }, "Check documento non riuscito"),
+    () => ({ filename, diagnostics: checkBrowserDocument(content) })
+  );
+}
+
+export async function exportDocument({ filename, content, format, autoPaginate = false }) {
+  return withServerFallback(
+    () => fetchJson("/api/export-document", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ filename, content, format, autoPaginate })
+    }, "Export documento non riuscito", { includeLog: true }),
+    () => exportBrowserDocument({ filename, content, format, autoPaginate })
+  );
+}
+
+export function getDocumentRuntimeMode() {
+  return browserOnlyMode() ? "browser" : "server";
+}
+
+export function setBrowserOnlyMode(enabled) {
+  try {
+    if (enabled) {
+      localStorage.setItem(browserModeStorageKey, "true");
+    } else {
+      localStorage.removeItem(browserModeStorageKey);
+    }
+  } catch {}
+}
+
+export async function getBrowserDocumentStorageStats() {
+  const documents = await browserDocuments();
+  const bytes = new Blob([JSON.stringify(documents)]).size;
+  return {
+    count: documents.length,
+    bytes,
+    label: formatBytes(bytes),
+    warning: bytes > 2_500_000,
+    storage: indexedDbAvailable() ? "IndexedDB" : "localStorage"
+  };
+}
+
+export async function exportBrowserDocumentsArchive() {
+  const documents = await browserDocuments();
+  const exportedAt = new Date().toISOString();
+  const archive = {
+    format: "rpg-text-editor.browser-documents.v1",
+    exportedAt,
+    documents
+  };
+  const outputName = `rpg-text-editor-browser-documents-${exportedAt.slice(0, 10)}.json`;
+  const blob = new Blob([JSON.stringify(archive, null, 2)], { type: "application/json;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  triggerDownload(url, outputName);
+  return { count: documents.length, path: `browser-download/${outputName}`, url };
+}
+
+export async function importBrowserDocumentsArchive(file) {
+  const archive = JSON.parse(await file.text());
+  if (archive.format !== "rpg-text-editor.browser-documents.v1" || !Array.isArray(archive.documents)) {
+    throw new Error("Archivio browser non valido");
+  }
+
+  const current = await browserDocuments();
+  const merged = new Map(current.map((document) => [document.filename, document]));
+  const imported = [];
+  let renamed = 0;
+
+  for (const sourceDocument of archive.documents) {
+    const content = String(sourceDocument.content || "");
+    const safeFilename = safeMarkdownFilename(sourceDocument.filename || "documento.md");
+    const existing = merged.get(safeFilename);
+    const filename = existing && existing.content !== content
+      ? uniqueFilename([...merged.values()], safeFilename)
+      : safeFilename;
+
+    if (filename !== safeFilename) renamed += 1;
+    merged.set(filename, {
+      filename,
+      content,
+      updatedAt: sourceDocument.updatedAt || new Date().toISOString()
+    });
+    imported.push(filename);
+  }
+
+  await saveBrowserDocuments([...merged.values()]);
+  setBrowserOnlyMode(true);
+  return { count: archive.documents.length, renamed, imported, documents: [...merged.values()].map(({ filename }) => filename) };
+}
+
+export async function importBrowserMarkdownDocument(file) {
+  return importBrowserMarkdownDocuments([file]);
+}
+
+export async function importBrowserMarkdownDocuments(files) {
+  const current = await browserDocuments();
+  const nextDocuments = [...current];
+  const imported = [];
+  let renamed = 0;
+
+  for (const file of files) {
+    const safeFilename = safeMarkdownFilename(file.name || "documento.md");
+    const content = await file.text();
+    const existing = nextDocuments.find((document) => document.filename === safeFilename);
+    const filename = existing && existing.content !== content
+      ? uniqueFilename(nextDocuments, safeFilename)
+      : safeFilename;
+
+    if (filename !== safeFilename) renamed += 1;
+    const replaceIndex = nextDocuments.findIndex((document) => document.filename === filename);
+    const document = { filename, content, updatedAt: new Date().toISOString() };
+    if (replaceIndex >= 0) {
+      nextDocuments[replaceIndex] = document;
+    } else {
+      nextDocuments.push(document);
+    }
+    imported.push(filename);
+  }
+
+  await saveBrowserDocuments(nextDocuments);
+  setBrowserOnlyMode(true);
+  return {
+    count: files.length,
+    renamed,
+    filename: imported[0] || "",
+    imported,
+    documents: nextDocuments.sort((a, b) => a.filename.localeCompare(b.filename)).map(({ filename: itemFilename }) => itemFilename)
+  };
+}
+
+async function withServerFallback(serverAction, browserAction) {
+  if (browserOnlyMode()) return browserAction();
+  try {
+    return await serverAction();
+  } catch (error) {
+    if (error.status) throw error;
+    activateBrowserOnlyMode();
+    return browserAction();
+  }
+}
+
+async function fetchJson(url, options, errorMessage, { includeLog = false } = {}) {
+  const response = await fetch(url, options);
+  const contentType = response.headers.get("content-type") || "";
+
+  if (!contentType.includes("application/json")) {
+    throw new Error(errorMessage);
+  }
+
+  if (!response.ok) {
+    const payload = contentType.includes("application/json") ? await response.json().catch(() => ({})) : {};
+    const error = new Error(payload.message || errorMessage);
+    error.status = response.status;
+    if (includeLog) error.log = payload.log || "";
+    throw error;
+  }
+
+  return response.json();
+}
+
+function browserOnlyMode() {
+  if (typeof window === "undefined") return false;
+  const params = new URLSearchParams(window.location.search);
+  return params.has("browser-only")
+    || window.__RPG_TEXT_EDITOR_BROWSER_ONLY__ === true
+    || safeLocalStorageGet(browserModeStorageKey) === "true";
+}
+
+function activateBrowserOnlyMode() {
+  setBrowserOnlyMode(true);
+}
+
+async function browserDocuments() {
+  if (!indexedDbAvailable()) return localStorageBrowserDocuments();
+
+  try {
+    const db = await openBrowserDocumentDb();
+    await migrateLocalStorageDocuments(db);
+    return getAllBrowserDocuments(db);
+  } catch {
+    return localStorageBrowserDocuments();
+  }
+}
+
+async function saveBrowserDocuments(documents) {
+  const sorted = documents.sort((a, b) => a.filename.localeCompare(b.filename));
+  if (!indexedDbAvailable()) {
+    saveLocalStorageBrowserDocuments(sorted);
+    return;
+  }
+
+  try {
+    const db = await openBrowserDocumentDb();
+    await replaceAllBrowserDocuments(db, sorted);
+    localStorage.removeItem(browserDocumentStorageKey);
+  } catch {
+    saveLocalStorageBrowserDocuments(sorted);
+  }
+}
+
+function localStorageBrowserDocuments() {
+  return safeParseBrowserDocuments(safeLocalStorageGet(browserDocumentStorageKey) || "[]");
+}
+
+function saveLocalStorageBrowserDocuments(documents) {
+  localStorage.setItem(browserDocumentStorageKey, JSON.stringify(documents));
+}
+
+function browserDocumentSummary(document) {
+  const { metadata, body } = parseFrontmatter(document.content || "");
+  return {
+    filename: document.filename,
+    title: metadata.title || firstHeading(body) || document.filename
+  };
+}
+
+function firstHeading(markdown) {
+  return String(markdown).split(/\r?\n/).find((line) => /^#\s+/.test(line))?.replace(/^#\s+/, "").trim();
+}
+
+function indexedDbAvailable() {
+  return typeof indexedDB !== "undefined";
+}
+
+function openBrowserDocumentDb() {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(browserDocumentDbName, 1);
+    request.onupgradeneeded = () => {
+      const db = request.result;
+      if (!db.objectStoreNames.contains(browserDocumentStoreName)) {
+        db.createObjectStore(browserDocumentStoreName, { keyPath: "filename" });
+      }
+    };
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error || new Error("IndexedDB non disponibile"));
+  });
+}
+
+async function migrateLocalStorageDocuments(db) {
+  const documents = localStorageBrowserDocuments();
+  if (!documents.length) return;
+  const current = await getAllBrowserDocuments(db);
+  const merged = new Map(current.map((document) => [document.filename, document]));
+  for (const document of documents) merged.set(document.filename, document);
+  await replaceAllBrowserDocuments(db, [...merged.values()]);
+  localStorage.removeItem(browserDocumentStorageKey);
+}
+
+function getAllBrowserDocuments(db) {
+  return new Promise((resolve, reject) => {
+    const request = db.transaction(browserDocumentStoreName, "readonly")
+      .objectStore(browserDocumentStoreName)
+      .getAll();
+    request.onsuccess = () => resolve((request.result || []).sort((a, b) => a.filename.localeCompare(b.filename)));
+    request.onerror = () => reject(request.error || new Error("Lettura IndexedDB non riuscita"));
+  });
+}
+
+function replaceAllBrowserDocuments(db, documents) {
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(browserDocumentStoreName, "readwrite");
+    const store = transaction.objectStore(browserDocumentStoreName);
+    store.clear();
+    for (const document of documents) store.put(document);
+    transaction.oncomplete = resolve;
+    transaction.onerror = () => reject(transaction.error || new Error("Scrittura IndexedDB non riuscita"));
+  });
+}
+
+function safeParseBrowserDocuments(raw) {
+  try {
+    const documents = JSON.parse(raw);
+    return Array.isArray(documents) ? documents : [];
+  } catch {
+    return [];
+  }
+}
+
+function formatBytes(bytes) {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
+  return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
+}
+
+function safeLocalStorageGet(key) {
+  try {
+    return localStorage.getItem(key);
+  } catch {
+    return "";
+  }
+}
+
+async function saveBrowserDocument({ filename, content, overwrite = false, unique = false }) {
+  const documents = await browserDocuments();
+  const safeFilename = safeMarkdownFilename(filename);
+  const nextFilename = unique ? uniqueFilename(documents, safeFilename) : safeFilename;
+  const index = documents.findIndex((item) => item.filename === nextFilename);
+
+  if (index >= 0 && !overwrite && !unique) {
+    const error = new Error("File gia esistente");
+    error.status = 409;
+    throw error;
+  }
+
+  const document = { filename: nextFilename, content, updatedAt: new Date().toISOString() };
+  if (index >= 0) {
+    documents[index] = document;
+  } else {
+    documents.push(document);
+  }
+  await saveBrowserDocuments(documents);
+  return document;
+}
+
+async function renameBrowserDocument(filename, nextFilename) {
+  const documents = await browserDocuments();
+  const safeNext = safeMarkdownFilename(nextFilename);
+  const index = documents.findIndex((item) => item.filename === filename);
+  if (index === -1) throw new Error("Documento browser non trovato");
+  if (documents.some((item) => item.filename === safeNext)) {
+    const error = new Error("File gia esistente");
+    error.status = 409;
+    throw error;
+  }
+  documents[index] = { ...documents[index], filename: safeNext, updatedAt: new Date().toISOString() };
+  await saveBrowserDocuments(documents);
+  return documents[index];
+}
+
+async function exportBrowserDocument({ filename, content, format, autoPaginate = false }) {
+  const parsed = parseFrontmatter(content);
+  const html = renderPreviewDocument(
+    parsed.metadata,
+    renderMarkdown(parsed.body, { components: [] }, { startLine: parsed.bodyStartLine }),
+    { autoPaginate }
+  );
+
+  if (format === "pdf") {
+    const pdfName = safeMarkdownFilename(filename).replace(/\.md$/i, ".pdf");
+    const pdfBlob = await makeBrowserPdfBlob({
+      html,
+      title: parsed.metadata.title || readMarkdownTitle(parsed.body) || pdfName.replace(/\.pdf$/i, ""),
+      markdown: parsed.body
+    });
+    const pdfUrl = URL.createObjectURL(pdfBlob);
+    triggerDownload(pdfUrl, pdfName);
+
+    const printName = safeMarkdownFilename(filename).replace(/\.md$/i, ".print.html");
+    const printBlob = new Blob([makePrintablePdfHtml(html)], { type: "text/html;charset=utf-8" });
+    const printUrl = URL.createObjectURL(printBlob);
+    return {
+      outputs: [
+        { format: "pdf", path: `browser-download/${pdfName}`, url: pdfUrl },
+        { format: "print-html", path: `browser-fallback/${printName}`, url: printUrl }
+      ]
+    };
+  }
+
+  const outputName = safeMarkdownFilename(filename).replace(/\.md$/i, ".html");
+  const blob = new Blob([html], { type: "text/html;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  triggerDownload(url, outputName);
+  return { outputs: [{ path: `browser-download/${outputName}`, url }] };
+}
+
+function triggerDownload(url, filename) {
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  link.click();
+}
+
+function readMarkdownTitle(markdown) {
+  return String(markdown).match(/^#\s+(.+)$/m)?.[1]?.trim() || "";
+}
+
+function checkBrowserDocument(source) {
+  return [
+    ...checkBrowserFrontmatter(source),
+    ...checkBrowserHeadingOrder(source),
+    ...checkBrowserLegalTerms(source),
+    ...checkBrowserIncludes(source),
+    ...checkBrowserDifficultyClasses(source)
+  ].sort((a, b) => a.line - b.line || severityWeight(a.severity) - severityWeight(b.severity));
+}
+
+function checkBrowserFrontmatter(source) {
+  const diagnostics = [];
+  const required = ["title", "slug", "summary", "compatibility", "license_mode", "author"];
+  const { metadata } = parseFrontmatter(source);
+
+  for (const field of required) {
+    if (!metadata[field]) diagnostics.push({
+      severity: "error",
+      line: 1,
+      message: `Frontmatter senza "${field}".`,
+      fix: `Aggiungi ${field}: ... nel blocco frontmatter.`
+    });
+  }
+
+  return diagnostics;
+}
+
+function checkBrowserHeadingOrder(source) {
+  const diagnostics = [];
+  const { bodyStartLine } = parseFrontmatter(source);
+  let previous = 0;
+
+  for (const [index, line] of source.split(/\r?\n/).entries()) {
+    const match = line.match(/^(#{1,6})\s+/);
+    if (!match) continue;
+    const level = match[1].length;
+    if (previous && level > previous + 1) diagnostics.push({
+      severity: "warning",
+      line: index + 1,
+      message: `Salto gerarchico da H${previous} a H${level}.`,
+      fix: "Inserisci un heading intermedio o abbassa il livello del titolo."
+    });
+    previous = level;
+  }
+
+  if (!source.split(/\r?\n/).slice(bodyStartLine - 1).some((line) => /^#\s+/.test(line))) diagnostics.push({
+    severity: "error",
+    line: bodyStartLine,
+    message: "Documento senza titolo H1 nel corpo.",
+    fix: "Aggiungi un titolo principale con # Titolo dopo il frontmatter."
+  });
+
+  return diagnostics;
+}
+
+function checkBrowserLegalTerms(source) {
+  const terms = ["beholder", "mind flayer", "illithid", "strahd", "orcus", "tiamat", "forgotten realms", "waterdeep", "baldur's gate", "ravenloft", "dragonlance", "eberron", "artificer", "aasimar"];
+  const diagnostics = [];
+  for (const [index, line] of source.split(/\r?\n/).entries()) {
+    const normalized = line.toLowerCase();
+    for (const term of terms) {
+      if (normalized.includes(term)) diagnostics.push({
+        severity: "error",
+        line: index + 1,
+        message: `Termine sensibile: "${term}".`,
+        fix: "Sostituisci con un nome originale o verifica una licenza esplicita."
+      });
+    }
+  }
+  return diagnostics;
+}
+
+function checkBrowserIncludes(source) {
+  const diagnostics = [];
+  for (const match of source.matchAll(/<rpg-include\s+src="([^"]+)"\s*><\/rpg-include>/g)) {
+    const src = match[1];
+    if (src.startsWith("/") || src.includes("..")) diagnostics.push({
+      severity: "error",
+      line: source.slice(0, match.index || 0).split(/\r?\n/).length,
+      message: `Include non consentito: ${src}.`,
+      fix: "Usa un percorso relativo interno senza / iniziale o segmenti ..."
+    });
+  }
+  return diagnostics;
+}
+
+function checkBrowserDifficultyClasses(source) {
+  const diagnostics = [];
+  for (const match of source.matchAll(/\bCD\s*([0-9]{1,2})\b/gi)) {
+    const dc = Number(match[1]);
+    const line = source.slice(0, match.index || 0).split(/\r?\n/).length;
+    if (dc < 5 || dc > 30) diagnostics.push({
+      severity: "error",
+      line,
+      message: `CD ${dc} fuori scala.`,
+      fix: "Usa CD tra 5 e 30 salvo casi dichiaratamente speciali."
+    });
+  }
+  return diagnostics;
+}
+
+function safeMarkdownFilename(filename) {
+  const clean = String(filename || "bozza-rpg.md").split(/[\\/]/).pop().replace(/[^a-zA-Z0-9._-]+/g, "-");
+  return clean.endsWith(".md") ? clean : `${clean || "bozza-rpg"}.md`;
+}
+
+function uniqueFilename(documents, filename) {
+  const taken = new Set(documents.map((item) => item.filename));
+  if (!taken.has(filename)) return filename;
+  const base = filename.replace(/\.md$/i, "");
+  let index = 2;
+  while (taken.has(`${base}-${index}.md`)) index += 1;
+  return `${base}-${index}.md`;
+}
+
+function severityWeight(severity) {
+  return severity === "error" ? 0 : 1;
+}

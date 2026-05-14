@@ -7,7 +7,7 @@ tags: dungeon, livello-1, non-morti
 compatibility: 5e/5.5e
 license_mode: srd-5.2-cc
 author: Andrea
-theme: classic-parchment
+theme: fifth-edition-compatible
 paper: A4
 public: true
 ---
