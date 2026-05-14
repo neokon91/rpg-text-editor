@@ -2,12 +2,14 @@ import { mkdtemp, rm } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { createServer as createTcpServer } from "node:net";
 import { spawn } from "node:child_process";
 
 const root = new URL("..", import.meta.url).pathname;
-const editorPort = 8100 + Math.floor(Math.random() * 500);
-const cdpPort = 9200 + Math.floor(Math.random() * 500);
+const editorPort = await findFreePort(8100);
+const cdpPort = await findFreePort(9200);
 const baseUrl = `http://127.0.0.1:${editorPort}`;
+const saveConflictFile = "codex-save-conflict.md";
 const renameSourceFile = "codex-rename-temp.md";
 const renameTargetFile = "codex-rename-temp-renamed.md";
 const openGuardFile = "codex-open-guard.md";
@@ -77,6 +79,7 @@ try {
     stdio: ["ignore", "pipe", "pipe"]
   });
   await waitForServer();
+  await cleanupTestDocument(saveConflictFile);
   await cleanupTestDocument(renameSourceFile);
   await cleanupTestDocument(renameTargetFile);
   await cleanupTestDocument(openGuardFile);
@@ -100,6 +103,21 @@ try {
   await waitFor(() => evalInPage("document.readyState === 'complete'"));
   await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.querySelector('.page-shell h1')?.textContent.toLowerCase().includes('nuova avventura')"));
   await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.querySelector('p[data-source-end-line]')?.dataset.sourceEndLine"));
+  await saveTestDocument(saveConflictFile, "---\ntitle: Codex Save Conflict\nslug: codex-save-conflict\nsummary: Documento temporaneo conflitto save\ncompatibility: 5e/5.5e\nlicense_mode: srd-5.2-cc\nauthor: Codex\n---\n\n# Codex Save Conflict\n\nDocumento gia presente.");
+  await evalInPage(`
+    window.localStorage.setItem('rpg-text-editor-next:draft', '---\\ntitle: Codex Save Conflict\\nslug: codex-save-conflict\\nsummary: Documento temporaneo conflitto save\\ncompatibility: 5e/5.5e\\nlicense_mode: srd-5.2-cc\\nauthor: Codex\\n---\\n\\n# Codex Save Conflict\\n\\nTentativo di sovrascrittura non confermata.');
+  `);
+  await reloadPage();
+  await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.querySelector('.page-shell h1')?.textContent.includes('Codex Save Conflict')"));
+  await clickTopbarButton("Salva");
+  await waitFor(() => evalInPage("document.body.textContent.includes('File gia esistente: usa Salva copia')"));
+  await evalInPage(`
+    window.localStorage.setItem('rpg-text-editor-next:draft', '# Export Non Valido\\n\\nDocumento senza frontmatter.');
+  `);
+  await reloadPage();
+  await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.querySelector('.page-shell h1')?.textContent.includes('Export Non Valido')"));
+  await clickTopbarButton("HTML");
+  await waitFor(() => evalInPage("document.body.textContent.includes('Export bloccato: correggi gli errori')"));
   await evalInPage(`
     window.localStorage.setItem('rpg-text-editor-next:draft', '---\\ntitle: Codex Rename Temp\\nslug: codex-rename-temp\\nsummary: Documento temporaneo rename/delete\\ncompatibility: 5e/5.5e\\nlicense_mode: srd-5.2-cc\\nauthor: Codex\\ntheme: classic-parchment\\npaper: A4\\n---\\n\\n# Codex Rename Temp\\n\\nContenuto temporaneo.');
   `);
@@ -307,6 +325,7 @@ try {
 } finally {
   cdp?.close();
   browser?.kill();
+  await cleanupTestDocument(saveConflictFile);
   await cleanupTestDocument(renameSourceFile);
   await cleanupTestDocument(renameTargetFile);
   await cleanupTestDocument(openGuardFile);
@@ -405,30 +424,34 @@ async function setComponentSearch(value) {
 }
 
 async function clickTopbarButton(label) {
-  const result = await evalInPage(`
-    (() => {
-      const buttons = Array.from(document.querySelectorAll('.next-actions > button'));
-      const button = buttons
-        .find((item) => item.textContent.trim() === ${JSON.stringify(label)});
-      if (!button) {
-        return {
-          clicked: false,
-          labels: buttons.map((item) => item.textContent.trim()),
-          allLabels: Array.from(document.querySelectorAll('button')).map((item) => item.textContent.trim()),
-          hasTopbar: Boolean(document.querySelector('.next-actions')),
-          href: window.location.href,
-          readyState: document.readyState,
-          body: document.body.textContent.slice(0, 200),
-          errors: window.__editorNextErrors || []
-        };
-      }
-      button.click();
-      return { clicked: true, labels: buttons.map((item) => item.textContent.trim()) };
-    })()
-  `);
-  if (!result.clicked) {
-    throw new Error(`Topbar button ${label} not found. Topbar: ${result.hasTopbar}. URL: ${result.href}. Ready: ${result.readyState}. Body: ${result.body || "(empty)"}. Errors: ${result.errors.join("; ") || "(none)"}. Available: ${result.labels.join(", ") || "(none)"}. All buttons: ${result.allLabels.join(", ") || "(none)"}`);
+  let result;
+  const started = Date.now();
+  while (Date.now() - started < 8000) {
+    result = await evalInPage(`
+      (() => {
+        const buttons = Array.from(document.querySelectorAll('.next-actions > button'));
+        const button = buttons
+          .find((item) => item.textContent.trim() === ${JSON.stringify(label)});
+        if (!button) {
+          return {
+            clicked: false,
+            labels: buttons.map((item) => item.textContent.trim()),
+            allLabels: Array.from(document.querySelectorAll('button')).map((item) => item.textContent.trim()),
+            hasTopbar: Boolean(document.querySelector('.next-actions')),
+            href: window.location.href,
+            readyState: document.readyState,
+            body: document.body.textContent.slice(0, 200),
+            errors: window.__editorNextErrors || []
+          };
+        }
+        button.click();
+        return { clicked: true, labels: buttons.map((item) => item.textContent.trim()) };
+      })()
+    `);
+    if (result.clicked) return;
+    await new Promise((resolve) => setTimeout(resolve, 100));
   }
+  throw new Error(`Topbar button ${label} not found. Topbar: ${result?.hasTopbar}. URL: ${result?.href}. Ready: ${result?.readyState}. Body: ${result?.body || "(empty)"}. Errors: ${result?.errors?.join("; ") || "(none)"}. Available: ${result?.labels?.join(", ") || "(none)"}. All buttons: ${result?.allLabels?.join(", ") || "(none)"}`);
 }
 
 async function clickButtonByAriaLabel(label) {
@@ -582,4 +605,18 @@ function findBrowser() {
   const browser = candidates.find((candidate) => existsSync(candidate) || !candidate.startsWith("/"));
   if (!browser) throw new Error("Nessun browser Chromium/Brave trovato per i test UI.");
   return browser;
+}
+
+function findFreePort(startPort) {
+  return new Promise((resolve) => {
+    function tryPort(port) {
+      const tester = createTcpServer();
+      tester.once("error", () => tryPort(port + 1));
+      tester.once("listening", () => {
+        tester.close(() => resolve(port));
+      });
+      tester.listen(port, "127.0.0.1");
+    }
+    tryPort(startPort);
+  });
 }

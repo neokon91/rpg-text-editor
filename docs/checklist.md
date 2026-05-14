@@ -110,6 +110,7 @@ public: false
 - [x] Fixture diagnostiche per casi limite della validazione.
 - [x] Test UI automatizzati affidabili.
 - [x] Test UI per open con modifiche non salvate: annulla e conferma.
+- [x] Test UI per errore save su file esistente e export bloccato dai diagnostici.
 
 ## Output editoriale
 
@@ -124,5 +125,5 @@ public: false
 
 ## Prossimi passi consigliati
 
-1. Test UI piu ampi per casi errore save/export.
+1. Test UI piu ampi per component insertion, sync preview e export PDF.
 2. Palette/componenti e preview come workspace persistenti.
