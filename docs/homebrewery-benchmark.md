@@ -1,7 +1,7 @@
 ---
 title: Benchmark Homebrewery
 slug: benchmark-homebrewery
-summary: Confronto operativo minimo con naturalcrit/homebrewery e V3.
+summary: Riferimento minimo Homebrewery/V3 per orientare la UX senza copiare trade dress.
 category: reference
 tags: editor, ux, homebrewery, benchmark
 compatibility: 5e/5.5e
@@ -14,46 +14,25 @@ public: false
 
 # Benchmark Homebrewery
 
-<p class="subtitle">Riferimento compatto per procedere senza rileggere il repository upstream.</p>
+## Fonte
 
-## Fonte Verificata
+- Upstream: `naturalcrit/homebrewery`.
+- V3 non e una codebase separata da imitare: e una modalita/tema nello stesso progetto.
+- Riferimenti utili upstream: CodeMirror 6 editor, iframe renderer, toolbar pagina/zoom/spread, snippet bar, metadata editor.
 
-- Repo principale: `naturalcrit/homebrewery`.
-- V3 non e un repo separato principale: e un branch storico e oggi un renderer/tema nello stesso repo.
-- Release recente verificata: `v3.21.0`, con migrazione backend a Vite.
-- Changelog upstream 2026 cita migrazione editor a CodeMirror 6.
+## Decisione Locale
 
-## File Upstream Da Ricordare
+- Usare Homebrewery solo come benchmark UX: Markdown visibile, preview impaginata, snippet rapidi, export centrale.
+- Non importare sintassi `{{...}}`, CSS, font, asset, loghi, cornici o trade dress.
+- Preferire componenti `:::` schema-driven per validazione, snippet, plugin pack e reference generate.
+- Restare local-first: niente account, vault, MongoDB, drive/cloud o share pubblico finche non richiesto.
 
-- `shared/markdown.js`: parser Markdown V3 con blocchi `{{...}}`, injection stile e variabili.
-- `client/components/codeEditor/codeEditor.jsx`: CodeMirror 6, page map da `\page`, fold, history, search, shortcut.
-- `client/homebrew/brewRenderer/brewRenderer.jsx`: iframe renderer, split pagine, lazy rendering, page visibility.
-- `client/homebrew/brewRenderer/toolBar/toolBar.jsx`: zoom fit/fill, spread single/facing/flow, prev/next pagina, input pagina.
-- `client/homebrew/editor/snippetbar/snippetbar.jsx`: snippet per tema, sottosnippet, history locale.
-- `client/homebrew/editor/metadataEditor/metadataEditor.jsx`: proprieta, tema, lingua, publish/delete.
+## Stato Comparativo
 
-## Decisione Per Questo Repo
+- Allineato: React/Vite, CodeMirror 6, preview iframe, toolbar pagina, zoom fit/fill, single/facing/flow, snippet/componenti, metadata/frontmatter, export.
+- Superficie originale: schema componenti, plugin pack, author check, packaging locale.
+- Gap attuale: `Auto pages` e disponibile in preview ma non ancora nel renderer/export stabile.
 
-- Seguire Homebrewery solo come benchmark UX: editor Markdown visibile, preview impaginata, snippet/componenti rapidi, export.
-- Non importare sintassi `{{...}}`, PHB/trade dress, asset, font, stylesheet, icone o temi upstream.
-- Restare local-first: niente account, vault, share pubblico, MongoDB o Google Drive finche non diventa un requisito esplicito.
-- Preferire componenti `:::` schema-driven perche sono validabili, documentabili e compatibili con plugin pack.
+## Prossimo Passo
 
-## Gap Prioritario
-
-Prima tranche preview implementata:
-
-1. Pagine reali basate su `.page-shell`, generate da `::pagebreak`.
-2. Stato pagina corrente e totale pagine.
-3. Comandi pagina precedente/successiva.
-4. Zoom `fit page` e `fill width`, oltre allo zoom percentuale.
-5. Selettore `single`, `facing` e `flow`.
-6. Test UI su pagina, zoom e navigazione.
-
-Limite noto: la paginazione stabile per export resta manuale tramite `::pagebreak`; la preview ora segnala le pagine in overflow, seleziona la riga sorgente da spezzare, offre inserimento assistito block-aware, auto break predittivo e una modalita sperimentale `Auto pages` che crea pagine fisiche nell'iframe.
-
-## Dopo La Preview
-
-- Sync editor-preview completato per toggle, click preview verso editor e range sorgente sui blocchi multi-linea.
-- Palette componenti con categorie preset dedicate.
-- Switch pannelli mobile per Editor, Componenti, Preview e Documento.
+Promuovere la paginazione misurata da esperimento preview a output riproducibile per HTML/PDF, mantenendo `::pagebreak` come override manuale esplicito.

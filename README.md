@@ -67,7 +67,7 @@ npm run package:editor
 
 ## Authoring in VS Code
 
-Per il flusso pratico completo vedi `docs/authoring.md`. Per creare pack componenti vedi `docs/plugin-packs.md`. Per lo stato della UI vedi `docs/editor-reference.md`; per il gap Homebrewery vedi `docs/homebrewery-gap.md`; per priorita e QA usa `docs/checklist.md`.
+Per il flusso pratico completo vedi `docs/authoring.md`. Per creare pack componenti vedi `docs/plugin-packs.md`. Per lo stato della UI vedi `docs/editor-reference.md`; per il benchmark Homebrewery vedi `docs/homebrewery-benchmark.md`; per priorita e QA usa `docs/checklist.md`.
 
 ## Editor UI
 

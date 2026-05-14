@@ -1,7 +1,7 @@
 ---
 title: Roadmap Prodotto
 slug: roadmap-prodotto
-summary: Direzione evolutiva della suite editoriale RPG Text Editor.
+summary: Direzione sintetica della suite RPG Text Editor.
 category: reference
 tags: roadmap, editor, plugin, markdown
 compatibility: 5e/5.5e
@@ -14,71 +14,37 @@ public: false
 
 # Roadmap Prodotto
 
-## Stato repository
-
-- Repository GitHub: `neokon91/rpg-text-editor`.
-- Visibilita GitHub: privata.
-- Branch corrente: `main`.
-- Stato locale all'ultimo aggiornamento: pulito e allineato a `origin/main`.
-- Connettore GitHub Codex/GPT: installato sull'account `neokon91` e repository visibile al connector.
-
 ## Direzione
 
-RPG Text Editor deve diventare un ambiente di scrittura Markdown per contenuti TTRPG, con preview editoriale e componenti riusabili descritti da schema. Il formato sorgente resta Markdown leggibile e versionabile; la UI deve aiutare a produrre blocchi corretti senza nascondere il testo.
+RPG Text Editor e un ambiente locale Markdown-first per contenuti TTRPG: editor CodeMirror, preview editoriale, componenti schema-driven, check guidati ed export HTML/PDF. Il sorgente resta Markdown leggibile e versionabile.
 
-## Fase 1 - UI editor Markdown
+## Stato Attuale
 
-- Fatto: UI locale React/CodeMirror con editor Markdown e preview.
-- Fatto: inserimento guidato di blocchi `:::`.
-- Fatto: form frontmatter e toolbar Markdown rapida.
-- Fatto: preview editor basata sugli stessi CSS, tema e `page-shell` della build finale.
-- Fatto: Markdown come sorgente primaria.
-- Fatto: salvataggio bozze in `localStorage`, senza backend.
-- Fatto: stato documento, dirty indicator, overwrite esplicito e salva come nuovo.
-- Fatto: script `npm run editor`.
+- UI React/Vite/CodeMirror in `editor-next/`.
+- API locali per documenti, check ed export in `scripts/editor-server/*`.
+- Componenti core e plugin pack descritti da schema.
+- Palette componenti con ricerca, gruppi, preset, pack manifest e pack JSON esterni.
+- Preview iframe con sync editor-preview, toolbar pagine, `::pagebreak`, overflow badge, `Auto break` e `Auto pages`.
+- Avvio utente semplificato: `npm start`; preflight: `npm run doctor`.
+- Packaging locale: `npm run package:editor`; package pubblicazione libro: `npm run export:package`.
+- QA aggregata: `npm run check`.
 
-## Fase 2 - Sistema componenti a schema
+## Prossime Fasi
 
-- Fatto: descrivere componenti come dati.
-- Fatto: modellare campi, liste ripetibili e valori di default.
-- Prossimo: riportare palette e form componenti nella UI React dalla definizione schema.
-- Prossimo: evitare registry hardcoded in UI per i componenti disponibili.
-- Allineare progressivamente schema UI e renderer Node.
+1. **Paginazione stabile**
+   Portare la misurazione di `Auto pages` nel renderer/export HTML/PDF, mantenendo `::pagebreak` come override manuale.
 
-Componenti prioritari:
+2. **Distribuzione finale**
+   Passare dallo ZIP applicativo locale a installer/app desktop o bundle equivalente per utenti non tecnici.
 
-- `monster`
-- `spell`
-- `magicitem`
-- `npc`
-- `location`
-- `hazard`
-- `random-table`
-- `readaloud`
-- `encounter`
-- `treasure`
-- `note`
-- `map`
-- `image`
+3. **Onboarding e recovery**
+   Rifinire primo avvio, messaggi errore, recupero draft, esempi iniziali e indicazioni export.
 
-## Fase 3 - Plugin pack
+4. **Hardening QA**
+   Mantenere `npm run check` verde, ridurre flakiness UI e aggiungere casi su documenti lunghi, immagini e pagine multiple.
 
-- Fatto: separare schema core da schema installabili.
-- Fatto: introdurre manifest per plugin pack con nome, versione, compatibilita e componenti esportati.
-- Fatto: validare collisioni di `id` e `container`.
-- Fatto: aggiungere pack tematico `fantasy-classic`.
-- Fatto: decidere strategia di caricamento pack da UI, con scelta locale in `localStorage` e manifest versionato per build/check.
+## Non Obiettivi
 
-## Fase 4 - Validazione e import/export
-
-- Fatto: validare blocchi Markdown contro lo schema.
-- Fatto: segnalare campi mancanti, chiavi sconosciute e liste malformate.
-- Fatto: esportare bozze in file Markdown dentro `docs/` dal server editor locale.
-- Fatto: importare documenti esistenti mantenendo frontmatter e contenuti non riconosciuti.
-- Prossimo: aggiungere test fixture per diagnostica e copertura di casi limite.
-
-## Fase 5 - Integrazione build
-
-- Fatto: rendere lo schema una fonte comune per UI, snippet e documentazione.
-- Fatto: generare reference componenti e snippet VS Code a partire dallo schema.
-- Fatto: aggiungere test di regressione per rendering componenti strutturati.
+- Account/cloud/share pubblico finche non richiesti.
+- Sintassi proprietaria nascosta al posto del Markdown.
+- Copia di trade dress, font, asset o layout riconoscibili di Homebrewery/manuali ufficiali.

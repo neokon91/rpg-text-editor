@@ -22,6 +22,8 @@ public: false
 - [x] Repository visibile dal connector GitHub.
 - [x] Branch `main` usato come linea principale.
 - [x] Commit e push effettuati per ogni incremento.
+- [x] Riferimenti compatti canonici: `docs/next-session.md`, `docs/editor-reference.md`, `docs/homebrewery-benchmark.md`.
+- [x] Riferimento duplicato `docs/homebrewery-gap.md` rimosso.
 
 ## Editor UI
 

@@ -1,7 +1,7 @@
 ---
 title: Prossima Sessione
 slug: prossima-sessione
-summary: Handoff conciso per migrare l'editor verso una UX Homebrewery-like moderna.
+summary: Handoff compatto per continuare lo sviluppo con poco contesto.
 category: reference
 tags: handoff, editor, ux, codemirror
 compatibility: 5e/5.5e
@@ -14,95 +14,35 @@ public: false
 
 # Prossima Sessione
 
-## Obiettivo
+## Stato Canonico
 
-Preparare una nuova esperienza editor statica integrabile nel sito reference SRD: topbar minima, Markdown editor a sinistra, preview viva a destra, preview nascondibile, dati salvati localmente nel browser.
+- Branch di lavoro: `codex/vscode-preview-rendering`.
+- UI unica: `editor-next/` con React, Vite, CodeMirror 6 e preview iframe.
+- Avvio utente: `npm start`; preflight: `npm run doctor`; pacchetto locale: `npm run package:editor`.
+- Verifica completa richiesta prima di chiudere tranche: `npm run check`.
+- Smoke minimo durante sviluppo UI: `npm run test:editor-next-ui`.
+- Reference operative da leggere prima del codice: `docs/editor-reference.md`, `docs/checklist.md`, `docs/homebrewery-benchmark.md`.
 
-## Decisione Tecnica
+## Cosa Funziona
 
-Migrare la UI editor verso:
+- Markdown resta sorgente primaria, con autosave locale e download Markdown.
+- Apertura/salvataggio/rename/delete documenti da `docs/`, con dialog custom.
+- Check guidato, diagnostiche schema + author check, export HTML/PDF.
+- Palette componenti schema-driven con ricerca, gruppi, preset, pack manifest, pack JSON esterni e validazione collisioni.
+- Preview live iframe con tema/carta, sync editor-preview, zoom, pagina corrente/totale, single/facing/flow.
+- `::pagebreak` crea pagine fisiche; `Break` e `Auto break` inseriscono page break block-aware.
+- `Auto pages` e disponibile nella preview: misura l'iframe, crea nuove `page-shell`, mostra pagine totali, pagine generate e residui overflow cliccabili.
+- Test UI copre editor, componenti, sync, overflow, Auto pages, export HTML/PDF e stati errore principali.
 
-```text
-Vite + React + CodeMirror 6 + iframe preview
-```
-
-- CodeMirror 6 per editing Markdown, shortcut, completions, lint e comandi.
-- React solo per shell, menu, pannelli e stato.
-- Preview iframe usando il renderer/CSS gia presenti.
-- Storage statico iniziale: `localStorage`/download-import Markdown.
-- Integrazione futura nel sito reference come app statica.
-
-## Stato Attuale
-
-- Il repo ha molte modifiche non committate e preesistenti. Non fare revert automatici.
-- Ultimo check completo eseguito con successo: `npm run check`.
-- Server locale corrente: `npm run editor` su `http://127.0.0.1:5173/editor-next/`.
-- La shell vanilla `editor/` e stata rimossa; `editor-next/` e l'unica UI applicativa.
-- Tranche Homebrewery-like avviata in `editor-next/` con Vite, React, CodeMirror 6, preview iframe e autosave locale separato.
-- `editor-next` ora usa un server integrato Vite + API locali con `npm run editor:next`, include apertura documenti, salvataggio, check guidato ed export HTML/PDF.
-- Flusso documenti UI include rename/delete del documento corrente.
-- Dialog custom disponibili per conferme e rename, senza prompt/confirm nativi.
-- Snippet topbar estesi a nota/callout, include e immagine.
-- Build statica: `npm run editor:next:build`; smoke dedicato: `npm run test:editor-next-ui`.
-- Benchmark Homebrewery verificato in `docs/homebrewery-benchmark.md`: upstream e `naturalcrit/homebrewery`, V3 non e una codebase separata, e la priorita comparativa ora e la toolbar preview pagina/spread.
-- Form componenti gia portati oltre il base: preset schema-driven, rimozione righe lista e validazione inline dei campi richiesti.
-- Prima toolbar preview implementata: pagina corrente/totale, prev/next, input pagina, fit/fill e selettore single/facing/flow.
-- Preview multipagina reale implementata per `::pagebreak`: ogni pagina e una `page-shell` separata.
-- Indicatore overflow pagine implementato nella toolbar preview, con riga sorgente del prossimo intervento e selezione da spezzare.
-- Comando `Break` disponibile per inserire `::pagebreak` prima del blocco Markdown selezionato e tracciare il marker creato.
-- Revisione post-break disponibile: se resta overflow seleziona la prossima riga da spezzare.
-- Sync editor-preview implementato: toggle `Sync`, preview segue la linea cursore anche su blocchi multi-linea e il click preview seleziona la sorgente.
-- Plugin pack manifest attivabili/disattivabili dalla palette componenti, con scelta persistente.
-- Pack JSON esterni importabili e rimovibili dalla palette componenti, con persistenza locale e validazione collisioni.
-- Anteprima componenti dei pack esterni importati visibile nella palette.
-- Azioni preset rapide disponibili sulle card componenti.
-- Sottogruppi preset visibili sulle card componenti.
-- Filtro categorie preset dedicato nella palette componenti.
-- Preset dichiarati anche da plugin pack versionati.
-- Ricerca palette estesa a label, gruppi e valori dei preset.
-- Shortcut palette: `Ctrl/Cmd+K` focus ricerca, `Escape` pulisce filtro attivo.
-- Filtri rapidi per gruppo disponibili nella palette componenti.
-- Breakpoint desktop compatti per evitare overflow orizzontale dei pannelli.
-- Switch pannelli mobile per Editor, Componenti, Preview e Documento.
-- Workspace locale persistente per preview visibile, zoom, viewport, spread, sync e filtro gruppo componenti.
-- Workspace locale persistente per collasso frontmatter/outline e riga outline selezionata.
-
-## File Da Conoscere
-
-- `docs/homebrewery-benchmark.md`
-- `packages/markdown/editor-actions.js`
-- `packages/documents/preview-shell.js`
-- `packages/components/preview.js`
-- `packages/documents/api.js`
-- `scripts/serve-editor-next.js`
-- `scripts/editor-server/*`
-- `styles/preview.css`
-- `styles/core/*`
-- `scripts/test-editor-next-ui.js`
-
-## Primo Task Consigliato
-
-Proseguire con page break piu intelligenti o palette avanzata:
+## Prossime Priorita
 
 1. Promuovere `Auto pages` da preview sperimentale a renderer/export stabile.
-2. Oppure installer/app desktop oltre allo ZIP applicativo locale.
-3. Mantenere `npm run test:editor-next-ui` come smoke minimo per ogni tranche.
+2. Packaging installabile/app desktop oltre allo ZIP locale.
+3. Polish onboarding e messaggi errore/export per utente non tecnico.
 
-Poi: polish errori/export e onboarding minimo.
+## Guardrail
 
-## Guardrail UX
-
-- Niente pannelli impilati sopra il testo.
-- Niente UI da gestionale: menu compatti e contenuto dominante.
-- Markdown resta sorgente primaria.
-- Preview pulita, senza immagini demo o ornamenti inutili.
-- Stile fantasy/SRD originale: non copiare trade dress, loghi, font o asset proprietari di editori terzi.
-
-## Verifica Minima
-
-Prima di chiudere ogni tranche:
-
-```bash
-npm run test:editor-next-ui
-npm run check
-```
+- Non copiare sintassi, stylesheet, font, asset, loghi o trade dress Homebrewery/manuali ufficiali.
+- Restare local-first e schema-driven finche account/cloud non diventano requisito esplicito.
+- Non nascondere il Markdown dietro un formato proprietario.
+- Conservare UI compatta: niente landing page, niente pannelli che coprono il testo.
