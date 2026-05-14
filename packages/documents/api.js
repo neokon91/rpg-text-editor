@@ -4,19 +4,21 @@ import { renderPreviewDocument } from "./preview-shell.js";
 
 const browserDocumentStorageKey = "rpg-text-editor-next:browser-documents";
 const browserModeStorageKey = "rpg-text-editor-next:browser-only";
+const browserDocumentDbName = "rpg-text-editor-next";
+const browserDocumentStoreName = "documents";
 
 export async function listDocuments() {
   return withServerFallback(
     () => fetchJson("/api/documents", {}, "Lista documenti non disponibile"),
-    () => ({ documents: browserDocuments().map(({ filename }) => filename) })
+    async () => ({ documents: (await browserDocuments()).map(({ filename }) => filename) })
   );
 }
 
 export async function getDocument(filename) {
   return withServerFallback(
     () => fetchJson(`/api/documents/${encodeURIComponent(filename)}`, {}, "Import non riuscito"),
-    () => {
-      const document = browserDocuments().find((item) => item.filename === filename);
+    async () => {
+      const document = (await browserDocuments()).find((item) => item.filename === filename);
       if (!document) throw new Error("Documento browser non trovato");
       return document;
     }
@@ -48,8 +50,8 @@ export async function renameDocument(filename, nextFilename) {
 export async function deleteDocument(filename) {
   return withServerFallback(
     () => fetchJson(`/api/documents/${encodeURIComponent(filename)}`, { method: "DELETE" }, "Delete non riuscito"),
-    () => {
-      saveBrowserDocuments(browserDocuments().filter((item) => item.filename !== filename));
+    async () => {
+      await saveBrowserDocuments((await browserDocuments()).filter((item) => item.filename !== filename));
       return { filename };
     }
   );
@@ -91,20 +93,20 @@ export function setBrowserOnlyMode(enabled) {
   } catch {}
 }
 
-export function getBrowserDocumentStorageStats() {
-  const raw = safeLocalStorageGet(browserDocumentStorageKey) || "[]";
-  const documents = safeParseBrowserDocuments(raw);
-  const bytes = new Blob([raw]).size;
+export async function getBrowserDocumentStorageStats() {
+  const documents = await browserDocuments();
+  const bytes = new Blob([JSON.stringify(documents)]).size;
   return {
     count: documents.length,
     bytes,
     label: formatBytes(bytes),
-    warning: bytes > 2_500_000
+    warning: bytes > 2_500_000,
+    storage: indexedDbAvailable() ? "IndexedDB" : "localStorage"
   };
 }
 
-export function exportBrowserDocumentsArchive() {
-  const documents = browserDocuments();
+export async function exportBrowserDocumentsArchive() {
+  const documents = await browserDocuments();
   const exportedAt = new Date().toISOString();
   const archive = {
     format: "rpg-text-editor.browser-documents.v1",
@@ -124,7 +126,7 @@ export async function importBrowserDocumentsArchive(file) {
     throw new Error("Archivio browser non valido");
   }
 
-  const current = browserDocuments();
+  const current = await browserDocuments();
   const merged = new Map(current.map((document) => [document.filename, document]));
   let renamed = 0;
 
@@ -144,7 +146,7 @@ export async function importBrowserDocumentsArchive(file) {
     });
   }
 
-  saveBrowserDocuments([...merged.values()]);
+  await saveBrowserDocuments([...merged.values()]);
   setBrowserOnlyMode(true);
   return { count: archive.documents.length, renamed, documents: [...merged.values()].map(({ filename }) => filename) };
 }
@@ -191,12 +193,89 @@ function activateBrowserOnlyMode() {
   setBrowserOnlyMode(true);
 }
 
-function browserDocuments() {
+async function browserDocuments() {
+  if (!indexedDbAvailable()) return localStorageBrowserDocuments();
+
+  try {
+    const db = await openBrowserDocumentDb();
+    await migrateLocalStorageDocuments(db);
+    return getAllBrowserDocuments(db);
+  } catch {
+    return localStorageBrowserDocuments();
+  }
+}
+
+async function saveBrowserDocuments(documents) {
+  const sorted = documents.sort((a, b) => a.filename.localeCompare(b.filename));
+  if (!indexedDbAvailable()) {
+    saveLocalStorageBrowserDocuments(sorted);
+    return;
+  }
+
+  try {
+    const db = await openBrowserDocumentDb();
+    await replaceAllBrowserDocuments(db, sorted);
+    localStorage.removeItem(browserDocumentStorageKey);
+  } catch {
+    saveLocalStorageBrowserDocuments(sorted);
+  }
+}
+
+function localStorageBrowserDocuments() {
   return safeParseBrowserDocuments(safeLocalStorageGet(browserDocumentStorageKey) || "[]");
 }
 
-function saveBrowserDocuments(documents) {
-  localStorage.setItem(browserDocumentStorageKey, JSON.stringify(documents.sort((a, b) => a.filename.localeCompare(b.filename))));
+function saveLocalStorageBrowserDocuments(documents) {
+  localStorage.setItem(browserDocumentStorageKey, JSON.stringify(documents));
+}
+
+function indexedDbAvailable() {
+  return typeof indexedDB !== "undefined";
+}
+
+function openBrowserDocumentDb() {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(browserDocumentDbName, 1);
+    request.onupgradeneeded = () => {
+      const db = request.result;
+      if (!db.objectStoreNames.contains(browserDocumentStoreName)) {
+        db.createObjectStore(browserDocumentStoreName, { keyPath: "filename" });
+      }
+    };
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error || new Error("IndexedDB non disponibile"));
+  });
+}
+
+async function migrateLocalStorageDocuments(db) {
+  const documents = localStorageBrowserDocuments();
+  if (!documents.length) return;
+  const current = await getAllBrowserDocuments(db);
+  const merged = new Map(current.map((document) => [document.filename, document]));
+  for (const document of documents) merged.set(document.filename, document);
+  await replaceAllBrowserDocuments(db, [...merged.values()]);
+  localStorage.removeItem(browserDocumentStorageKey);
+}
+
+function getAllBrowserDocuments(db) {
+  return new Promise((resolve, reject) => {
+    const request = db.transaction(browserDocumentStoreName, "readonly")
+      .objectStore(browserDocumentStoreName)
+      .getAll();
+    request.onsuccess = () => resolve((request.result || []).sort((a, b) => a.filename.localeCompare(b.filename)));
+    request.onerror = () => reject(request.error || new Error("Lettura IndexedDB non riuscita"));
+  });
+}
+
+function replaceAllBrowserDocuments(db, documents) {
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(browserDocumentStoreName, "readwrite");
+    const store = transaction.objectStore(browserDocumentStoreName);
+    store.clear();
+    for (const document of documents) store.put(document);
+    transaction.oncomplete = resolve;
+    transaction.onerror = () => reject(transaction.error || new Error("Scrittura IndexedDB non riuscita"));
+  });
 }
 
 function safeParseBrowserDocuments(raw) {
@@ -222,8 +301,8 @@ function safeLocalStorageGet(key) {
   }
 }
 
-function saveBrowserDocument({ filename, content, overwrite = false, unique = false }) {
-  const documents = browserDocuments();
+async function saveBrowserDocument({ filename, content, overwrite = false, unique = false }) {
+  const documents = await browserDocuments();
   const safeFilename = safeMarkdownFilename(filename);
   const nextFilename = unique ? uniqueFilename(documents, safeFilename) : safeFilename;
   const index = documents.findIndex((item) => item.filename === nextFilename);
@@ -240,12 +319,12 @@ function saveBrowserDocument({ filename, content, overwrite = false, unique = fa
   } else {
     documents.push(document);
   }
-  saveBrowserDocuments(documents);
+  await saveBrowserDocuments(documents);
   return document;
 }
 
-function renameBrowserDocument(filename, nextFilename) {
-  const documents = browserDocuments();
+async function renameBrowserDocument(filename, nextFilename) {
+  const documents = await browserDocuments();
   const safeNext = safeMarkdownFilename(nextFilename);
   const index = documents.findIndex((item) => item.filename === filename);
   if (index === -1) throw new Error("Documento browser non trovato");
@@ -255,7 +334,7 @@ function renameBrowserDocument(filename, nextFilename) {
     throw error;
   }
   documents[index] = { ...documents[index], filename: safeNext, updatedAt: new Date().toISOString() };
-  saveBrowserDocuments(documents);
+  await saveBrowserDocuments(documents);
   return documents[index];
 }
 

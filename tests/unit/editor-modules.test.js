@@ -303,7 +303,7 @@ test("browser-only document api can backup and import document archives", async 
 
   await saveDocument({ filename: "backup-one.md", content: "# Backup One" });
   await saveDocument({ filename: "backup-two.md", content: "# Backup Two" });
-  const exported = exportBrowserDocumentsArchive();
+  const exported = await exportBrowserDocumentsArchive();
   const archiveText = await downloads[0].blob.text();
 
   assert.equal(exported.count, 2);
@@ -321,15 +321,16 @@ test("browser-only document api can backup and import document archives", async 
 
 test("browser-only document api reports storage stats", async () => {
   withBrowserOnlyStorage();
-  assert.deepEqual(getBrowserDocumentStorageStats(), {
+  assert.deepEqual(await getBrowserDocumentStorageStats(), {
     count: 0,
     bytes: 2,
     label: "2 B",
-    warning: false
+    warning: false,
+    storage: "localStorage"
   });
 
   await saveDocument({ filename: "stats.md", content: "# Stats" });
-  const stats = getBrowserDocumentStorageStats();
+  const stats = await getBrowserDocumentStorageStats();
 
   assert.equal(stats.count, 1);
   assert.equal(stats.bytes > 2, true);
@@ -370,6 +371,7 @@ function withBrowserStorage({ browserOnly, downloads = [] }) {
     location: { search: browserOnly ? "?browser-only" : "" },
     __RPG_TEXT_EDITOR_BROWSER_ONLY__: browserOnly
   };
+  globalThis.indexedDB = undefined;
   globalThis.localStorage = {
     getItem: (key) => store.get(key) || null,
     setItem: (key, value) => store.set(key, String(value)),

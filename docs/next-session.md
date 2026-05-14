@@ -29,7 +29,7 @@ public: false
 - Markdown resta sorgente primaria, con autosave locale e download Markdown.
 - Apertura/salvataggio/rename/delete documenti da `docs/`, con dialog custom.
 - Check guidato, diagnostiche schema + author check, export HTML/PDF.
-- Adapter documenti browser-only iniziale: fallback automatico da API locali a storage/download browser, PDF come HTML stampabile, backup/import JSON con conflitti rinominati e indicatore uso storage.
+- Adapter documenti browser-only iniziale: fallback automatico da API locali a storage/download browser, persistenza IndexedDB con migrazione da `localStorage`, PDF come HTML stampabile, backup/import JSON con conflitti rinominati e indicatore uso storage.
 - Palette componenti schema-driven con ricerca, gruppi, preset, pack manifest, pack JSON esterni e validazione collisioni.
 - Preview live iframe con tema/carta, sync editor-preview, zoom, pagina corrente/totale, single/facing/flow.
 - `::pagebreak` crea pagine fisiche; `Break` e `Auto break` inseriscono page break block-aware.

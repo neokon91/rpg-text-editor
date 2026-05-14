@@ -86,7 +86,13 @@ function App() {
   const [documents, setDocuments] = useState([]);
   const [currentDocument, setCurrentDocument] = useState("");
   const [documentRuntimeMode, setDocumentRuntimeMode] = useState(() => getDocumentRuntimeMode());
-  const [browserStorageStats, setBrowserStorageStats] = useState(() => getBrowserDocumentStorageStats());
+  const [browserStorageStats, setBrowserStorageStats] = useState(() => ({
+    count: 0,
+    bytes: 0,
+    label: "0 B",
+    warning: false,
+    storage: "browser"
+  }));
   const [lastSavedContent, setLastSavedContent] = useState(() => initialMarkdown.current);
   const [status, setStatus] = useState("Bozza locale");
   const [statusDetail, setStatusDetail] = useState("");
@@ -393,7 +399,7 @@ function App() {
       setStatus("Lista documenti non disponibile");
     } finally {
       setDocumentRuntimeMode(getDocumentRuntimeMode());
-      setBrowserStorageStats(getBrowserDocumentStorageStats());
+      setBrowserStorageStats(await getBrowserDocumentStorageStats());
     }
   }
 
@@ -535,12 +541,12 @@ function App() {
     setStatus("Download Markdown pronto");
   }
 
-  function exportBrowserArchive() {
-    const result = exportBrowserDocumentsArchive();
+  async function exportBrowserArchive() {
+    const result = await exportBrowserDocumentsArchive();
     setExportOutputs([{ path: result.path, url: result.url }]);
     setStatus(`Backup browser pronto: ${result.count} documenti`);
     setDocumentRuntimeMode(getDocumentRuntimeMode());
-    setBrowserStorageStats(getBrowserDocumentStorageStats());
+    setBrowserStorageStats(await getBrowserDocumentStorageStats());
   }
 
   function selectBrowserArchive() {
@@ -557,7 +563,7 @@ function App() {
       setDocuments(result.documents.map((filename) => ({ filename })));
       setCurrentDocument("");
       setExportOutputs([]);
-      setBrowserStorageStats(getBrowserDocumentStorageStats());
+      setBrowserStorageStats(await getBrowserDocumentStorageStats());
       setStatus(result.renamed
         ? `Import browser completato: ${result.count} documenti, ${result.renamed} rinominati`
         : `Import browser completato: ${result.count} documenti`);

@@ -162,7 +162,7 @@ export function TopMenu({
         <span data-state={documentRuntimeMode === "browser" ? "warning" : "ok"} title="Runtime documenti">{runtimeLabel}</span>
         <span
           data-state={browserStorageStats.warning ? "warning" : "ok"}
-          title={browserStorageStats.warning ? "Storage browser alto: esegui Backup" : "Uso documenti browser"}
+          title={browserStorageStats.warning ? `Storage browser alto (${browserStorageStats.storage}): esegui Backup` : `Uso documenti browser (${browserStorageStats.storage})`}
         >
           {browserStorageLabel}
         </span>
