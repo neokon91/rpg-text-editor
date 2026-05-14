@@ -48,6 +48,7 @@ public: false
 - [x] Indicatore uso storage browser con avviso backup quando cresce.
 - [x] Persistenza browser documenti su IndexedDB con fallback/migrazione da `localStorage`.
 - [x] Smoke UI reale per migrazione documenti legacy da `localStorage` a IndexedDB.
+- [x] Lista documenti browser-only allineata al server con `filename` e titolo leggibile.
 - [x] Export HTML/PDF guidato dal workflow autore locale.
 - [x] Overwrite esplicito.
 - [x] Salva nuovo con nome unico.

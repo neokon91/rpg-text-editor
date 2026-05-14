@@ -10,7 +10,7 @@ const browserDocumentStoreName = "documents";
 export async function listDocuments() {
   return withServerFallback(
     () => fetchJson("/api/documents", {}, "Lista documenti non disponibile"),
-    async () => ({ documents: (await browserDocuments()).map(({ filename }) => filename) })
+    async () => ({ documents: (await browserDocuments()).map(browserDocumentSummary) })
   );
 }
 
@@ -227,6 +227,18 @@ function localStorageBrowserDocuments() {
 
 function saveLocalStorageBrowserDocuments(documents) {
   localStorage.setItem(browserDocumentStorageKey, JSON.stringify(documents));
+}
+
+function browserDocumentSummary(document) {
+  const { metadata, body } = parseFrontmatter(document.content || "");
+  return {
+    filename: document.filename,
+    title: metadata.title || firstHeading(body) || document.filename
+  };
+}
+
+function firstHeading(markdown) {
+  return String(markdown).split(/\r?\n/).find((line) => /^#\s+/.test(line))?.replace(/^#\s+/, "").trim();
 }
 
 function indexedDbAvailable() {

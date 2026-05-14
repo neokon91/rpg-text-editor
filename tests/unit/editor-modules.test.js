@@ -229,7 +229,7 @@ CD 31`;
 
   assert.equal(getDocumentRuntimeMode(), "browser");
   assert.equal(saved.filename, "browser-test.md");
-  assert.deepEqual(listed.documents, ["browser-test.md"]);
+  assert.deepEqual(listed.documents, [{ filename: "browser-test.md", title: "Browser Test" }]);
   assert.equal(checked.diagnostics.some((item) => item.message.includes("CD 31 fuori scala")), true);
 });
 
@@ -316,7 +316,10 @@ test("browser-only document api can backup and import document archives", async 
 
   assert.equal(getDocumentRuntimeMode(), "browser");
   assert.equal(imported.count, 2);
-  assert.deepEqual(listed.documents, ["backup-one.md", "backup-two.md"]);
+  assert.deepEqual(listed.documents, [
+    { filename: "backup-one.md", title: "Backup One" },
+    { filename: "backup-two.md", title: "Backup Two" }
+  ]);
 });
 
 test("browser-only document api reports storage stats", async () => {
@@ -356,7 +359,11 @@ test("browser-only archive import keeps existing documents on filename conflicts
 
   assert.equal(imported.count, 2);
   assert.equal(imported.renamed, 1);
-  assert.deepEqual(listed.documents, ["conflict-2.md", "conflict.md", "unsafe-name.md"]);
+  assert.deepEqual(listed.documents, [
+    { filename: "conflict-2.md", title: "Imported" },
+    { filename: "conflict.md", title: "Original" },
+    { filename: "unsafe-name.md", title: "Safe Name" }
+  ]);
 });
 
 function withBrowserOnlyStorage(options = {}) {
