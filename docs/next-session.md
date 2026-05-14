@@ -84,7 +84,7 @@ Vite + React + CodeMirror 6 + iframe preview
 
 Proseguire con page break piu intelligenti o palette avanzata:
 
-1. Polish onboarding e messaggi errore/export.
+1. Polish onboarding minimo per primo avvio e documenti demo.
 2. Oppure paginazione automatica piu predittiva prima del render overflow.
 3. Mantenere `npm run test:editor-next-ui` come smoke minimo per ogni tranche.
 

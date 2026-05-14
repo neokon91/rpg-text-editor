@@ -115,6 +115,7 @@ public: false
 - [x] Test UI per export PDF con stato in corso e file generato.
 - [x] Test UI per component insertion da form con campi modificati e preview aggiornata.
 - [x] Test UI per sync preview da cursore editor verso anteprima.
+- [x] Badge status con severita `warning`/`busy`/`error` per save/export e log export nel tooltip.
 
 ## Output editoriale
 
@@ -129,5 +130,5 @@ public: false
 
 ## Prossimi passi consigliati
 
-1. Polish onboarding e messaggi errore/export.
+1. Polish onboarding minimo per primo avvio e documenti demo.
 2. Paginazione automatica piu predittiva prima del render overflow.

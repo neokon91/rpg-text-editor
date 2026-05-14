@@ -20,6 +20,7 @@ export function TopMenu({
   currentDocument,
   isDirty,
   status,
+  statusDetail,
   isChecking,
   exportOutputs,
   previewVisible,
@@ -50,6 +51,13 @@ export function TopMenu({
   const warnings = diagnostics.filter((item) => item.severity === "warning").length;
   const checkStatus = errors ? `${errors} errori` : warnings ? `${warnings} avvisi` : "Check ok";
   const visibleZoomOptions = zoomOptions.includes(zoom) ? zoomOptions : [...zoomOptions, zoom];
+  const statusState = statusDetail || /non riuscito|bloccato|errore|errori|non disponibile/i.test(status)
+    ? "error"
+    : /in corso|\.\.\./i.test(status)
+      ? "busy"
+      : /avvisi|gia|modifiche/i.test(status)
+        ? "warning"
+        : "ok";
 
   return (
     <header className="next-topbar">
@@ -135,7 +143,7 @@ export function TopMenu({
         <span>{words} parole</span>
         <span>{schemaState}</span>
         <span data-state={errors ? "error" : warnings ? "warning" : "ok"}>{checkStatus}</span>
-        <span>{status}</span>
+        <span data-state={statusState} title={statusDetail || status}>{status}</span>
         {exportOutputs.map((output) => (
           <a key={output.path} href={output.url} target="_blank" rel="noreferrer">{output.path}</a>
         ))}

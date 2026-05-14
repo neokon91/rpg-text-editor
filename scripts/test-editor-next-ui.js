@@ -111,6 +111,7 @@ try {
   await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.querySelector('.page-shell h1')?.textContent.includes('Codex Save Conflict')"));
   await clickTopbarButton("Salva");
   await waitFor(() => evalInPage("document.body.textContent.includes('File gia esistente: usa Salva copia')"));
+  await waitFor(() => evalInPage("Array.from(document.querySelectorAll('.next-status [data-state=\"warning\"]')).some((node) => node.textContent.includes('File gia esistente'))"));
   await evalInPage(`
     window.localStorage.setItem('rpg-text-editor-next:draft', '# Export Non Valido\\n\\nDocumento senza frontmatter.');
   `);
@@ -118,6 +119,7 @@ try {
   await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.querySelector('.page-shell h1')?.textContent.includes('Export Non Valido')"));
   await clickTopbarButton("HTML");
   await waitFor(() => evalInPage("document.body.textContent.includes('Export bloccato: correggi gli errori')"));
+  await waitFor(() => evalInPage("Array.from(document.querySelectorAll('.next-status [data-state=\"error\"]')).some((node) => node.textContent.includes('Export bloccato'))"));
   await evalInPage(`
     window.localStorage.setItem('rpg-text-editor-next:draft', '---\\ntitle: Codex Rename Temp\\nslug: codex-rename-temp\\nsummary: Documento temporaneo rename/delete\\ncompatibility: 5e/5.5e\\nlicense_mode: srd-5.2-cc\\nauthor: Codex\\ntheme: classic-parchment\\npaper: A4\\n---\\n\\n# Codex Rename Temp\\n\\nContenuto temporaneo.');
   `);
@@ -349,6 +351,7 @@ try {
   await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.querySelector('.page-shell h1')?.textContent.includes('Codex PDF UI')"));
   await clickTopbarButton("PDF");
   await waitFor(() => evalInPage("document.body.textContent.includes('Export PDF in corso')"));
+  await waitFor(() => evalInPage("Array.from(document.querySelectorAll('.next-status [data-state=\"busy\"]')).some((node) => node.textContent.includes('Export PDF in corso'))"));
   await waitFor(() => exportedFileExists("codex-pdf-ui.pdf"), 90000);
   await rm(join(root, "dist", "codex-pdf-ui.pdf"), { force: true });
   await rm(join(root, "dist", "codex-pdf-ui.html"), { force: true });

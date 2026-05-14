@@ -150,6 +150,11 @@ button:disabled {
   color: #6d4e0b;
 }
 
+.next-status [data-state="busy"] {
+  background: #d9e8ef;
+  color: #205066;
+}
+
 .next-status [data-state="error"] {
   background: #f2d1c8;
   color: #7d2d1a;

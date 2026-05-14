@@ -70,6 +70,7 @@ function App() {
   const [currentDocument, setCurrentDocument] = useState("");
   const [lastSavedContent, setLastSavedContent] = useState("");
   const [status, setStatus] = useState("Bozza locale");
+  const [statusDetail, setStatusDetail] = useState("");
   const [authorDiagnostics, setAuthorDiagnostics] = useState([]);
   const [checkedMarkdown, setCheckedMarkdown] = useState("");
   const [isChecking, setIsChecking] = useState(false);
@@ -121,6 +122,10 @@ function App() {
   useEffect(() => {
     saveDraft(markdown);
   }, [markdown]);
+
+  useEffect(() => {
+    if (statusDetail && !/export/i.test(status)) setStatusDetail("");
+  }, [status, statusDetail]);
 
   useEffect(() => {
     refreshDocuments();
@@ -525,13 +530,16 @@ function App() {
     }
 
     setStatus(`Export ${format.toUpperCase()} in corso...`);
+    setStatusDetail("");
     try {
       const exportResult = await exportDocument({ filename, content: markdown, format });
       setExportOutputs(exportResult.outputs || []);
       setStatus(`Export ${format.toUpperCase()} pronto`);
+      setStatusDetail("");
     } catch (error) {
       setExportOutputs([]);
-      setStatus(error.log || error.message || "Export non riuscito");
+      setStatus(error.message || "Export non riuscito");
+      setStatusDetail(error.log || "");
     }
   }
 
@@ -546,6 +554,7 @@ function App() {
         currentDocument={currentDocument}
         isDirty={isDirty}
         status={status}
+        statusDetail={statusDetail}
         isChecking={isChecking}
         exportOutputs={exportOutputs}
         previewVisible={previewVisible}
