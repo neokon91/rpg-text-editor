@@ -60,7 +60,7 @@ public: false
 - [x] Markdown Preview VS Code allineata ai token visuali del template.
 - [x] Sync editor-preview piu fine su blocchi multi-linea tramite range sorgente.
 - [x] Preview locale con zoom persistente e marker `::pagebreak` visibile.
-- [x] Workspace persistente per visibilita preview, zoom, viewport, spread, sync e filtro gruppo componenti.
+- [x] Workspace persistente per visibilita preview, zoom, viewport, spread, sync, filtro gruppo componenti, ricerca palette e categoria preset.
 - [x] Workspace persistente per collasso pannelli frontmatter/outline e riga outline selezionata.
 - [x] Prima toolbar pagina/spread nella UI React: pagina corrente/totale, prev/next, input pagina, fit page/fill width e modalita single/facing/flow.
 - [x] Preview multipagina reale basata su `::pagebreak`, con una `page-shell` per pagina.
@@ -128,5 +128,5 @@ public: false
 
 ## Prossimi passi consigliati
 
-1. Palette/componenti e preview come workspace persistenti.
-2. Paginazione automatica piu evoluta oltre agli split manuali.
+1. Paginazione automatica piu evoluta oltre agli split manuali.
+2. Polish onboarding e messaggi errore/export.

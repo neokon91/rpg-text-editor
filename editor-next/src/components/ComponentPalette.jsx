@@ -6,6 +6,8 @@ import {
   validateComponentValues
 } from "./componentMarkdown.js";
 
+const componentPaletteStoragePrefix = "rpg-text-editor-next:component-palette";
+
 export function ComponentPalette({
   schema,
   packs = [],
@@ -18,10 +20,10 @@ export function ComponentPalette({
   onActiveGroupChange,
   onInsert
 }) {
-  const [query, setQuery] = useState("");
-  const [selectedId, setSelectedId] = useState("");
+  const [query, setQuery] = useState(() => loadPaletteSetting("query", ""));
+  const [selectedId, setSelectedId] = useState(() => loadPaletteSetting("selected-id", ""));
   const [packError, setPackError] = useState("");
-  const [activePresetGroup, setActivePresetGroup] = useState("all");
+  const [activePresetGroup, setActivePresetGroup] = useState(() => loadPaletteSetting("preset-group", "all"));
   const searchRef = useRef(null);
   const selectedComponent = useMemo(
     () => (schema.components || []).find((component) => component.id === selectedId) || null,
@@ -45,6 +47,18 @@ export function ComponentPalette({
   useEffect(() => {
     if (presetGroups.length && activePresetGroup !== "all" && !presetGroups.includes(activePresetGroup)) setActivePresetGroup("all");
   }, [activePresetGroup, presetGroups]);
+  useEffect(() => {
+    savePaletteSetting("query", query);
+  }, [query]);
+  useEffect(() => {
+    savePaletteSetting("preset-group", activePresetGroup);
+  }, [activePresetGroup]);
+  useEffect(() => {
+    savePaletteSetting("selected-id", selectedId);
+  }, [selectedId]);
+  useEffect(() => {
+    if (selectedId && schema.components?.length && !selectedComponent) setSelectedId("");
+  }, [schema, selectedComponent, selectedId]);
   useEffect(() => {
     function handleShortcut(event) {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
@@ -177,6 +191,25 @@ export function ComponentPalette({
       ) : null}
     </aside>
   );
+}
+
+function loadPaletteSetting(key, fallback) {
+  try {
+    return localStorage.getItem(`${componentPaletteStoragePrefix}:${key}`) || fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+function savePaletteSetting(key, value) {
+  try {
+    const storageKey = `${componentPaletteStoragePrefix}:${key}`;
+    if (value) {
+      localStorage.setItem(storageKey, value);
+    } else {
+      localStorage.removeItem(storageKey);
+    }
+  } catch {}
 }
 
 function ExternalPackControls({ packs, error, onError, onImport, onRemove }) {

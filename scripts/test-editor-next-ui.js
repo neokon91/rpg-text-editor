@@ -200,15 +200,23 @@ try {
   await clickButton("Tono");
   await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 1 && document.body.textContent.includes('Fazione') && !document.body.textContent.includes('Missione')"));
   await waitFor(() => evalInPage("Array.from(document.querySelectorAll('.component-preset-group-label')).every((node) => node.textContent.trim() === 'Tono')"));
+  await assertEqual(await evalInPage("window.localStorage.getItem('rpg-text-editor-next:component-palette:preset-group')"), "Tono", "preset group persisted");
+  await reloadPage();
+  await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 1 && Array.from(document.querySelectorAll('.component-preset-group-label')).every((node) => node.textContent.trim() === 'Tono')"));
   await clickButton("Tutti preset");
   await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 15"));
   await dispatchDocumentKey("k", { ctrlKey: true });
   await waitFor(() => evalInPage("document.activeElement === document.querySelector('.component-palette input[type=\"search\"]')"));
   await setComponentSearch("Congrega");
   await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 1 && document.body.textContent.includes('Fazione')"));
+  await assertEqual(await evalInPage("window.localStorage.getItem('rpg-text-editor-next:component-palette:query')"), "Congrega", "component search persisted");
+  await reloadPage();
+  await waitFor(() => evalInPage("document.querySelector('.component-palette input[type=\"search\"]')?.value === 'Congrega' && document.querySelectorAll('.component-card').length === 1"));
   await waitFor(() => evalInPage("document.querySelector('.component-form optgroup[label=\"Tono\"]') || Array.from(document.querySelectorAll('.component-preset-group-label')).some((node) => node.textContent.trim() === 'Tono')"));
+  await dispatchDocumentKey("k", { ctrlKey: true });
   await dispatchDocumentKey("Escape");
   await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 15"));
+  await waitFor(() => evalInPage("!window.localStorage.getItem('rpg-text-editor-next:component-palette:query')"));
   await waitFor(() => evalInPage("Array.from(document.querySelectorAll('.component-preset-group-label')).some((node) => node.textContent.trim() === 'Tono')"));
   const draftBeforePluginPreset = await evalInPage("window.localStorage.getItem('rpg-text-editor-next:draft')");
   await clickButton("Congrega segreta");
@@ -430,14 +438,29 @@ async function dispatchDocumentKey(key, options = {}) {
 }
 
 async function clickButton(label) {
-  await evalInPage(`
-    {
-      const button = Array.from(document.querySelectorAll('button'))
-        .find((item) => item.textContent.trim() === ${JSON.stringify(label)});
-      if (!button) throw new Error('Button not found: ${label}');
-      button.click();
-    }
-  `);
+  let result;
+  const started = Date.now();
+  while (Date.now() - started < 8000) {
+    result = await evalInPage(`
+      (() => {
+        const buttons = Array.from(document.querySelectorAll('button'));
+        const button = buttons.find((item) => item.textContent.trim() === ${JSON.stringify(label)});
+        if (!button) {
+          return {
+            clicked: false,
+            readyState: document.readyState,
+            labels: buttons.map((item) => item.textContent.trim()),
+            body: document.body.textContent.slice(0, 200)
+          };
+        }
+        button.click();
+        return { clicked: true };
+      })()
+    `);
+    if (result.clicked) return;
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  }
+  throw new Error(`Button not found: ${label}. Ready: ${result?.readyState}. Body: ${result?.body || "(empty)"}. Available: ${result?.labels?.join(", ") || "(none)"}`);
 }
 
 async function setComponentSearch(value) {
@@ -467,7 +490,7 @@ async function setComponentFormField(label, value) {
   await evalInPage(`
     {
       const field = Array.from(document.querySelectorAll('.component-form label'))
-        .find((item) => item.querySelector('span')?.textContent.trim().replace(/ \\*$/, '') === ${JSON.stringify(label)});
+        .find((item) => item.querySelector('span')?.textContent.trim().startsWith(${JSON.stringify(label)}));
       if (!field) throw new Error('Component field not found: ${label}');
       const control = field.querySelector('input, textarea');
       if (!control) throw new Error('Component control not found: ${label}');
@@ -482,7 +505,7 @@ async function setComponentFormField(label, value) {
 async function componentFormHasField(label) {
   return evalInPage(`
     Array.from(document.querySelectorAll('.component-form label'))
-      .some((item) => item.querySelector('span')?.textContent.trim().replace(/ \\*$/, '') === ${JSON.stringify(label)})
+      .some((item) => item.querySelector('span')?.textContent.trim().startsWith(${JSON.stringify(label)}))
   `);
 }
 

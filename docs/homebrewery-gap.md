@@ -65,7 +65,7 @@ public: false
 ## Gap Prioritari
 
 1. Paginazione automatica piu evoluta oltre agli split manuali `::pagebreak`.
-2. Persistenza workspace piu organica per palette/componenti e preview.
+2. Polish onboarding e messaggi errore/export.
 
 ## Non Obiettivi
 
