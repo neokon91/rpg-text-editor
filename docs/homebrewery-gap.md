@@ -26,7 +26,7 @@ public: false
 - Dialog custom per conferme e input rename, senza prompt/confirm nativi.
 - Check guidato con diagnostiche schema e author check.
 - Export HTML/PDF dal flusso locale.
-- Snippet rapidi per blocchi frequenti.
+- Snippet rapidi per blocchi frequenti, inclusi callout, include e immagini.
 - Toolbar preview con pagina corrente/totale, prev/next, input pagina, fit page/fill width e modalita single/facing/flow.
 - Preview multipagina reale da `::pagebreak`, con pagine `page-shell` separate.
 - Indicatore overflow pagine nella toolbar preview, con riga sorgente del prossimo intervento e selezione da spezzare.
@@ -65,8 +65,7 @@ public: false
 ## Gap Prioritari
 
 1. Paginazione automatica piu evoluta oltre agli split manuali `::pagebreak`.
-2. Comandi editor da tastiera e toolbar Markdown piu completa.
-3. Test UI per open/save, component insertion, sync preview e export PDF.
+2. Test UI per open/save, component insertion, sync preview e export PDF.
 
 ## Non Obiettivi
 

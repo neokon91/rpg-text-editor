@@ -4,6 +4,8 @@ const snippets = {
   note: "::: note Nota\nPromemoria per il master.\n:::",
   encounter: "::: encounter Incontro\nname: Nuovo incontro\nbody: Obiettivo, minaccia e complicazione.\n:::",
   table: "::: random-table Tabella\nname: Tabella casuale\ndie: d6\nrow: 1 | Evento\nrow: 2 | Svolta inattesa\n:::",
+  include: '<rpg-include src="content/monsters/custode-ossa.html"></rpg-include>',
+  image: '![Mappa santuario sepolto](assets/images/maps/santuario-sepolto-map.svg)',
   pagebreak: "::pagebreak"
 };
 
@@ -78,8 +80,11 @@ export function TopMenu({
         <span className="next-separator" />
         <button type="button" onClick={() => onInsertSnippet(snippets.scene)}>Scena</button>
         <button type="button" onClick={() => onInsertSnippet(snippets.readaloud)}>Readaloud</button>
+        <button type="button" onClick={() => onInsertSnippet(snippets.note)}>Nota</button>
         <button type="button" onClick={() => onInsertSnippet(snippets.encounter)}>Incontro</button>
         <button type="button" onClick={() => onInsertSnippet(snippets.table)}>Tabella</button>
+        <button type="button" onClick={() => onInsertSnippet(snippets.include)}>Include</button>
+        <button type="button" onClick={() => onInsertSnippet(snippets.image)}>Immagine</button>
         <button type="button" onClick={() => onInsertSnippet(snippets.pagebreak)}>Pagina</button>
         <button type="button" onClick={onInsertPageBreakAtSelection}>Break</button>
         <span className="next-separator" />

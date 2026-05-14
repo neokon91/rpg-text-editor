@@ -44,7 +44,7 @@ Il server apre `editor-next/` su `http://127.0.0.1:5173/editor-next/` e combina 
 - Comando `Break` per inserire `::pagebreak` prima del blocco Markdown selezionato, selezionando il marker creato e indicando la riga del contenuto spostato.
 - Revisione post-break: se resta overflow dopo l'inserimento assistito, la prossima riga da spezzare viene selezionata automaticamente.
 - Sync preview: toggle `Sync`, scroll preview dalla linea cursore, range sorgente sui blocchi multi-linea e click su preview verso la linea sorgente.
-- Snippet rapidi: scena, readaloud, incontro, tabella e page break.
+- Snippet rapidi: scena, readaloud, nota/callout, incontro, tabella, include, immagine e page break.
 - Palette componenti generata da schema con ricerca, gruppi e inserimento al cursore.
 - Toggle plugin pack dichiarati nel manifest, con scelta persistente in `localStorage`.
 - Import pack JSON esterni non versionati dalla palette, con rimozione, persistenza locale e validazione collisioni prima del salvataggio.

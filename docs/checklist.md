@@ -43,7 +43,7 @@ public: false
 - [x] Rename documento nella UI React.
 - [x] Delete documento nella UI React.
 - [x] Conferme custom non native per reset, cambio documento, rename e delete.
-- [ ] Toolbar estesa per tabelle, immagini, callout e include nella UI React.
+- [x] Toolbar estesa per tabelle, immagini, callout e include nella UI React.
 - [x] Navigatore documento da heading Markdown con salto alla riga sorgente.
 - [x] Sync editor-preview base: toggle, scroll preview dalla linea cursore e click preview verso linea sorgente.
 - [ ] Palette/componenti e preview come workspace persistenti.
@@ -123,5 +123,5 @@ public: false
 
 ## Prossimi passi consigliati
 
-1. Comandi editor da tastiera e toolbar Markdown piu completa.
-2. Test UI piu ampi per open/save e casi errore.
+1. Test UI piu ampi per open/save e casi errore.
+2. Palette/componenti e preview come workspace persistenti.

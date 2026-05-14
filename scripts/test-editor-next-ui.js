@@ -230,8 +230,14 @@ try {
 
   await clickTopbarButton("Scena");
   await waitFor(() => evalInPage("document.body.textContent.includes('Nuova scena')"));
+  await clickTopbarButton("Nota");
+  await waitFor(() => evalInPage("window.localStorage.getItem('rpg-text-editor-next:draft')?.includes('::: note Nota')"));
+  await clickTopbarButton("Include");
+  await waitFor(() => evalInPage("window.localStorage.getItem('rpg-text-editor-next:draft')?.includes('<rpg-include src=\"content/monsters/custode-ossa.html\"></rpg-include>')"));
+  await clickTopbarButton("Immagine");
+  await waitFor(() => evalInPage("window.localStorage.getItem('rpg-text-editor-next:draft')?.includes('![Mappa santuario sepolto]')"));
 
-  await assertEqual(await evalInPage("document.body.textContent.includes('Nuova scena')"), true, "outline shows inserted scene");
+  await assertEqual(await evalInPage("window.localStorage.getItem('rpg-text-editor-next:draft')?.includes('Nuova scena')"), true, "draft includes inserted scene");
 
   await clickButton("Pagina");
   await waitFor(() => evalInPage("document.querySelector('.preview-toolbar')?.textContent.includes('/ 2')"));
