@@ -299,6 +299,9 @@ try {
   await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.documentElement.style.getPropertyValue('--rpg-preview-zoom') !== '1'"));
   await clickButton("Sync");
   await waitFor(() => evalInPage("Array.from(document.querySelectorAll('button[aria-pressed=\"true\"]')).some((button) => button.textContent.trim() === 'Sync')"));
+  await evalInPage("document.querySelector('iframe')?.contentWindow?.scrollTo(0, 0)");
+  await clickEditorLineContaining("![Mappa santuario sepolto]");
+  await waitFor(() => evalInPage("document.querySelector('iframe')?.contentWindow?.scrollY > 0"));
   await evalInPage(`
     {
       const heading = document.querySelector('iframe').contentDocument.querySelector('.page-shell h1');
@@ -490,6 +493,19 @@ async function clickComponentFormSubmit() {
       const button = document.querySelector('.component-form .primary-action');
       if (!button) throw new Error('Component form submit not found');
       button.click();
+    }
+  `);
+}
+
+async function clickEditorLineContaining(text) {
+  await evalInPage(`
+    {
+      const line = Array.from(document.querySelectorAll('.cm-line'))
+        .find((item) => item.textContent.includes(${JSON.stringify(text)}));
+      if (!line) throw new Error('Editor line not found: ${text}');
+      line.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, clientX: line.getBoundingClientRect().left + 8, clientY: line.getBoundingClientRect().top + 8 }));
+      line.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, clientX: line.getBoundingClientRect().left + 8, clientY: line.getBoundingClientRect().top + 8 }));
+      line.click();
     }
   `);
 }

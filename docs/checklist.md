@@ -113,6 +113,7 @@ public: false
 - [x] Test UI per errore save su file esistente e export bloccato dai diagnostici.
 - [x] Test UI per export PDF con stato in corso e file generato.
 - [x] Test UI per component insertion da form con campi modificati e preview aggiornata.
+- [x] Test UI per sync preview da cursore editor verso anteprima.
 
 ## Output editoriale
 
@@ -127,5 +128,5 @@ public: false
 
 ## Prossimi passi consigliati
 
-1. Test UI piu ampi per sync preview.
-2. Palette/componenti e preview come workspace persistenti.
+1. Palette/componenti e preview come workspace persistenti.
+2. Paginazione automatica piu evoluta oltre agli split manuali.

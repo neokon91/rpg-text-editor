@@ -84,8 +84,8 @@ Vite + React + CodeMirror 6 + iframe preview
 
 Proseguire con page break piu intelligenti o palette avanzata:
 
-1. Test UI piu ampi per sync preview.
-2. Oppure workspace persistente per palette/componenti e preview.
+1. Workspace persistente per palette/componenti e preview.
+2. Oppure paginazione automatica piu evoluta oltre agli split manuali.
 3. Mantenere `npm run test:editor-next-ui` come smoke minimo per ogni tranche.
 
 Poi: polish errori/export e onboarding minimo.
