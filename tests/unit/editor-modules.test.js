@@ -10,6 +10,7 @@ import {
 import { insertPageBreakBeforeLine, insertPageBreaksBeforeLines, predictPageBreakLines } from "../../editor-next/src/editor/pageBreaks.js";
 import { renderMarkdown } from "../../packages/components/preview.js";
 import { renderPreviewDocument } from "../../packages/documents/preview-shell.js";
+import { checkDocument, listDocuments, saveDocument } from "../../packages/documents/api.js";
 import { parseMarkdownOutline } from "../../packages/markdown/outline.js";
 
 test("parseMarkdownOutline ignores fenced headings and strips inline HTML", () => {
@@ -195,3 +196,41 @@ test("renderPreviewDocument can enable measured auto pagination", () => {
   assert.match(html, /overflowPages/);
   assert.match(html, /firstOverflowLine/);
 });
+
+test("browser-only document api stores documents and runs client checks", async () => {
+  withBrowserOnlyStorage();
+
+  const content = `---
+title: Browser Test
+slug: browser-test
+summary: Test browser
+compatibility: 5e/5.5e
+license_mode: srd-5.2-cc
+author: Codex
+---
+
+# Browser Test
+
+CD 31`;
+
+  const saved = await saveDocument({ filename: "browser-test.md", content });
+  const listed = await listDocuments();
+  const checked = await checkDocument({ filename: saved.filename, content });
+
+  assert.equal(saved.filename, "browser-test.md");
+  assert.deepEqual(listed.documents, ["browser-test.md"]);
+  assert.equal(checked.diagnostics.some((item) => item.message.includes("CD 31 fuori scala")), true);
+});
+
+function withBrowserOnlyStorage() {
+  const store = new Map();
+  globalThis.window = {
+    location: { search: "?browser-only" },
+    __RPG_TEXT_EDITOR_BROWSER_ONLY__: true
+  };
+  globalThis.localStorage = {
+    getItem: (key) => store.get(key) || null,
+    setItem: (key, value) => store.set(key, String(value)),
+    removeItem: (key) => store.delete(key)
+  };
+}

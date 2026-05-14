@@ -25,6 +25,7 @@ RPG Text Editor deve essere una web app browser-first per contenuti TTRPG: edito
 - Componenti core e plugin pack descritti da schema.
 - Palette componenti con ricerca, gruppi, preset, pack manifest e pack JSON esterni.
 - Preview iframe con sync editor-preview, toolbar pagine, `::pagebreak`, overflow badge, `Auto break` e `Auto pages`.
+- Adapter browser-only iniziale per documenti, check client-side ed export HTML via download browser.
 - Avvio sviluppo semplificato: `npm start`; preflight sviluppo: `npm run doctor`.
 - Packaging locale disponibile per QA/dev: `npm run package:editor`; package pubblicazione libro: `npm run export:package`.
 - QA aggregata: `npm run check`.
@@ -35,7 +36,7 @@ RPG Text Editor deve essere una web app browser-first per contenuti TTRPG: edito
    Portare la misurazione di `Auto pages` nel renderer/export HTML/PDF, mantenendo `::pagebreak` come override manuale.
 
 2. **Web app finale**
-   Rendere l'editor deployabile e usabile da browser senza installazione locale, sostituendo le API file locali con persistenza web/browser.
+   Rendere l'editor deployabile e usabile da browser senza installazione locale, completando persistenza web/browser ed export PDF web.
 
 3. **Onboarding e recovery**
    Rifinire primo avvio, messaggi errore, recupero draft, esempi iniziali e indicazioni export.

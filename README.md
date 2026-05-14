@@ -81,6 +81,8 @@ npm start
 
 L'editor mantiene il Markdown come sorgente primaria, usa CodeMirror 6, salva bozze in `localStorage` e mostra una preview live in iframe con `styles/main.css`, `page-shell`, tema e formato carta del frontmatter. Il server locale integra le API per aprire documenti da `docs/`, salvare la bozza corrente, eseguire check guidati ed esportare HTML/PDF in `dist/`.
 
+Per l'integrazione web, la UI include una prima modalita browser-only: se le API locali non sono disponibili, documenti, check client-side ed export HTML usano storage/download del browser. L'export PDF resta da collegare a print browser o backend web.
+
 Per preparare un pacchetto consegnabile dell'app locale usa:
 
 ```sh

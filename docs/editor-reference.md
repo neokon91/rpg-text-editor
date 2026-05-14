@@ -42,6 +42,7 @@ npm start
 - Frontmatter compatto, outline da heading Markdown e salto alla riga sorgente.
 - Check guidato con diagnostiche schema e author check.
 - Export HTML/PDF in `dist/`, con stato busy/error e log export nel tooltip.
+- Modalita browser-only iniziale: se le API locali non esistono, documenti/check/export HTML usano storage e download del browser.
 - Palette componenti schema-driven con ricerca, gruppi, preset, pack manifest e pack JSON esterni.
 - Form componenti generati dallo schema, con liste, preset e validazione inline.
 - Preview iframe con tema/carta da frontmatter, zoom, fit/fill, pagina corrente/totale, prev/next, single/facing/flow.
@@ -62,7 +63,7 @@ npm start
 ## Mancanze Prioritarie
 
 1. Portare `Auto pages` nel renderer/export stabile.
-2. Sostituire il flusso file/API locali con persistenza adatta a web app browser-first.
+2. Estendere la modalita browser-only a persistenza definitiva e export web/PDF.
 3. Rifinire deploy, onboarding e messaggi errore per utente finale non tecnico.
 
 ## Guardrail

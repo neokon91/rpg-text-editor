@@ -39,6 +39,7 @@ public: false
 - [x] Salvataggio con file corrente.
 - [x] Dirty state.
 - [x] Autosave locale.
+- [x] Modalita browser-only iniziale per salvataggio/lista/check/export HTML senza API locali.
 - [x] Export HTML/PDF guidato dal workflow autore locale.
 - [x] Overwrite esplicito.
 - [x] Salva nuovo con nome unico.
@@ -145,4 +146,4 @@ public: false
 ## Prossimi passi consigliati
 
 1. Promuovere `Auto pages` da preview sperimentale a renderer/export stabile.
-2. Deploy web browser-first e persistenza senza dipendenza da file/API locali.
+2. Completare persistenza browser/backend web e export PDF senza server locale di sviluppo.

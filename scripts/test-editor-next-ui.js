@@ -395,7 +395,7 @@ async function openTarget() {
     } catch {
       return false;
     }
-  });
+  }, 15000, "browser CDP ready");
 
   const version = await fetchJson(`http://127.0.0.1:${cdpPort}/json/version`);
   const connection = new CdpConnection(version.webSocketDebuggerUrl);
@@ -759,6 +759,7 @@ async function waitFor(predicate, timeout = 8000, label = "condizione") {
 }
 
 async function readUiDiagnostics() {
+  if (!cdp) return "UI diagnostics unavailable: CDP non inizializzato.";
   try {
     const snapshot = await evalInPage(`
       (() => ({
