@@ -344,6 +344,13 @@ try {
   await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.querySelectorAll('.page-shell').length > 1"));
   await waitFor(() => evalInPage("document.querySelector('.preview-auto-pages')?.textContent.includes('Auto')"));
   await waitFor(() => evalInPage("/Auto \\d+p · (ok|\\d+ overflow)/.test(document.querySelector('.preview-auto-pages')?.textContent || '')"));
+  await evalInPage(`
+    {
+      const autoPages = document.querySelector('.preview-auto-pages[data-state="warning"]');
+      if (autoPages) autoPages.click();
+    }
+  `);
+  await waitFor(() => evalInPage("document.querySelector('.preview-auto-pages[data-state=\"warning\"]') ? Number(window.localStorage.getItem('rpg-text-editor-next:selected-line')) > 1 : true"));
   await clickButton("Auto pages");
   await waitFor(() => evalInPage("!Array.from(document.querySelectorAll('.preview-toolbar button[aria-pressed=\"true\"]')).some((button) => button.textContent.trim() === 'Auto pages')"));
   await waitFor(() => evalInPage("document.querySelector('.preview-overflow')?.textContent.includes('riga')"));

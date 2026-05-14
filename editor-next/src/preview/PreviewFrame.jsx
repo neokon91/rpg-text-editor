@@ -57,7 +57,9 @@ export function PreviewFrame({
         setAutoPageReport({
           totalPages: Number(event.data.totalPages) || 1,
           generatedPages: Number(event.data.generatedPages) || 0,
-          overflowPages: Number(event.data.overflowPages) || 0
+          overflowPages: Number(event.data.overflowPages) || 0,
+          firstOverflowPage: Number(event.data.firstOverflowPage) || 0,
+          firstOverflowLine: Number(event.data.firstOverflowLine) || 0
         });
         updatePageState();
       }
@@ -154,6 +156,12 @@ export function PreviewFrame({
     if (firstOverflow.line) onSelectLine(firstOverflow.line);
   }
 
+  function selectAutoPageOverflow() {
+    if (!autoPageReport?.firstOverflowPage) return;
+    goToPage(autoPageReport.firstOverflowPage);
+    if (autoPageReport.firstOverflowLine) onSelectLine(autoPageReport.firstOverflowLine);
+  }
+
   const canGoBack = pageState.current > 1;
   const canGoForward = pageState.current < pageState.total;
   const firstOverflow = overflowPages[0];
@@ -177,13 +185,21 @@ export function PreviewFrame({
           Auto pages
         </button>
         {autoPaginate && autoPageReport ? (
-          <span
-            className="preview-auto-pages"
-            data-state={autoPageReport.overflowPages ? "warning" : "ok"}
-            title="Pagine generate dalla preview automatica"
-          >
-            Auto {autoPageReport.totalPages}p{autoPageReport.overflowPages ? ` · ${autoPageReport.overflowPages} overflow` : " · ok"}
-          </span>
+          autoPageReport.overflowPages ? (
+            <button
+              type="button"
+              className="preview-auto-pages"
+              data-state="warning"
+              title={`Prima pagina auto overflow: ${autoPageReport.firstOverflowPage}, riga ${autoPageReport.firstOverflowLine}`}
+              onClick={selectAutoPageOverflow}
+            >
+              Auto {autoPageReport.totalPages}p · {autoPageReport.overflowPages} overflow
+            </button>
+          ) : (
+            <span className="preview-auto-pages" data-state="ok" title="Pagine generate dalla preview automatica">
+              Auto {autoPageReport.totalPages}p · ok
+            </span>
+          )
         ) : null}
         <button type="button" disabled={!canGoBack} onClick={() => goToPage(pageState.current - 1)} aria-label="Pagina precedente">‹</button>
         <label>

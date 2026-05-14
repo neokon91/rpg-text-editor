@@ -76,6 +76,7 @@ public: false
 - [x] Smoke UI su `Auto pages`: toggle toolbar, stato iframe e generazione pagine fisiche.
 - [x] Feedback `Auto pages` in toolbar con conteggio pagine generato dalla preview misurata.
 - [x] Feedback residui `Auto pages`: segnala se restano pagine in overflow dopo la ripaginazione.
+- [x] Navigazione residui `Auto pages`: click sul badge overflow auto porta alla prima pagina/riga problematica.
 - [x] Tema originale `modern-5-5` per resa 5.5-compatible piu moderna e pulita.
 
 ## Componenti e schema

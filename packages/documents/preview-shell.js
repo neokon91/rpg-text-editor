@@ -139,13 +139,17 @@ ${page}
       function reportAutoPagination(container, initialPages) {
         var pages = Array.from(container.querySelectorAll(".page-shell"));
         var totalPages = pages.length;
-        var overflowPages = pages.filter(pageOverflows).length;
+        var overflowedPages = pages.filter(pageOverflows);
+        var firstOverflowPage = overflowedPages[0];
+        var firstOverflowSource = firstOverflowPage ? firstOverflowPage.querySelector("[data-source-line]") : null;
         window.parent.postMessage({
           type: "rpg-preview-pagination",
           autoPaginate: true,
           totalPages: totalPages,
           generatedPages: Math.max(totalPages - initialPages, 0),
-          overflowPages: overflowPages
+          overflowPages: overflowedPages.length,
+          firstOverflowPage: firstOverflowPage ? Number(firstOverflowPage.dataset.previewPage) || 1 : 0,
+          firstOverflowLine: firstOverflowSource ? Number(firstOverflowSource.dataset.sourceLine) || 0 : 0
         }, "*");
       }
     </script>
