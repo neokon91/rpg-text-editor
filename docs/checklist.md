@@ -72,6 +72,7 @@ public: false
 - [x] Revisione post-break: se resta overflow seleziona la prossima riga da spezzare.
 - [x] Auto break da overflow preview: inserisce piu `::pagebreak` block-aware in una passata.
 - [x] Auto break predittivo: dopo la prima riga overflow pianifica altri break euristici nel resto del documento lungo.
+- [x] Modalita `Auto pages` nella preview: misura l'iframe e crea pagine fisiche spostando blocchi interi su nuove `page-shell`.
 - [x] Tema originale `modern-5-5` per resa 5.5-compatible piu moderna e pulita.
 
 ## Componenti e schema
@@ -135,5 +136,5 @@ public: false
 
 ## Prossimi passi consigliati
 
-1. Paginazione fisica automatica nel renderer, oltre agli helper predittivi.
+1. Promuovere `Auto pages` da preview sperimentale a renderer/export stabile.
 2. Installer/app desktop oltre allo ZIP applicativo locale.

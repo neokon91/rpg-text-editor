@@ -84,7 +84,7 @@ Vite + React + CodeMirror 6 + iframe preview
 
 Proseguire con page break piu intelligenti o palette avanzata:
 
-1. Paginazione fisica automatica nel renderer, oltre agli helper predittivi.
+1. Promuovere `Auto pages` da preview sperimentale a renderer/export stabile.
 2. Oppure installer/app desktop oltre allo ZIP applicativo locale.
 3. Mantenere `npm run test:editor-next-ui` come smoke minimo per ogni tranche.
 

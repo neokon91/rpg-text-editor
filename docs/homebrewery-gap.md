@@ -64,7 +64,7 @@ public: false
 
 ## Gap Prioritari
 
-1. Paginazione fisica automatica nel renderer, oltre agli helper predittivi.
+1. Promuovere `Auto pages` da preview sperimentale a renderer/export stabile.
 2. Installer/app desktop oltre allo ZIP applicativo locale.
 3. Polish onboarding e messaggi errore/export.
 

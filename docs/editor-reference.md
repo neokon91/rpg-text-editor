@@ -40,6 +40,7 @@ Il server apre `editor-next/` su `http://127.0.0.1:5173/editor-next/` e combina 
 - Preview live con `styles/main.css`, `page-shell`, tema e carta da frontmatter.
 - Controlli preview: desktop/mobile, zoom, toggle preview, fit/fill, pagina corrente/totale, prev/next, input pagina e modalita single/facing/flow.
 - Preview multipagina reale: ogni `::pagebreak` crea una nuova `page-shell` navigabile.
+- Modalita `Auto pages`: la preview misura l'iframe e crea pagine aggiuntive spostando blocchi interi quando una pagina supera il box carta.
 - Indicatore overflow nella toolbar preview quando una pagina manuale supera il box pagina, con riga sorgente del prossimo intervento e salto alla selezione da spezzare.
 - Comando `Break` per inserire `::pagebreak` prima del blocco Markdown selezionato, selezionando il marker creato e indicando la riga del contenuto spostato.
 - Comando `Auto break` predittivo: usa le righe overflow della preview e stima altri break block-aware nel resto del documento lungo.
@@ -74,7 +75,7 @@ Il server apre `editor-next/` su `http://127.0.0.1:5173/editor-next/` e combina 
 
 ## Mancanze Verso Homebrewery
 
-- Paginazione fisica automatica nel renderer, oltre agli helper predittivi.
+- Promuovere `Auto pages` da preview sperimentale a renderer/export stabile.
 - Installer/app desktop oltre allo ZIP applicativo locale.
 
 ## Guardrail

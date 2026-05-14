@@ -72,6 +72,7 @@ function App() {
   const [zoom, setZoom] = useState(() => localStorage.getItem(`${workspaceStoragePrefix}:zoom`) || "1");
   const [viewport, setViewport] = useState(() => localStorage.getItem(`${workspaceStoragePrefix}:viewport`) || "desktop");
   const [previewSpread, setPreviewSpread] = useState(() => localStorage.getItem(`${workspaceStoragePrefix}:preview-spread`) || "single");
+  const [autoPaginatePreview, setAutoPaginatePreview] = useState(() => loadBooleanWorkspaceSetting("auto-paginate-preview", false));
   const [syncPreview, setSyncPreview] = useState(() => loadBooleanWorkspaceSetting("sync-preview", false));
   const [mobilePanel, setMobilePanel] = useState(() => localStorage.getItem(`${workspaceStoragePrefix}:mobile-panel`) || "editor");
   const [activeComponentGroup, setActiveComponentGroup] = useState(() => localStorage.getItem(`${workspaceStoragePrefix}:component-group`) || "all");
@@ -163,6 +164,10 @@ function App() {
   }, [previewSpread]);
 
   useEffect(() => {
+    localStorage.setItem(`${workspaceStoragePrefix}:auto-paginate-preview`, autoPaginatePreview ? "true" : "false");
+  }, [autoPaginatePreview]);
+
+  useEffect(() => {
     localStorage.setItem(`${workspaceStoragePrefix}:sync-preview`, syncPreview ? "true" : "false");
   }, [syncPreview]);
 
@@ -190,8 +195,8 @@ function App() {
   const parsed = useMemo(() => parseFrontmatter(markdown), [markdown]);
   const previewHtml = useMemo(() => {
     const content = renderMarkdown(parsed.body, schema, { startLine: parsed.bodyStartLine });
-    return renderPreviewDocument(parsed.metadata, content, { viewport });
-  }, [parsed, schema, viewport]);
+    return renderPreviewDocument(parsed.metadata, content, { viewport, autoPaginate: autoPaginatePreview });
+  }, [autoPaginatePreview, parsed, schema, viewport]);
   const diagnostics = useMemo(() => collectDiagnostics(markdown, schema), [markdown, schema]);
   const activeAuthorDiagnostics = checkedMarkdown === markdown ? authorDiagnostics : [];
   const combinedDiagnostics = useMemo(
@@ -623,11 +628,13 @@ function App() {
             zoom={zoom}
             viewport={viewport}
             spread={previewSpread}
+            autoPaginate={autoPaginatePreview}
             syncSourceLine={syncPreview ? cursorLine : null}
             onOverflowChange={handleOverflowChange}
             onSelectLine={setSelectedLine}
             onZoomChange={setZoom}
             onSpreadChange={setPreviewSpread}
+            onAutoPaginateChange={setAutoPaginatePreview}
           />
         ) : null}
         <DocumentOutline

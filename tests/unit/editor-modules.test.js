@@ -9,6 +9,7 @@ import {
 } from "../../editor-next/src/components/componentMarkdown.js";
 import { insertPageBreakBeforeLine, insertPageBreaksBeforeLines, predictPageBreakLines } from "../../editor-next/src/editor/pageBreaks.js";
 import { renderMarkdown } from "../../packages/components/preview.js";
+import { renderPreviewDocument } from "../../packages/documents/preview-shell.js";
 import { parseMarkdownOutline } from "../../packages/markdown/outline.js";
 
 test("parseMarkdownOutline ignores fenced headings and strips inline HTML", () => {
@@ -182,4 +183,12 @@ test("predictPageBreakLines plans extra block-aware breaks after overflow", () =
   assert.equal(targets[0], 3);
   assert.ok(targets.length > 1);
   assert.ok(targets.every((line) => markdown.split("\n")[line - 1]?.startsWith("Paragrafo")));
+});
+
+test("renderPreviewDocument can enable measured auto pagination", () => {
+  const html = renderPreviewDocument({ title: "Preview" }, "<h1 data-source-line=\"1\">Preview</h1>", { autoPaginate: true });
+
+  assert.match(html, /data-auto-paginate="true"/);
+  assert.match(html, /function paginatePreviewPages/);
+  assert.match(html, /pageOverflows/);
 });

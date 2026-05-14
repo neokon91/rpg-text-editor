@@ -8,11 +8,13 @@ export function PreviewFrame({
   zoom,
   viewport,
   spread,
+  autoPaginate,
   syncSourceLine,
   onOverflowChange,
   onSelectLine,
   onZoomChange,
-  onSpreadChange
+  onSpreadChange,
+  onAutoPaginateChange
 }) {
   const frame = useRef(null);
   const removeScrollListener = useRef(null);
@@ -154,6 +156,14 @@ export function PreviewFrame({
           <option value="facing">Affiancata</option>
           <option value="flow">Flusso</option>
         </select>
+        <button
+          type="button"
+          aria-pressed={autoPaginate}
+          title="Paginazione automatica preview"
+          onClick={() => onAutoPaginateChange(!autoPaginate)}
+        >
+          Auto pages
+        </button>
         <button type="button" disabled={!canGoBack} onClick={() => goToPage(pageState.current - 1)} aria-label="Pagina precedente">‹</button>
         <label>
           <span>Pagina</span>

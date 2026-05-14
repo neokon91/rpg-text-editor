@@ -50,7 +50,7 @@ Prima tranche preview implementata:
 5. Selettore `single`, `facing` e `flow`.
 6. Test UI su pagina, zoom e navigazione.
 
-Limite noto: la paginazione e ancora manuale tramite `::pagebreak`; la preview ora segnala le pagine in overflow, seleziona la riga sorgente da spezzare, offre inserimento assistito block-aware e dopo il break seleziona l'eventuale prossima riga in overflow.
+Limite noto: la paginazione stabile per export resta manuale tramite `::pagebreak`; la preview ora segnala le pagine in overflow, seleziona la riga sorgente da spezzare, offre inserimento assistito block-aware, auto break predittivo e una modalita sperimentale `Auto pages` che crea pagine fisiche nell'iframe.
 
 ## Dopo La Preview
 

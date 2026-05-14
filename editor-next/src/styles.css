@@ -707,6 +707,13 @@ button:disabled {
   padding: 0 8px;
 }
 
+.preview-toolbar button[aria-pressed="true"] {
+  border-color: #1f6f78;
+  background: #e8f5f2;
+  color: #174f55;
+  font-weight: 700;
+}
+
 .preview-toolbar .preview-overflow {
   border-color: #a43d25;
   background: #fff5f1;

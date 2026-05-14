@@ -3,6 +3,7 @@ export function renderPreviewDocument(metadata, content, options = {}) {
   const paper = String(metadata.paper || "A4").toLowerCase();
   const title = metadata.title || "Anteprima";
   const pages = splitPreviewPages(content);
+  const autoPaginate = options.autoPaginate === true;
   const documentClass = [
     "homebrew-document",
     `theme-${theme}`,
@@ -65,7 +66,7 @@ export function renderPreviewDocument(metadata, content, options = {}) {
       }
     </style>
   </head>
-  <body class="${escapeHtml(`${documentClass} ${options.viewport === "mobile" ? "preview-mobile" : ""}`.trim())}">
+  <body class="${escapeHtml(`${documentClass} ${options.viewport === "mobile" ? "preview-mobile" : ""}`.trim())}" data-auto-paginate="${autoPaginate ? "true" : "false"}">
     <main class="preview-pages" aria-label="Pagine anteprima">
 ${pages.map((page, index) => `      <section class="page-shell" data-preview-page="${index + 1}">
 ${page}
@@ -78,6 +79,59 @@ ${page}
         event.preventDefault();
         window.parent.postMessage({ type: "rpg-preview-source-line", line: Number(target.dataset.sourceLine) }, "*");
       });
+
+      if (document.body.dataset.autoPaginate === "true") {
+        requestAnimationFrame(paginatePreviewPages);
+      }
+
+      function paginatePreviewPages() {
+        if (document.body.dataset.spread === "flow") return;
+        var container = document.querySelector(".preview-pages");
+        if (!container) return;
+        var guard = 0;
+
+        while (guard < 120) {
+          guard += 1;
+          var changed = false;
+          var pages = Array.from(container.querySelectorAll(".page-shell"));
+
+          for (var index = 0; index < pages.length; index += 1) {
+            var page = pages[index];
+            if (!pageOverflows(page)) continue;
+            var children = Array.from(page.children).filter(function(child) {
+              return !child.classList.contains("page-break");
+            });
+            if (children.length <= 1) continue;
+
+            var nextPage = page.nextElementSibling;
+            if (!nextPage || !nextPage.classList.contains("page-shell")) {
+              nextPage = document.createElement("section");
+              nextPage.className = "page-shell";
+              container.insertBefore(nextPage, page.nextSibling);
+            }
+
+            while (pageOverflows(page) && children.length > 1) {
+              nextPage.insertBefore(children.pop(), nextPage.firstChild);
+              changed = true;
+            }
+          }
+
+          refreshPageNumbers(container);
+          if (!changed) break;
+        }
+      }
+
+      function pageOverflows(page) {
+        var style = getComputedStyle(page);
+        var limit = parseFloat(style.minHeight || "0") || parseFloat(style.height || "0") || page.clientHeight;
+        return page.scrollHeight > limit + 4 || page.scrollWidth > page.clientWidth + 4;
+      }
+
+      function refreshPageNumbers(container) {
+        Array.from(container.querySelectorAll(".page-shell")).forEach(function(page, index) {
+          page.dataset.previewPage = String(index + 1);
+        });
+      }
     </script>
   </body>
 </html>`;
