@@ -40,8 +40,8 @@ public: false
 - [x] Overwrite esplicito.
 - [x] Salva nuovo con nome unico.
 - [x] Conferma prima di perdere modifiche non salvate.
-- [ ] Rename documento nella UI React.
-- [ ] Delete documento nella UI React.
+- [x] Rename documento nella UI React.
+- [x] Delete documento nella UI React.
 - [ ] Conferme custom non native.
 - [ ] Toolbar estesa per tabelle, immagini, callout e include nella UI React.
 - [x] Navigatore documento da heading Markdown con salto alla riga sorgente.
@@ -123,5 +123,5 @@ public: false
 
 ## Prossimi passi consigliati
 
-1. Rename/delete documento nella UI React.
+1. Conferme custom non native.
 2. Comandi editor da tastiera e toolbar Markdown piu completa.

@@ -32,6 +32,7 @@ Il server apre `editor-next/` su `http://127.0.0.1:5173/editor-next/` e combina 
 - Autosave locale in `localStorage`.
 - Apertura documenti da `docs/`.
 - Salvataggio su file corrente e salvataggio copia.
+- Rename/delete del documento corrente dalla topbar.
 - Download Markdown.
 - Check guidato con diagnostiche schema + author check.
 - Export HTML/PDF in `dist/` tramite renderer ufficiale.
@@ -71,7 +72,7 @@ Il server apre `editor-next/` su `http://127.0.0.1:5173/editor-next/` e combina 
 
 ## Mancanze Verso Homebrewery
 
-- Rename/delete documento, se confermati come parte del flusso editor.
+- Conferme custom non native.
 - Test UI piu ampi per save/open e component insertion.
 
 ## Guardrail

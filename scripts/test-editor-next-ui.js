@@ -8,6 +8,8 @@ const root = new URL("..", import.meta.url).pathname;
 const editorPort = 8193;
 const cdpPort = 9231;
 const baseUrl = `http://127.0.0.1:${editorPort}`;
+const renameSourceFile = "codex-rename-temp.md";
+const renameTargetFile = "codex-rename-temp-renamed.md";
 
 let server;
 let browser;
@@ -74,6 +76,8 @@ try {
     stdio: ["ignore", "pipe", "pipe"]
   });
   await waitForServer();
+  await cleanupTestDocument(renameSourceFile);
+  await cleanupTestDocument(renameTargetFile);
 
   userDataDir = await mkdtemp(join(tmpdir(), "rpg-editor-next-ui-"));
   browser = spawn(findBrowser(), [
@@ -93,6 +97,22 @@ try {
   await waitFor(() => evalInPage("document.readyState === 'complete'"));
   await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.querySelector('.page-shell h1')?.textContent.toLowerCase().includes('nuova avventura')"));
   await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.querySelector('p[data-source-end-line]')?.dataset.sourceEndLine"));
+  await evalInPage(`
+    window.localStorage.setItem('rpg-text-editor-next:draft', '---\\ntitle: Codex Rename Temp\\nslug: codex-rename-temp\\nsummary: Documento temporaneo rename/delete\\ncompatibility: 5e/5.5e\\nlicense_mode: srd-5.2-cc\\nauthor: Codex\\ntheme: classic-parchment\\npaper: A4\\n---\\n\\n# Codex Rename Temp\\n\\nContenuto temporaneo.');
+  `);
+  await reloadPage();
+  await waitFor(() => evalInPage("document.readyState === 'complete'"));
+  await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.querySelector('.page-shell h1')?.textContent.includes('Codex Rename Temp')"));
+  await clickTopbarButton("Salva");
+  await waitFor(() => evalInPage(`document.body.textContent.includes('docs/${renameSourceFile}')`));
+  await evalInPage(`window.prompt = () => ${JSON.stringify(renameTargetFile)}`);
+  await clickTopbarButton("Rinomina");
+  await waitFor(() => evalInPage(`document.body.textContent.includes('docs/${renameTargetFile}') && document.body.textContent.includes('Rinominato')`));
+  await evalInPage("window.confirm = () => true");
+  await clickTopbarButton("Elimina");
+  await waitFor(() => evalInPage("document.body.textContent.includes('Eliminato docs/codex-rename-temp-renamed.md')"));
+  await clickTopbarButton("Nuovo");
+  await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.querySelector('.page-shell h1')?.textContent.toLowerCase().includes('nuova avventura')"));
   await setViewport(1180, 820);
   await waitFor(() => evalInPage("document.querySelector('.next-workspace') && document.documentElement.scrollWidth <= window.innerWidth"));
   await setViewport(800, 600);
@@ -260,6 +280,8 @@ try {
 } finally {
   cdp?.close();
   browser?.kill();
+  await cleanupTestDocument(renameSourceFile);
+  await cleanupTestDocument(renameTargetFile);
   server?.kill();
   if (userDataDir) await rm(userDataDir, { recursive: true, force: true, maxRetries: 3, retryDelay: 100 });
 }
@@ -434,6 +456,12 @@ async function waitForServer() {
       return false;
     }
   });
+}
+
+async function cleanupTestDocument(filename) {
+  try {
+    await fetch(`${baseUrl}/api/documents/${encodeURIComponent(filename)}`, { method: "DELETE" });
+  } catch {}
 }
 
 async function waitFor(predicate, timeout = 8000) {

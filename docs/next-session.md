@@ -40,6 +40,7 @@ Vite + React + CodeMirror 6 + iframe preview
 - La shell vanilla `editor/` e stata rimossa; `editor-next/` e l'unica UI applicativa.
 - Tranche Homebrewery-like avviata in `editor-next/` con Vite, React, CodeMirror 6, preview iframe e autosave locale separato.
 - `editor-next` ora usa un server integrato Vite + API locali con `npm run editor:next`, include apertura documenti, salvataggio, check guidato ed export HTML/PDF.
+- Flusso documenti UI include rename/delete del documento corrente.
 - Build statica: `npm run editor:next:build`; smoke dedicato: `npm run test:editor-next-ui`.
 - Benchmark Homebrewery verificato in `docs/homebrewery-benchmark.md`: upstream e `naturalcrit/homebrewery`, V3 non e una codebase separata, e la priorita comparativa ora e la toolbar preview pagina/spread.
 - Form componenti gia portati oltre il base: preset schema-driven, rimozione righe lista e validazione inline dei campi richiesti.
@@ -81,11 +82,11 @@ Vite + React + CodeMirror 6 + iframe preview
 
 Proseguire con page break piu intelligenti o palette avanzata:
 
-1. Rename/delete documento nella UI React.
+1. Conferme custom non native.
 2. Oppure comandi editor da tastiera e toolbar Markdown piu completa.
 3. Mantenere `npm run test:editor-next-ui` come smoke minimo per ogni tranche.
 
-Poi: rename/delete se confermati.
+Poi: test UI piu ampi per open/save e casi errore.
 
 ## Guardrail UX
 

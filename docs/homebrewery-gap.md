@@ -22,6 +22,7 @@ public: false
 - Preview live in iframe con resa editoriale reale.
 - Autosave locale.
 - Apertura e salvataggio file Markdown da `docs/`.
+- Rename/delete del documento corrente dalla topbar.
 - Check guidato con diagnostiche schema e author check.
 - Export HTML/PDF dal flusso locale.
 - Snippet rapidi per blocchi frequenti.

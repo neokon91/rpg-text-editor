@@ -5,7 +5,7 @@ import { renderComponentValidation } from "../../packages/components/validation.
 import { loadComponentSchema, loadEnabledPacks, manifestUrl, fetchJson, saveEnabledPacks } from "../../packages/components/schema.js";
 import { renderPreviewDocument } from "../../packages/documents/preview-shell.js";
 import { parseFrontmatter, serializeFrontmatter } from "../../packages/documents/frontmatter.js";
-import { checkDocument, exportDocument, getDocument, listDocuments, saveDocument } from "../../packages/documents/api.js";
+import { checkDocument, deleteDocument, exportDocument, getDocument, listDocuments, renameDocument, saveDocument } from "../../packages/documents/api.js";
 import { countWords, downloadMarkdown } from "../../packages/markdown/editor-actions.js";
 import { slugifyDocumentName } from "../../scripts/lib/component-schema.js";
 import { ComponentPalette } from "./components/ComponentPalette.jsx";
@@ -361,6 +361,48 @@ function App() {
     }
   }
 
+  async function renameCurrent() {
+    if (!currentDocument) {
+      setStatus("Apri o salva un documento prima di rinominarlo");
+      return;
+    }
+    if (isDirty) {
+      setStatus("Salva le modifiche prima di rinominare");
+      return;
+    }
+
+    const nextName = window.prompt("Nuovo nome file Markdown", currentDocument);
+    if (!nextName || nextName === currentDocument) return;
+
+    try {
+      const result = await renameDocument(currentDocument, nextName);
+      setCurrentDocument(result.filename);
+      await refreshDocuments();
+      setStatus(`Rinominato docs/${result.filename}`);
+    } catch (error) {
+      setStatus(error.status === 409 ? "Rename non riuscito: file gia esistente" : "Rename non riuscito");
+    }
+  }
+
+  async function deleteCurrent() {
+    if (!currentDocument) {
+      setStatus("Apri o salva un documento prima di eliminarlo");
+      return;
+    }
+    if (!window.confirm(`Eliminare docs/${currentDocument}?`)) return;
+
+    try {
+      const deleted = currentDocument;
+      await deleteDocument(currentDocument);
+      setCurrentDocument("");
+      setLastSavedContent(markdown);
+      await refreshDocuments();
+      setStatus(`Eliminato docs/${deleted}`);
+    } catch {
+      setStatus("Eliminazione non riuscita");
+    }
+  }
+
   function downloadCurrentMarkdown() {
     downloadMarkdown(markdown, filename);
     setStatus("Download Markdown pronto");
@@ -441,6 +483,8 @@ function App() {
         onOpenDocument={openDocument}
         onSave={saveCurrent}
         onSaveCopy={saveCopy}
+        onRename={renameCurrent}
+        onDelete={deleteCurrent}
         onDownloadMarkdown={downloadCurrentMarkdown}
         onCheck={runCheck}
         onExport={exportChecked}

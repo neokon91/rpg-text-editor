@@ -28,6 +28,8 @@ export function TopMenu({
   onOpenDocument,
   onSave,
   onSaveCopy,
+  onRename,
+  onDelete,
   onDownloadMarkdown,
   onCheck,
   onExport,
@@ -70,6 +72,8 @@ export function TopMenu({
         </label>
         <button type="button" onClick={onSave}>Salva</button>
         <button type="button" onClick={onSaveCopy}>Salva copia</button>
+        <button type="button" disabled={!currentDocument || isDirty} onClick={onRename}>Rinomina</button>
+        <button type="button" disabled={!currentDocument} onClick={onDelete}>Elimina</button>
         <button type="button" onClick={onDownloadMarkdown}>MD</button>
         <span className="next-separator" />
         <button type="button" onClick={() => onInsertSnippet(snippets.scene)}>Scena</button>
