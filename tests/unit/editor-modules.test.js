@@ -14,6 +14,7 @@ import {
   checkDocument,
   exportBrowserDocumentsArchive,
   exportDocument,
+  getBrowserDocumentStorageStats,
   getDocumentRuntimeMode,
   importBrowserDocumentsArchive,
   listDocuments,
@@ -316,6 +317,24 @@ test("browser-only document api can backup and import document archives", async 
   assert.equal(getDocumentRuntimeMode(), "browser");
   assert.equal(imported.count, 2);
   assert.deepEqual(listed.documents, ["backup-one.md", "backup-two.md"]);
+});
+
+test("browser-only document api reports storage stats", async () => {
+  withBrowserOnlyStorage();
+  assert.deepEqual(getBrowserDocumentStorageStats(), {
+    count: 0,
+    bytes: 2,
+    label: "2 B",
+    warning: false
+  });
+
+  await saveDocument({ filename: "stats.md", content: "# Stats" });
+  const stats = getBrowserDocumentStorageStats();
+
+  assert.equal(stats.count, 1);
+  assert.equal(stats.bytes > 2, true);
+  assert.match(stats.label, /(B|KB)$/);
+  assert.equal(stats.warning, false);
 });
 
 test("browser-only archive import keeps existing documents on filename conflicts", async () => {

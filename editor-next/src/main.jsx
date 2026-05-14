@@ -5,7 +5,7 @@ import { renderComponentValidation } from "../../packages/components/validation.
 import { loadComponentSchema, loadEnabledPacks, manifestUrl, fetchJson, saveEnabledPacks } from "../../packages/components/schema.js";
 import { renderPreviewDocument } from "../../packages/documents/preview-shell.js";
 import { parseFrontmatter, serializeFrontmatter } from "../../packages/documents/frontmatter.js";
-import { checkDocument, deleteDocument, exportBrowserDocumentsArchive, exportDocument, getDocument, getDocumentRuntimeMode, importBrowserDocumentsArchive, listDocuments, renameDocument, saveDocument, setBrowserOnlyMode } from "../../packages/documents/api.js";
+import { checkDocument, deleteDocument, exportBrowserDocumentsArchive, exportDocument, getBrowserDocumentStorageStats, getDocument, getDocumentRuntimeMode, importBrowserDocumentsArchive, listDocuments, renameDocument, saveDocument, setBrowserOnlyMode } from "../../packages/documents/api.js";
 import { countWords, downloadMarkdown } from "../../packages/markdown/editor-actions.js";
 import { slugifyDocumentName } from "../../scripts/lib/component-schema.js";
 import { ComponentPalette } from "./components/ComponentPalette.jsx";
@@ -86,6 +86,7 @@ function App() {
   const [documents, setDocuments] = useState([]);
   const [currentDocument, setCurrentDocument] = useState("");
   const [documentRuntimeMode, setDocumentRuntimeMode] = useState(() => getDocumentRuntimeMode());
+  const [browserStorageStats, setBrowserStorageStats] = useState(() => getBrowserDocumentStorageStats());
   const [lastSavedContent, setLastSavedContent] = useState(() => initialMarkdown.current);
   const [status, setStatus] = useState("Bozza locale");
   const [statusDetail, setStatusDetail] = useState("");
@@ -392,6 +393,7 @@ function App() {
       setStatus("Lista documenti non disponibile");
     } finally {
       setDocumentRuntimeMode(getDocumentRuntimeMode());
+      setBrowserStorageStats(getBrowserDocumentStorageStats());
     }
   }
 
@@ -538,6 +540,7 @@ function App() {
     setExportOutputs([{ path: result.path, url: result.url }]);
     setStatus(`Backup browser pronto: ${result.count} documenti`);
     setDocumentRuntimeMode(getDocumentRuntimeMode());
+    setBrowserStorageStats(getBrowserDocumentStorageStats());
   }
 
   function selectBrowserArchive() {
@@ -554,6 +557,7 @@ function App() {
       setDocuments(result.documents.map((filename) => ({ filename })));
       setCurrentDocument("");
       setExportOutputs([]);
+      setBrowserStorageStats(getBrowserDocumentStorageStats());
       setStatus(result.renamed
         ? `Import browser completato: ${result.count} documenti, ${result.renamed} rinominati`
         : `Import browser completato: ${result.count} documenti`);
@@ -634,6 +638,7 @@ function App() {
         documents={documents}
         currentDocument={currentDocument}
         documentRuntimeMode={documentRuntimeMode}
+        browserStorageStats={browserStorageStats}
         isDirty={isDirty}
         status={status}
         statusDetail={statusDetail}

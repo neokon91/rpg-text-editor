@@ -91,6 +91,18 @@ export function setBrowserOnlyMode(enabled) {
   } catch {}
 }
 
+export function getBrowserDocumentStorageStats() {
+  const raw = safeLocalStorageGet(browserDocumentStorageKey) || "[]";
+  const documents = safeParseBrowserDocuments(raw);
+  const bytes = new Blob([raw]).size;
+  return {
+    count: documents.length,
+    bytes,
+    label: formatBytes(bytes),
+    warning: bytes > 2_500_000
+  };
+}
+
 export function exportBrowserDocumentsArchive() {
   const documents = browserDocuments();
   const exportedAt = new Date().toISOString();
@@ -180,11 +192,26 @@ function activateBrowserOnlyMode() {
 }
 
 function browserDocuments() {
-  return JSON.parse(safeLocalStorageGet(browserDocumentStorageKey) || "[]");
+  return safeParseBrowserDocuments(safeLocalStorageGet(browserDocumentStorageKey) || "[]");
 }
 
 function saveBrowserDocuments(documents) {
   localStorage.setItem(browserDocumentStorageKey, JSON.stringify(documents.sort((a, b) => a.filename.localeCompare(b.filename))));
+}
+
+function safeParseBrowserDocuments(raw) {
+  try {
+    const documents = JSON.parse(raw);
+    return Array.isArray(documents) ? documents : [];
+  } catch {
+    return [];
+  }
+}
+
+function formatBytes(bytes) {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
+  return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
 }
 
 function safeLocalStorageGet(key) {

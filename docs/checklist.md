@@ -45,6 +45,7 @@ public: false
 - [x] Fallback PDF browser-only come HTML stampabile con `Salva come PDF` del browser.
 - [x] Backup/import archivio JSON dei documenti salvati nello storage browser.
 - [x] Import archivio browser senza sovrascrittura silenziosa: conflitti rinominati automaticamente.
+- [x] Indicatore uso storage browser con avviso backup quando cresce.
 - [x] Export HTML/PDF guidato dal workflow autore locale.
 - [x] Overwrite esplicito.
 - [x] Salva nuovo con nome unico.

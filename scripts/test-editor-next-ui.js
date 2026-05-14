@@ -109,6 +109,7 @@ try {
   await clickTopbarButton("Browser-only");
   await waitFor(() => evalInPage("window.localStorage.getItem('rpg-text-editor-next:browser-only') === 'true'"));
   await waitFor(() => evalInPage("document.body.textContent.includes('Browser-only')"));
+  await waitFor(() => evalInPage("/Browser \\d+ doc \\/ \\d+ (B|KB|MB)/.test(document.body.textContent)"));
   await waitFor(() => evalInPage("document.querySelector('.next-actions button[aria-pressed=\"true\"]')?.textContent.trim() === 'Browser-only'"));
   await clickTopbarButton("Backup");
   await waitFor(() => evalInPage("document.body.textContent.includes('Backup browser pronto')"));
@@ -507,16 +508,16 @@ async function clickButton(label) {
 }
 
 async function setComponentSearch(value) {
-  await waitFor(() => evalInPage("Boolean(document.querySelector('.component-palette input[type=\"search\"]'))"));
-  await evalInPage(`
-    {
+  await waitFor(() => evalInPage(`
+    (() => {
       const input = document.querySelector('.component-palette input[type="search"]');
-      if (!input) throw new Error('Component search not found');
+      if (!input) return false;
       const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set;
       setter.call(input, ${JSON.stringify(value)});
       input.dispatchEvent(new Event('input', { bubbles: true }));
-    }
-  `);
+      return true;
+    })()
+  `));
 }
 
 async function clickComponentCard(label) {

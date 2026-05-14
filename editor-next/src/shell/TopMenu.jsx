@@ -19,6 +19,7 @@ export function TopMenu({
   documents,
   currentDocument,
   documentRuntimeMode,
+  browserStorageStats,
   isDirty,
   status,
   statusDetail,
@@ -55,6 +56,7 @@ export function TopMenu({
   const warnings = diagnostics.filter((item) => item.severity === "warning").length;
   const checkStatus = errors ? `${errors} errori` : warnings ? `${warnings} avvisi` : "Check ok";
   const runtimeLabel = documentRuntimeMode === "browser" ? "Browser-only" : "Server locale";
+  const browserStorageLabel = `Browser ${browserStorageStats.count} doc / ${browserStorageStats.label}`;
   const visibleZoomOptions = zoomOptions.includes(zoom) ? zoomOptions : [...zoomOptions, zoom];
   const statusState = statusDetail || /non riuscito|bloccato|errore|errori|non disponibile/i.test(status)
     ? "error"
@@ -158,6 +160,12 @@ export function TopMenu({
         <span>{words} parole</span>
         <span>{schemaState}</span>
         <span data-state={documentRuntimeMode === "browser" ? "warning" : "ok"} title="Runtime documenti">{runtimeLabel}</span>
+        <span
+          data-state={browserStorageStats.warning ? "warning" : "ok"}
+          title={browserStorageStats.warning ? "Storage browser alto: esegui Backup" : "Uso documenti browser"}
+        >
+          {browserStorageLabel}
+        </span>
         <span data-state={errors ? "error" : warnings ? "warning" : "ok"}>{checkStatus}</span>
         <span data-state={statusState} title={statusDetail || status}>{status}</span>
         {exportOutputs.map((output) => (
