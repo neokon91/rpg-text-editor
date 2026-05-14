@@ -69,6 +69,7 @@ public: false
 - [x] Inserimento page break block-aware, evitando di spezzare paragrafi/liste/tabelle nel mezzo.
 - [x] Stato page break esplicito: dopo inserimento viene selezionato il marker creato e tracciata la riga del contenuto spostato.
 - [x] Badge overflow con riga sorgente del prossimo intervento.
+- [x] Revisione post-break: se resta overflow seleziona la prossima riga da spezzare.
 - [x] Tema originale `modern-5-5` per resa 5.5-compatible piu moderna e pulita.
 
 ## Componenti e schema
@@ -120,5 +121,5 @@ public: false
 
 ## Prossimi passi consigliati
 
-1. Ridurre overflow residuo dopo l'inserimento assistito.
-2. Rifinire responsive mobile dei pannelli laterali.
+1. Rifinire responsive mobile dei pannelli laterali.
+2. Categorie preset dedicate nella palette componenti.

@@ -72,6 +72,7 @@ function App() {
   const [checkedMarkdown, setCheckedMarkdown] = useState("");
   const [isChecking, setIsChecking] = useState(false);
   const [exportOutputs, setExportOutputs] = useState([]);
+  const [pendingBreakReview, setPendingBreakReview] = useState(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -219,8 +220,22 @@ function App() {
       return result.markdown;
     });
     setSelectedLine(breakLine);
+    setPendingBreakReview(inserted ? { breakLine, contentLine } : null);
     setStatus(inserted ? `Page break inserito alla riga ${breakLine}; contenuto da riga ${contentLine}` : `Page break gia vicino alla riga ${breakLine}`);
     setExportOutputs([]);
+  }
+
+  function reviewBreakOverflow(overflowPages) {
+    if (!pendingBreakReview) return;
+
+    const residualOverflow = overflowPages.find((item) => item.line > pendingBreakReview.breakLine);
+    if (residualOverflow) {
+      setSelectedLine(residualOverflow.line);
+      setStatus(`Overflow residuo: prossima pagina ${residualOverflow.page}, riga ${residualOverflow.line}`);
+    } else {
+      setStatus(`Page break inserito alla riga ${pendingBreakReview.breakLine}; overflow risolto`);
+    }
+    setPendingBreakReview(null);
   }
 
   function togglePack(packId) {
@@ -459,6 +474,7 @@ function App() {
             viewport={viewport}
             spread={previewSpread}
             syncSourceLine={syncPreview ? cursorLine : null}
+            onOverflowChange={reviewBreakOverflow}
             onSelectLine={setSelectedLine}
             onZoomChange={setZoom}
             onSpreadChange={setPreviewSpread}

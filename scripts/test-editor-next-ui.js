@@ -230,6 +230,7 @@ try {
   await waitFor(() => evalInPage("Number(window.localStorage.getItem('rpg-text-editor-next:selected-line')) > 1"));
   await clickTopbarButton("Break");
   await waitFor(() => evalInPage("window.localStorage.getItem('rpg-text-editor-next:draft')?.includes('::pagebreak')"));
+  await waitFor(() => evalInPage("document.body.textContent.includes('Overflow residuo') || document.body.textContent.includes('overflow risolto')"));
   await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.querySelectorAll('.page-shell').length > 1"));
 
   const errors = await evalInPage("Array.from(window.__editorNextErrors || [])");

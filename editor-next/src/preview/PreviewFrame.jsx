@@ -9,6 +9,7 @@ export function PreviewFrame({
   viewport,
   spread,
   syncSourceLine,
+  onOverflowChange,
   onSelectLine,
   onZoomChange,
   onSpreadChange
@@ -47,8 +48,10 @@ export function PreviewFrame({
     const nextState = { current, total: Math.max(markers.length, 1) };
     setPageState(nextState);
     setPageInput(String(nextState.current));
-    setOverflowPages(readOverflowPages(doc));
-  }, [readPageMarkers]);
+    const nextOverflowPages = readOverflowPages(doc);
+    setOverflowPages(nextOverflowPages);
+    onOverflowChange?.(nextOverflowPages);
+  }, [onOverflowChange, readPageMarkers]);
 
   useEffect(() => {
     const documentElement = frame.current?.contentDocument?.documentElement;

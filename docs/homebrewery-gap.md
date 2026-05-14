@@ -29,6 +29,7 @@ public: false
 - Preview multipagina reale da `::pagebreak`, con pagine `page-shell` separate.
 - Indicatore overflow pagine nella toolbar preview, con riga sorgente del prossimo intervento e selezione da spezzare.
 - Inserimento assistito `::pagebreak` prima del blocco Markdown selezionato, con marker creato tracciato in editor.
+- Revisione post-break disponibile: se resta overflow seleziona la prossima riga da spezzare.
 - Sync editor-preview con toggle, scroll preview dalla linea cursore, range sorgente sui blocchi multi-linea e click preview verso sorgente.
 - Toggle plugin pack manifest nella UI React, con scelta persistente.
 - Import di plugin pack JSON esterni non versionati, con persistenza locale e validazione collisioni.
@@ -59,12 +60,11 @@ public: false
 
 ## Gap Prioritari
 
-1. Ridurre overflow residuo dopo l'inserimento assistito.
-2. Paginazione automatica piu evoluta oltre agli split manuali `::pagebreak`.
+1. Paginazione automatica piu evoluta oltre agli split manuali `::pagebreak`.
+2. Rifiniture responsive mobile dei pannelli laterali.
 3. Palette componenti piu ricca: categorie preset dedicate.
-4. Rifiniture responsive mobile dei pannelli laterali.
-5. Comandi editor da tastiera e toolbar Markdown piu completa.
-6. Test UI per open/save, component insertion, sync preview e export PDF.
+4. Comandi editor da tastiera e toolbar Markdown piu completa.
+5. Test UI per open/save, component insertion, sync preview e export PDF.
 
 ## Non Obiettivi
 

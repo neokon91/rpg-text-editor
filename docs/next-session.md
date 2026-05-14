@@ -47,6 +47,7 @@ Vite + React + CodeMirror 6 + iframe preview
 - Preview multipagina reale implementata per `::pagebreak`: ogni pagina e una `page-shell` separata.
 - Indicatore overflow pagine implementato nella toolbar preview, con riga sorgente del prossimo intervento e selezione da spezzare.
 - Comando `Break` disponibile per inserire `::pagebreak` prima del blocco Markdown selezionato e tracciare il marker creato.
+- Revisione post-break disponibile: se resta overflow seleziona la prossima riga da spezzare.
 - Sync editor-preview implementato: toggle `Sync`, preview segue la linea cursore anche su blocchi multi-linea e il click preview seleziona la sorgente.
 - Plugin pack manifest attivabili/disattivabili dalla palette componenti, con scelta persistente.
 - Pack JSON esterni importabili e rimovibili dalla palette componenti, con persistenza locale e validazione collisioni.
@@ -78,7 +79,7 @@ Vite + React + CodeMirror 6 + iframe preview
 
 Proseguire con page break piu intelligenti o palette avanzata:
 
-1. Page break: ridurre overflow residuo dopo l'inserimento assistito.
+1. Responsive mobile dei pannelli laterali.
 2. Oppure palette avanzata: categorie preset dedicate.
 3. Mantenere `npm run test:editor-next-ui` come smoke minimo per ogni tranche.
 
