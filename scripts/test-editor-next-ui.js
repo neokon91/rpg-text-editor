@@ -111,6 +111,27 @@ try {
   await waitFor(() => evalInPage("document.body.textContent.includes('Browser-only')"));
   await waitFor(() => evalInPage("/Browser \\d+ doc \\/ \\d+ (B|KB|MB)/.test(document.body.textContent)"));
   await waitFor(() => evalInPage("document.querySelector('.next-actions button[aria-pressed=\"true\"]')?.textContent.trim() === 'Browser-only'"));
+  await evalInPage(`
+    window.localStorage.setItem('rpg-text-editor-next:browser-documents', JSON.stringify([
+      { filename: 'legacy-localstorage.md', content: '# Legacy LocalStorage', updatedAt: '2026-05-14T00:00:00.000Z' }
+    ]));
+  `);
+  await reloadPage();
+  await waitFor(() => evalInPage("document.body.textContent.includes('Browser-only')"));
+  await waitFor(() => evalInPage("!window.localStorage.getItem('rpg-text-editor-next:browser-documents')"));
+  await waitFor(() => evalInPage(`
+    new Promise((resolve, reject) => {
+      const request = indexedDB.open('rpg-text-editor-next', 1);
+      request.onerror = () => reject(request.error);
+      request.onsuccess = () => {
+        const db = request.result;
+        const list = db.transaction('documents', 'readonly').objectStore('documents').getAll();
+        list.onerror = () => reject(list.error);
+        list.onsuccess = () => resolve(list.result.some((document) => document.filename === 'legacy-localstorage.md'));
+      };
+    })
+  `));
+  await waitFor(() => evalInPage("document.body.textContent.includes('Browser 1 doc')"));
   await clickTopbarButton("Backup");
   await waitFor(() => evalInPage("document.body.textContent.includes('Backup browser pronto')"));
   await waitFor(() => evalInPage("Array.from(document.querySelectorAll('.next-status a')).some((link) => link.textContent.includes('browser-documents'))"));

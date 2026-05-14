@@ -46,6 +46,7 @@ npm start
 - Backup/import JSON dei documenti browser-only per migrazione e salvataggio esterno; i conflitti vengono rinominati invece di sovrascrivere.
 - Status bar con conteggio documenti browser e dimensione storage per capire quando fare backup.
 - Persistenza browser documenti su IndexedDB quando disponibile, con fallback e migrazione automatica da `localStorage`.
+- Smoke UI verifica la migrazione dei documenti browser legacy da `localStorage` a IndexedDB.
 - La topbar espone il toggle `Browser-only`; la status bar indica il runtime documenti: `Server locale` oppure `Browser-only`.
 - Palette componenti schema-driven con ricerca, gruppi, preset, pack manifest e pack JSON esterni.
 - Form componenti generati dallo schema, con liste, preset e validazione inline.

@@ -47,6 +47,7 @@ public: false
 - [x] Import archivio browser senza sovrascrittura silenziosa: conflitti rinominati automaticamente.
 - [x] Indicatore uso storage browser con avviso backup quando cresce.
 - [x] Persistenza browser documenti su IndexedDB con fallback/migrazione da `localStorage`.
+- [x] Smoke UI reale per migrazione documenti legacy da `localStorage` a IndexedDB.
 - [x] Export HTML/PDF guidato dal workflow autore locale.
 - [x] Overwrite esplicito.
 - [x] Salva nuovo con nome unico.
