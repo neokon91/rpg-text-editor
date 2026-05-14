@@ -43,6 +43,7 @@ public: false
 - [x] Indicatore runtime documenti in status bar: `Server locale`/`Browser-only`.
 - [x] Toggle esplicito `Browser-only` nella topbar per forzare storage, check ed export HTML nel browser.
 - [x] Fallback PDF browser-only come HTML stampabile con `Salva come PDF` del browser.
+- [x] Backup/import archivio JSON dei documenti salvati nello storage browser.
 - [x] Export HTML/PDF guidato dal workflow autore locale.
 - [x] Overwrite esplicito.
 - [x] Salva nuovo con nome unico.
@@ -149,5 +150,5 @@ public: false
 
 ## Prossimi passi consigliati
 
-1. Rifinire persistenza browser/backend web per documenti utente reali.
+1. Rifinire persistenza backend web/cloud per documenti utente reali.
 2. Rendere export PDF web-native oltre al fallback print del browser.

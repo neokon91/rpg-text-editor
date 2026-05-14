@@ -5,7 +5,7 @@ import { renderComponentValidation } from "../../packages/components/validation.
 import { loadComponentSchema, loadEnabledPacks, manifestUrl, fetchJson, saveEnabledPacks } from "../../packages/components/schema.js";
 import { renderPreviewDocument } from "../../packages/documents/preview-shell.js";
 import { parseFrontmatter, serializeFrontmatter } from "../../packages/documents/frontmatter.js";
-import { checkDocument, deleteDocument, exportDocument, getDocument, getDocumentRuntimeMode, listDocuments, renameDocument, saveDocument, setBrowserOnlyMode } from "../../packages/documents/api.js";
+import { checkDocument, deleteDocument, exportBrowserDocumentsArchive, exportDocument, getDocument, getDocumentRuntimeMode, importBrowserDocumentsArchive, listDocuments, renameDocument, saveDocument, setBrowserOnlyMode } from "../../packages/documents/api.js";
 import { countWords, downloadMarkdown } from "../../packages/markdown/editor-actions.js";
 import { slugifyDocumentName } from "../../scripts/lib/component-schema.js";
 import { ComponentPalette } from "./components/ComponentPalette.jsx";
@@ -60,6 +60,7 @@ body: Due custodi scheletrici proteggono la scala. Non attaccano chi pronuncia i
 
 function App() {
   const editorRef = useRef(null);
+  const archiveInputRef = useRef(null);
   const dialogResolverRef = useRef(null);
   const initialMarkdown = useRef(loadDraft() || starterDocument);
   const [markdown, setMarkdown] = useState(() => initialMarkdown.current);
@@ -532,6 +533,35 @@ function App() {
     setStatus("Download Markdown pronto");
   }
 
+  function exportBrowserArchive() {
+    const result = exportBrowserDocumentsArchive();
+    setExportOutputs([{ path: result.path, url: result.url }]);
+    setStatus(`Backup browser pronto: ${result.count} documenti`);
+    setDocumentRuntimeMode(getDocumentRuntimeMode());
+  }
+
+  function selectBrowserArchive() {
+    archiveInputRef.current?.click();
+  }
+
+  async function importBrowserArchive(event) {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+
+    try {
+      const result = await importBrowserDocumentsArchive(file);
+      setDocuments(result.documents.map((filename) => ({ filename })));
+      setCurrentDocument("");
+      setExportOutputs([]);
+      setStatus(`Import browser completato: ${result.count} documenti`);
+    } catch {
+      setStatus("Import browser non riuscito");
+    } finally {
+      setDocumentRuntimeMode(getDocumentRuntimeMode());
+    }
+  }
+
   async function runCheck({ focus = true } = {}) {
     setIsChecking(true);
     setExportOutputs([]);
@@ -618,6 +648,8 @@ function App() {
         onRename={renameCurrent}
         onDelete={deleteCurrent}
         onDownloadMarkdown={downloadCurrentMarkdown}
+        onExportBrowserArchive={exportBrowserArchive}
+        onImportBrowserArchive={selectBrowserArchive}
         onCheck={runCheck}
         onExport={exportChecked}
         onRefreshDocuments={refreshDocuments}
@@ -631,6 +663,13 @@ function App() {
         onInsertSnippet={insertSnippet}
         onInsertPageBreakAtSelection={insertPageBreakAtSelection}
         onInsertPageBreaksAtOverflow={insertPageBreaksAtOverflow}
+      />
+      <input
+        ref={archiveInputRef}
+        type="file"
+        accept="application/json,.json"
+        hidden
+        onChange={importBrowserArchive}
       />
       <section className="next-workspace">
         <ComponentPalette

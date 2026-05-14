@@ -35,6 +35,8 @@ export function TopMenu({
   onRename,
   onDelete,
   onDownloadMarkdown,
+  onExportBrowserArchive,
+  onImportBrowserArchive,
   onCheck,
   onExport,
   onRefreshDocuments,
@@ -97,6 +99,8 @@ export function TopMenu({
         >
           Browser-only
         </button>
+        <button type="button" title="Scarica archivio JSON dei documenti browser" onClick={onExportBrowserArchive}>Backup</button>
+        <button type="button" title="Importa archivio JSON nel browser" onClick={onImportBrowserArchive}>Importa</button>
         <span className="next-separator" />
         <button type="button" onClick={() => onInsertSnippet(snippets.scene)}>Scena</button>
         <button type="button" onClick={() => onInsertSnippet(snippets.readaloud)}>Readaloud</button>

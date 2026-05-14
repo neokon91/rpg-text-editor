@@ -31,7 +31,7 @@ public: false
 
 - Allineato: React/Vite, CodeMirror 6, preview iframe, toolbar pagina, zoom fit/fill, single/facing/flow, snippet/componenti, metadata/frontmatter, export.
 - Superficie originale: schema componenti, plugin pack, author check, export e persistenza browser-first.
-- Gap attuale: `Auto pages` e collegato anche all'export; restano da rifinire persistenza web e PDF web-native.
+- Gap attuale: `Auto pages` e collegato anche all'export e i documenti browser hanno backup/import JSON; restano da rifinire persistenza web/cloud e PDF web-native.
 
 ## Prossimo Passo
 

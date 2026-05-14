@@ -110,6 +110,9 @@ try {
   await waitFor(() => evalInPage("window.localStorage.getItem('rpg-text-editor-next:browser-only') === 'true'"));
   await waitFor(() => evalInPage("document.body.textContent.includes('Browser-only')"));
   await waitFor(() => evalInPage("document.querySelector('.next-actions button[aria-pressed=\"true\"]')?.textContent.trim() === 'Browser-only'"));
+  await clickTopbarButton("Backup");
+  await waitFor(() => evalInPage("document.body.textContent.includes('Backup browser pronto')"));
+  await waitFor(() => evalInPage("Array.from(document.querySelectorAll('.next-status a')).some((link) => link.textContent.includes('browser-documents'))"));
   await evalInPage(`
     window.localStorage.setItem('rpg-text-editor-next:draft', '---\\ntitle: Browser PDF Fallback\\nslug: browser-pdf-fallback\\nsummary: Documento valido per fallback PDF browser\\ncompatibility: 5e/5.5e\\nlicense_mode: srd-5.2-cc\\nauthor: Codex\\ntheme: classic-parchment\\npaper: A4\\n---\\n\\n# Browser PDF Fallback\\n\\nDocumento valido per export PDF browser-only.');
   `);

@@ -91,6 +91,44 @@ export function setBrowserOnlyMode(enabled) {
   } catch {}
 }
 
+export function exportBrowserDocumentsArchive() {
+  const documents = browserDocuments();
+  const exportedAt = new Date().toISOString();
+  const archive = {
+    format: "rpg-text-editor.browser-documents.v1",
+    exportedAt,
+    documents
+  };
+  const outputName = `rpg-text-editor-browser-documents-${exportedAt.slice(0, 10)}.json`;
+  const blob = new Blob([JSON.stringify(archive, null, 2)], { type: "application/json;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  triggerDownload(url, outputName);
+  return { count: documents.length, path: `browser-download/${outputName}`, url };
+}
+
+export async function importBrowserDocumentsArchive(file) {
+  const archive = JSON.parse(await file.text());
+  if (archive.format !== "rpg-text-editor.browser-documents.v1" || !Array.isArray(archive.documents)) {
+    throw new Error("Archivio browser non valido");
+  }
+
+  const imported = archive.documents.map((document) => ({
+    filename: safeMarkdownFilename(document.filename || "documento.md"),
+    content: String(document.content || ""),
+    updatedAt: document.updatedAt || new Date().toISOString()
+  }));
+  const current = browserDocuments();
+  const merged = new Map(current.map((document) => [document.filename, document]));
+
+  for (const document of imported) {
+    merged.set(document.filename, document);
+  }
+
+  saveBrowserDocuments([...merged.values()]);
+  setBrowserOnlyMode(true);
+  return { count: imported.length, documents: [...merged.values()].map(({ filename }) => filename) };
+}
+
 async function withServerFallback(serverAction, browserAction) {
   if (browserOnlyMode()) return browserAction();
   try {

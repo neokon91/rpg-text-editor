@@ -10,7 +10,16 @@ import {
 import { insertPageBreakBeforeLine, insertPageBreaksBeforeLines, predictPageBreakLines } from "../../editor-next/src/editor/pageBreaks.js";
 import { renderMarkdown } from "../../packages/components/preview.js";
 import { renderPreviewDocument } from "../../packages/documents/preview-shell.js";
-import { checkDocument, exportDocument, getDocumentRuntimeMode, listDocuments, saveDocument, setBrowserOnlyMode } from "../../packages/documents/api.js";
+import {
+  checkDocument,
+  exportBrowserDocumentsArchive,
+  exportDocument,
+  getDocumentRuntimeMode,
+  importBrowserDocumentsArchive,
+  listDocuments,
+  saveDocument,
+  setBrowserOnlyMode
+} from "../../packages/documents/api.js";
 import { parseMarkdownOutline } from "../../packages/markdown/outline.js";
 
 test("parseMarkdownOutline ignores fenced headings and strips inline HTML", () => {
@@ -285,6 +294,28 @@ Documento lungo.`
 
   assert.match(downloadedBlob, /data-auto-paginate="true"/);
   assert.match(downloadedBlob, /paginatePreviewPages/);
+});
+
+test("browser-only document api can backup and import document archives", async () => {
+  const downloads = [];
+  withBrowserOnlyStorage({ downloads });
+
+  await saveDocument({ filename: "backup-one.md", content: "# Backup One" });
+  await saveDocument({ filename: "backup-two.md", content: "# Backup Two" });
+  const exported = exportBrowserDocumentsArchive();
+  const archiveText = await downloads[0].blob.text();
+
+  assert.equal(exported.count, 2);
+  assert.match(exported.path, /rpg-text-editor-browser-documents-/);
+  assert.match(archiveText, /rpg-text-editor\.browser-documents\.v1/);
+
+  withBrowserStorage({ browserOnly: false });
+  const imported = await importBrowserDocumentsArchive({ text: async () => archiveText });
+  const listed = await listDocuments();
+
+  assert.equal(getDocumentRuntimeMode(), "browser");
+  assert.equal(imported.count, 2);
+  assert.deepEqual(listed.documents, ["backup-one.md", "backup-two.md"]);
 });
 
 function withBrowserOnlyStorage(options = {}) {
