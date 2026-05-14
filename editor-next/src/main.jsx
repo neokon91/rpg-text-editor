@@ -5,7 +5,7 @@ import { renderComponentValidation } from "../../packages/components/validation.
 import { loadComponentSchema, loadEnabledPacks, manifestUrl, fetchJson, saveEnabledPacks } from "../../packages/components/schema.js";
 import { renderPreviewDocument } from "../../packages/documents/preview-shell.js";
 import { parseFrontmatter, serializeFrontmatter } from "../../packages/documents/frontmatter.js";
-import { checkDocument, deleteDocument, exportBrowserDocumentsArchive, exportDocument, getBrowserDocumentStorageStats, getDocument, getDocumentRuntimeMode, importBrowserDocumentsArchive, importBrowserMarkdownDocument, listDocuments, renameDocument, saveDocument, setBrowserOnlyMode } from "../../packages/documents/api.js";
+import { checkDocument, deleteDocument, exportBrowserDocumentsArchive, exportDocument, getBrowserDocumentStorageStats, getDocument, getDocumentRuntimeMode, importBrowserDocumentsArchive, importBrowserMarkdownDocuments, listDocuments, renameDocument, saveDocument, setBrowserOnlyMode } from "../../packages/documents/api.js";
 import { countWords, downloadMarkdown } from "../../packages/markdown/editor-actions.js";
 import { slugifyDocumentName } from "../../scripts/lib/component-schema.js";
 import { ComponentPalette } from "./components/ComponentPalette.jsx";
@@ -554,15 +554,16 @@ function App() {
   }
 
   async function importBrowserArchive(event) {
-    const file = event.target.files?.[0];
+    const files = Array.from(event.target.files || []);
     event.target.value = "";
-    if (!file) return;
+    if (!files.length) return;
 
     try {
-      const isMarkdown = /\.md$/i.test(file.name || "");
+      const markdownFiles = files.filter((file) => /\.md$/i.test(file.name || ""));
+      const isMarkdown = markdownFiles.length > 0;
       const result = isMarkdown
-        ? await importBrowserMarkdownDocument(file)
-        : await importBrowserDocumentsArchive(file);
+        ? await importBrowserMarkdownDocuments(markdownFiles)
+        : await importBrowserDocumentsArchive(files[0]);
       setDocuments(result.documents.map((filename) => ({ filename })));
       setCurrentDocument("");
       setExportOutputs([]);
@@ -685,6 +686,7 @@ function App() {
         ref={archiveInputRef}
         type="file"
         accept="application/json,text/markdown,.json,.md"
+        multiple
         hidden
         onChange={importBrowserArchive}
       />

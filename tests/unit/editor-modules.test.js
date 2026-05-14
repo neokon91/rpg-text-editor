@@ -18,6 +18,7 @@ import {
   getDocumentRuntimeMode,
   importBrowserDocumentsArchive,
   importBrowserMarkdownDocument,
+  importBrowserMarkdownDocuments,
   listDocuments,
   saveDocument,
   setBrowserOnlyMode
@@ -396,6 +397,23 @@ author: Codex
   assert.deepEqual(listed.documents, [
     { filename: "Imported-Adventure-2.md", title: "Alternate Import" },
     { filename: "Imported-Adventure.md", title: "Imported Adventure" }
+  ]);
+});
+
+test("browser-only document api imports multiple markdown files", async () => {
+  withBrowserOnlyStorage();
+
+  const imported = await importBrowserMarkdownDocuments([
+    { name: "one.md", text: async () => "# One" },
+    { name: "two.md", text: async () => "# Two" }
+  ]);
+  const listed = await listDocuments();
+
+  assert.equal(imported.count, 2);
+  assert.deepEqual(imported.imported, ["one.md", "two.md"]);
+  assert.deepEqual(listed.documents, [
+    { filename: "one.md", title: "One" },
+    { filename: "two.md", title: "Two" }
   ]);
 });
 

@@ -567,19 +567,20 @@ async function openComponentForm(label, expectedText) {
 }
 
 async function setComponentFormField(label, value) {
-  await evalInPage(`
-    {
+  await waitFor(() => evalInPage(`
+    (() => {
       const field = Array.from(document.querySelectorAll('.component-form label'))
         .find((item) => item.querySelector('span')?.textContent.trim().startsWith(${JSON.stringify(label)}));
-      if (!field) throw new Error('Component field not found: ${label}');
+      if (!field) return false;
       const control = field.querySelector('input, textarea');
-      if (!control) throw new Error('Component control not found: ${label}');
+      if (!control) return false;
       const prototype = control instanceof HTMLTextAreaElement ? HTMLTextAreaElement.prototype : HTMLInputElement.prototype;
       const setter = Object.getOwnPropertyDescriptor(prototype, 'value').set;
       setter.call(control, ${JSON.stringify(value)});
       control.dispatchEvent(new Event('input', { bubbles: true }));
-    }
-  `);
+      return true;
+    })()
+  `));
 }
 
 async function componentFormHasField(label) {

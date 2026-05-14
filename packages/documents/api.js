@@ -152,22 +152,41 @@ export async function importBrowserDocumentsArchive(file) {
 }
 
 export async function importBrowserMarkdownDocument(file) {
-  const current = await browserDocuments();
-  const safeFilename = safeMarkdownFilename(file.name || "documento.md");
-  const content = await file.text();
-  const existing = current.find((document) => document.filename === safeFilename);
-  const filename = existing && existing.content !== content
-    ? uniqueFilename(current, safeFilename)
-    : safeFilename;
+  return importBrowserMarkdownDocuments([file]);
+}
 
-  const nextDocuments = current.filter((document) => document.filename !== filename);
-  nextDocuments.push({ filename, content, updatedAt: new Date().toISOString() });
+export async function importBrowserMarkdownDocuments(files) {
+  const current = await browserDocuments();
+  const nextDocuments = [...current];
+  const imported = [];
+  let renamed = 0;
+
+  for (const file of files) {
+    const safeFilename = safeMarkdownFilename(file.name || "documento.md");
+    const content = await file.text();
+    const existing = nextDocuments.find((document) => document.filename === safeFilename);
+    const filename = existing && existing.content !== content
+      ? uniqueFilename(nextDocuments, safeFilename)
+      : safeFilename;
+
+    if (filename !== safeFilename) renamed += 1;
+    const replaceIndex = nextDocuments.findIndex((document) => document.filename === filename);
+    const document = { filename, content, updatedAt: new Date().toISOString() };
+    if (replaceIndex >= 0) {
+      nextDocuments[replaceIndex] = document;
+    } else {
+      nextDocuments.push(document);
+    }
+    imported.push(filename);
+  }
+
   await saveBrowserDocuments(nextDocuments);
   setBrowserOnlyMode(true);
   return {
-    count: 1,
-    renamed: filename !== safeFilename ? 1 : 0,
-    filename,
+    count: files.length,
+    renamed,
+    filename: imported[0] || "",
+    imported,
     documents: nextDocuments.sort((a, b) => a.filename.localeCompare(b.filename)).map(({ filename: itemFilename }) => itemFilename)
   };
 }
