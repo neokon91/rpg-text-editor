@@ -554,7 +554,9 @@ function App() {
       setDocuments(result.documents.map((filename) => ({ filename })));
       setCurrentDocument("");
       setExportOutputs([]);
-      setStatus(`Import browser completato: ${result.count} documenti`);
+      setStatus(result.renamed
+        ? `Import browser completato: ${result.count} documenti, ${result.renamed} rinominati`
+        : `Import browser completato: ${result.count} documenti`);
     } catch {
       setStatus("Import browser non riuscito");
     } finally {

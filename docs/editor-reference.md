@@ -43,7 +43,7 @@ npm start
 - Check guidato con diagnostiche schema e author check.
 - Export HTML/PDF in `dist/`, con stato busy/error e log export nel tooltip.
 - Modalita browser-only iniziale: se le API locali non esistono, documenti/check/export HTML usano storage e download del browser; export PDF scarica un HTML stampabile per `Salva come PDF`.
-- Backup/import JSON dei documenti browser-only per migrazione e salvataggio esterno.
+- Backup/import JSON dei documenti browser-only per migrazione e salvataggio esterno; i conflitti vengono rinominati invece di sovrascrivere.
 - La topbar espone il toggle `Browser-only`; la status bar indica il runtime documenti: `Server locale` oppure `Browser-only`.
 - Palette componenti schema-driven con ricerca, gruppi, preset, pack manifest e pack JSON esterni.
 - Form componenti generati dallo schema, con liste, preset e validazione inline.

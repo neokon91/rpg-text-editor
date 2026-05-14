@@ -318,6 +318,27 @@ test("browser-only document api can backup and import document archives", async 
   assert.deepEqual(listed.documents, ["backup-one.md", "backup-two.md"]);
 });
 
+test("browser-only archive import keeps existing documents on filename conflicts", async () => {
+  withBrowserOnlyStorage();
+  await saveDocument({ filename: "conflict.md", content: "# Original" });
+
+  const archive = JSON.stringify({
+    format: "rpg-text-editor.browser-documents.v1",
+    exportedAt: "2026-05-14T00:00:00.000Z",
+    documents: [
+      { filename: "conflict.md", content: "# Imported", updatedAt: "2026-05-14T00:00:00.000Z" },
+      { filename: "../unsafe name.md", content: "# Safe Name", updatedAt: "2026-05-14T00:00:00.000Z" }
+    ]
+  });
+
+  const imported = await importBrowserDocumentsArchive({ text: async () => archive });
+  const listed = await listDocuments();
+
+  assert.equal(imported.count, 2);
+  assert.equal(imported.renamed, 1);
+  assert.deepEqual(listed.documents, ["conflict-2.md", "conflict.md", "unsafe-name.md"]);
+});
+
 function withBrowserOnlyStorage(options = {}) {
   return withBrowserStorage({ browserOnly: true, ...options });
 }

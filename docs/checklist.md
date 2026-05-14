@@ -44,6 +44,7 @@ public: false
 - [x] Toggle esplicito `Browser-only` nella topbar per forzare storage, check ed export HTML nel browser.
 - [x] Fallback PDF browser-only come HTML stampabile con `Salva come PDF` del browser.
 - [x] Backup/import archivio JSON dei documenti salvati nello storage browser.
+- [x] Import archivio browser senza sovrascrittura silenziosa: conflitti rinominati automaticamente.
 - [x] Export HTML/PDF guidato dal workflow autore locale.
 - [x] Overwrite esplicito.
 - [x] Salva nuovo con nome unico.

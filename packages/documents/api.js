@@ -112,21 +112,29 @@ export async function importBrowserDocumentsArchive(file) {
     throw new Error("Archivio browser non valido");
   }
 
-  const imported = archive.documents.map((document) => ({
-    filename: safeMarkdownFilename(document.filename || "documento.md"),
-    content: String(document.content || ""),
-    updatedAt: document.updatedAt || new Date().toISOString()
-  }));
   const current = browserDocuments();
   const merged = new Map(current.map((document) => [document.filename, document]));
+  let renamed = 0;
 
-  for (const document of imported) {
-    merged.set(document.filename, document);
+  for (const sourceDocument of archive.documents) {
+    const content = String(sourceDocument.content || "");
+    const safeFilename = safeMarkdownFilename(sourceDocument.filename || "documento.md");
+    const existing = merged.get(safeFilename);
+    const filename = existing && existing.content !== content
+      ? uniqueFilename([...merged.values()], safeFilename)
+      : safeFilename;
+
+    if (filename !== safeFilename) renamed += 1;
+    merged.set(filename, {
+      filename,
+      content,
+      updatedAt: sourceDocument.updatedAt || new Date().toISOString()
+    });
   }
 
   saveBrowserDocuments([...merged.values()]);
   setBrowserOnlyMode(true);
-  return { count: imported.length, documents: [...merged.values()].map(({ filename }) => filename) };
+  return { count: archive.documents.length, renamed, documents: [...merged.values()].map(({ filename }) => filename) };
 }
 
 async function withServerFallback(serverAction, browserAction) {
