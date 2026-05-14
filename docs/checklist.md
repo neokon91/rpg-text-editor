@@ -27,6 +27,7 @@ public: false
 
 ## Editor UI
 
+- [x] Target prodotto chiarito: web app browser-first, senza installazione locale per utente finale.
 - [x] Editor React/CodeMirror avviabile con `npm run editor`.
 - [x] Markdown sempre visibile come sorgente.
 - [x] Form frontmatter nella UI React.
@@ -144,4 +145,4 @@ public: false
 ## Prossimi passi consigliati
 
 1. Promuovere `Auto pages` da preview sperimentale a renderer/export stabile.
-2. Installer/app desktop oltre allo ZIP applicativo locale.
+2. Deploy web browser-first e persistenza senza dipendenza da file/API locali.

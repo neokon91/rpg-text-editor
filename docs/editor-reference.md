@@ -16,6 +16,8 @@ public: false
 
 ## Avvio
 
+Target prodotto: l'utente finale deve usare l'editor nel browser senza installare Node/npm o un'app desktop. I comandi sotto sono per sviluppo e QA locale.
+
 ```sh
 npm install
 npm run doctor
@@ -60,9 +62,9 @@ npm start
 ## Mancanze Prioritarie
 
 1. Portare `Auto pages` nel renderer/export stabile.
-2. Creare un installer/app desktop oltre a `npm run package:editor`.
-3. Rifinire onboarding e messaggi errore per utente finale non tecnico.
+2. Sostituire il flusso file/API locali con persistenza adatta a web app browser-first.
+3. Rifinire deploy, onboarding e messaggi errore per utente finale non tecnico.
 
 ## Guardrail
 
-Homebrewery resta solo benchmark UX. Non copiare sintassi `{{...}}`, stile PHB, font, asset, loghi o trade dress. Questo editor resta local-first, schema-driven e Markdown-first.
+Homebrewery resta solo benchmark UX. Non copiare sintassi `{{...}}`, stile PHB, font, asset, loghi o trade dress. Questo editor resta browser-first, schema-driven e Markdown-first.

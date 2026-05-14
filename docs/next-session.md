@@ -18,7 +18,8 @@ public: false
 
 - Branch di lavoro: `codex/vscode-preview-rendering`.
 - UI unica: `editor-next/` con React, Vite, CodeMirror 6 e preview iframe.
-- Avvio utente: `npm start`; preflight: `npm run doctor`; pacchetto locale: `npm run package:editor`.
+- Target utente finale: web app browser-first, senza installazione locale.
+- Avvio sviluppo: `npm start`; preflight sviluppo: `npm run doctor`; pacchetto locale solo per QA/dev: `npm run package:editor`.
 - Verifica completa richiesta prima di chiudere tranche: `npm run check`.
 - Smoke minimo durante sviluppo UI: `npm run test:editor-next-ui`.
 - Reference operative da leggere prima del codice: `docs/editor-reference.md`, `docs/checklist.md`, `docs/homebrewery-benchmark.md`.
@@ -37,12 +38,12 @@ public: false
 ## Prossime Priorita
 
 1. Promuovere `Auto pages` da preview sperimentale a renderer/export stabile.
-2. Packaging installabile/app desktop oltre allo ZIP locale.
-3. Polish onboarding e messaggi errore/export per utente non tecnico.
+2. Trasformare il flusso documenti/API locali in persistenza browser o backend web.
+3. Deploy web e onboarding browser-first per utente non tecnico.
 
 ## Guardrail
 
 - Non copiare sintassi, stylesheet, font, asset, loghi o trade dress Homebrewery/manuali ufficiali.
-- Restare local-first e schema-driven finche account/cloud non diventano requisito esplicito.
+- Restare browser-first e schema-driven finche account/cloud non diventano requisito esplicito.
 - Non nascondere il Markdown dietro un formato proprietario.
 - Conservare UI compatta: niente landing page, niente pannelli che coprono il testo.

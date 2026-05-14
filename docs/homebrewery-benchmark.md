@@ -25,12 +25,12 @@ public: false
 - Usare Homebrewery solo come benchmark UX: Markdown visibile, preview impaginata, snippet rapidi, export centrale.
 - Non importare sintassi `{{...}}`, CSS, font, asset, loghi, cornici o trade dress.
 - Preferire componenti `:::` schema-driven per validazione, snippet, plugin pack e reference generate.
-- Restare local-first: niente account, vault, MongoDB, drive/cloud o share pubblico finche non richiesto.
+- Restare browser-first: niente installazione locale per l'utente finale; account, vault, MongoDB, drive/cloud o share pubblico solo se diventano requisiti espliciti.
 
 ## Stato Comparativo
 
 - Allineato: React/Vite, CodeMirror 6, preview iframe, toolbar pagina, zoom fit/fill, single/facing/flow, snippet/componenti, metadata/frontmatter, export.
-- Superficie originale: schema componenti, plugin pack, author check, packaging locale.
+- Superficie originale: schema componenti, plugin pack, author check, export e persistenza browser-first.
 - Gap attuale: `Auto pages` e disponibile in preview ma non ancora nel renderer/export stabile.
 
 ## Prossimo Passo

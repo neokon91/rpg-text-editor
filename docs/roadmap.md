@@ -16,7 +16,7 @@ public: false
 
 ## Direzione
 
-RPG Text Editor e un ambiente locale Markdown-first per contenuti TTRPG: editor CodeMirror, preview editoriale, componenti schema-driven, check guidati ed export HTML/PDF. Il sorgente resta Markdown leggibile e versionabile.
+RPG Text Editor deve essere una web app browser-first per contenuti TTRPG: editor CodeMirror, preview editoriale, componenti schema-driven, check guidati ed export HTML/PDF. L'utente finale non deve installare Node/npm o un'app desktop. Il sorgente resta Markdown leggibile e versionabile.
 
 ## Stato Attuale
 
@@ -25,8 +25,8 @@ RPG Text Editor e un ambiente locale Markdown-first per contenuti TTRPG: editor 
 - Componenti core e plugin pack descritti da schema.
 - Palette componenti con ricerca, gruppi, preset, pack manifest e pack JSON esterni.
 - Preview iframe con sync editor-preview, toolbar pagine, `::pagebreak`, overflow badge, `Auto break` e `Auto pages`.
-- Avvio utente semplificato: `npm start`; preflight: `npm run doctor`.
-- Packaging locale: `npm run package:editor`; package pubblicazione libro: `npm run export:package`.
+- Avvio sviluppo semplificato: `npm start`; preflight sviluppo: `npm run doctor`.
+- Packaging locale disponibile per QA/dev: `npm run package:editor`; package pubblicazione libro: `npm run export:package`.
 - QA aggregata: `npm run check`.
 
 ## Prossime Fasi
@@ -34,8 +34,8 @@ RPG Text Editor e un ambiente locale Markdown-first per contenuti TTRPG: editor 
 1. **Paginazione stabile**
    Portare la misurazione di `Auto pages` nel renderer/export HTML/PDF, mantenendo `::pagebreak` come override manuale.
 
-2. **Distribuzione finale**
-   Passare dallo ZIP applicativo locale a installer/app desktop o bundle equivalente per utenti non tecnici.
+2. **Web app finale**
+   Rendere l'editor deployabile e usabile da browser senza installazione locale, sostituendo le API file locali con persistenza web/browser.
 
 3. **Onboarding e recovery**
    Rifinire primo avvio, messaggi errore, recupero draft, esempi iniziali e indicazioni export.
@@ -45,6 +45,7 @@ RPG Text Editor e un ambiente locale Markdown-first per contenuti TTRPG: editor 
 
 ## Non Obiettivi
 
+- Installer desktop come percorso principale per l'utente finale.
 - Account/cloud/share pubblico finche non richiesti.
 - Sintassi proprietaria nascosta al posto del Markdown.
 - Copia di trade dress, font, asset o layout riconoscibili di Homebrewery/manuali ufficiali.
