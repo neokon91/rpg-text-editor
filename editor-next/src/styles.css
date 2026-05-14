@@ -59,6 +59,13 @@ button:disabled {
   grid-template-rows: auto minmax(0, 1fr);
   height: 100vh;
   min-width: 0;
+  outline: 0 solid transparent;
+  outline-offset: -4px;
+  transition: outline-color 120ms ease, outline-width 120ms ease;
+}
+
+.next-shell[data-import-drag="on"] {
+  outline: 4px solid rgba(31, 111, 120, 0.55);
 }
 
 .next-topbar {

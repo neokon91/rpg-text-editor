@@ -137,6 +137,11 @@ try {
   await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.querySelector('.page-shell h1')?.textContent.includes('Browser Import One')"));
   await waitFor(() => evalInPage("Array.from(document.querySelector('.next-actions select')?.options || []).some((item) => item.textContent.includes('Browser Import Two'))"));
   await waitFor(() => evalInPage("document.body.textContent.includes('Browser 3 doc')"));
+  await dropBrowserMarkdownDocument();
+  await waitFor(() => evalInPage("document.body.textContent.includes('Import Markdown completato: 1 documenti')"));
+  await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.querySelector('.page-shell h1')?.textContent.includes('Browser Drop Import')"));
+  await waitFor(() => evalInPage("Array.from(document.querySelector('.next-actions select')?.options || []).some((item) => item.textContent.includes('Browser Drop Import'))"));
+  await waitFor(() => evalInPage("document.body.textContent.includes('Browser 4 doc')"));
   await clickTopbarButton("Backup");
   await waitFor(() => evalInPage("document.body.textContent.includes('Backup browser pronto')"));
   await waitFor(() => evalInPage("Array.from(document.querySelectorAll('.next-status a')).some((link) => link.textContent.includes('browser-documents'))"));
@@ -771,6 +776,28 @@ async function importBrowserMarkdownDocuments() {
       transfer.items.add(two);
       input.files = transfer.files;
       input.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+  `);
+}
+
+async function dropBrowserMarkdownDocument() {
+  await evalInPage(`
+    {
+      const shell = document.querySelector('.next-shell');
+      if (!shell) throw new Error('Editor shell not found');
+      const file = new File(['---\\ntitle: Browser Drop Import\\nslug: browser-drop-import\\nsummary: Drop import\\ncompatibility: 5e/5.5e\\nlicense_mode: srd-5.2-cc\\nauthor: Codex\\n---\\n\\n# Browser Drop Import\\n\\nDrop import.'], 'browser-drop-import.md', { type: 'text/markdown' });
+      const transfer = new DataTransfer();
+      transfer.items.add(file);
+      window.__browserDropTransfer = transfer;
+      shell.dispatchEvent(new DragEvent('dragenter', { bubbles: true, cancelable: true, dataTransfer: transfer }));
+    }
+  `);
+  await waitFor(() => evalInPage("document.querySelector('.next-shell')?.dataset.importDrag === 'on'"));
+  await evalInPage(`
+    {
+      const shell = document.querySelector('.next-shell');
+      shell.dispatchEvent(new DragEvent('drop', { bubbles: true, cancelable: true, dataTransfer: window.__browserDropTransfer }));
+      delete window.__browserDropTransfer;
     }
   `);
 }

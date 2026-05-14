@@ -102,6 +102,7 @@ function App() {
   const [exportOutputs, setExportOutputs] = useState([]);
   const [pendingBreakReview, setPendingBreakReview] = useState(null);
   const [previewOverflowPages, setPreviewOverflowPages] = useState([]);
+  const [isDraggingImport, setIsDraggingImport] = useState(false);
   const [dialog, setDialog] = useState(null);
 
   useEffect(() => {
@@ -556,6 +557,10 @@ function App() {
   async function importBrowserArchive(event) {
     const files = Array.from(event.target.files || []);
     event.target.value = "";
+    await importBrowserFiles(files);
+  }
+
+  async function importBrowserFiles(files) {
     if (!files.length) return;
 
     try {
@@ -587,6 +592,23 @@ function App() {
     } finally {
       setDocumentRuntimeMode(getDocumentRuntimeMode());
     }
+  }
+
+  function handleImportDrag(event) {
+    if (!Array.from(event.dataTransfer?.types || []).includes("Files")) return;
+    event.preventDefault();
+    setIsDraggingImport(true);
+  }
+
+  function clearImportDrag(event) {
+    if (event.currentTarget.contains(event.relatedTarget)) return;
+    setIsDraggingImport(false);
+  }
+
+  async function handleImportDrop(event) {
+    event.preventDefault();
+    setIsDraggingImport(false);
+    await importBrowserFiles(Array.from(event.dataTransfer?.files || []));
   }
 
   async function runCheck({ focus = true } = {}) {
@@ -650,7 +672,16 @@ function App() {
   }
 
   return (
-    <main className="next-shell" data-preview={previewVisible ? "on" : "off"} data-mobile-panel={mobilePanel}>
+    <main
+      className="next-shell"
+      data-preview={previewVisible ? "on" : "off"}
+      data-mobile-panel={mobilePanel}
+      data-import-drag={isDraggingImport ? "on" : "off"}
+      onDragEnter={handleImportDrag}
+      onDragOver={handleImportDrag}
+      onDragLeave={clearImportDrag}
+      onDrop={handleImportDrop}
+    >
       <TopMenu
         title={title}
         words={words}

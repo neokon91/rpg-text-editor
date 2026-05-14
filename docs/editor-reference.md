@@ -51,6 +51,7 @@ npm start
 - `Importa` accetta archivi JSON e uno o piu file `.md`, salvandoli nello storage browser con rinomina conflitti.
 - Dopo import browser-only, il primo documento importato viene aperto subito e la lista file viene ricaricata con i titoli.
 - Smoke UI copre import multiplo `.md`, apertura immediata del primo documento e titoli nel menu File.
+- Drag & drop sullo shell editor usa lo stesso import browser-only di `Importa`.
 - La topbar espone il toggle `Browser-only`; la status bar indica il runtime documenti: `Server locale` oppure `Browser-only`.
 - Palette componenti schema-driven con ricerca, gruppi, preset, pack manifest e pack JSON esterni.
 - Form componenti generati dallo schema, con liste, preset e validazione inline.
