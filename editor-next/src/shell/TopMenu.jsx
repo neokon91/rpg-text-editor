@@ -22,6 +22,7 @@ export function TopMenu({
   exportOutputs,
   previewVisible,
   syncPreview,
+  mobilePanel,
   viewport,
   zoom,
   onOpenDocument,
@@ -33,6 +34,7 @@ export function TopMenu({
   onRefreshDocuments,
   onTogglePreview,
   onToggleSyncPreview,
+  onMobilePanelChange,
   onViewportChange,
   onZoomChange,
   onResetDraft,
@@ -105,6 +107,18 @@ export function TopMenu({
           Sync
         </button>
         <button type="button" onClick={onResetDraft}>Nuovo</button>
+        <div className="mobile-panel-switch" aria-label="Pannelli mobile">
+          {[
+            ["editor", "Editor"],
+            ["components", "Componenti"],
+            ["preview", "Preview"],
+            ["document", "Documento"]
+          ].map(([value, label]) => (
+            <button key={value} type="button" aria-pressed={mobilePanel === value} onClick={() => onMobilePanelChange(value)}>
+              {label}
+            </button>
+          ))}
+        </div>
       </nav>
       <div className="next-status" aria-live="polite">
         <span>{words} parole</span>

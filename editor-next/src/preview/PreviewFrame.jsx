@@ -199,7 +199,7 @@ function readOverflowPages(doc) {
   return [...doc.querySelectorAll(".page-shell")]
     .map((page) => {
       const style = doc.defaultView?.getComputedStyle(page);
-      const pageLimit = parseFloat(style?.height || "0") || parseFloat(style?.minHeight || "0") || page.clientHeight;
+      const pageLimit = parseFloat(style?.minHeight || "0") || parseFloat(style?.height || "0") || page.clientHeight;
       const pageRect = page.getBoundingClientRect();
       const pageBottom = pageRect.top + pageLimit;
       const clippedNode = [...page.querySelectorAll("[data-source-line]")].find((node) => {

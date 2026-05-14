@@ -59,6 +59,7 @@ Vite + React + CodeMirror 6 + iframe preview
 - Shortcut palette: `Ctrl/Cmd+K` focus ricerca, `Escape` pulisce filtro attivo.
 - Filtri rapidi per gruppo disponibili nella palette componenti.
 - Breakpoint desktop compatti per evitare overflow orizzontale dei pannelli.
+- Switch pannelli mobile per Editor, Componenti, Preview e Documento.
 - Workspace locale persistente per preview visibile, zoom, viewport, spread, sync e filtro gruppo componenti.
 - Workspace locale persistente per collasso frontmatter/outline e riga outline selezionata.
 
@@ -79,8 +80,8 @@ Vite + React + CodeMirror 6 + iframe preview
 
 Proseguire con page break piu intelligenti o palette avanzata:
 
-1. Responsive mobile dei pannelli laterali.
-2. Oppure palette avanzata: categorie preset dedicate.
+1. Palette avanzata: categorie preset dedicate.
+2. Oppure rename/delete documento nella UI React.
 3. Mantenere `npm run test:editor-next-ui` come smoke minimo per ogni tranche.
 
 Poi: rename/delete se confermati.

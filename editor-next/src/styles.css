@@ -109,6 +109,10 @@ button:disabled {
   white-space: nowrap;
 }
 
+.mobile-panel-switch {
+  display: none;
+}
+
 .next-separator {
   width: 1px;
   height: 24px;
@@ -721,5 +725,39 @@ button:disabled {
   .component-palette,
   .document-side {
     display: none;
+  }
+
+  .mobile-panel-switch {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    width: 100%;
+  }
+
+  .mobile-panel-switch button {
+    min-height: 26px;
+    padding: 0 8px;
+    font-size: 12px;
+  }
+
+  .next-shell[data-mobile-panel="components"] .component-palette,
+  .next-shell[data-mobile-panel="preview"] .preview-pane,
+  .next-shell[data-mobile-panel="document"] .document-side {
+    display: grid;
+    min-height: 0;
+  }
+
+  .next-shell[data-mobile-panel="components"] .markdown-pane,
+  .next-shell[data-mobile-panel="preview"] .markdown-pane,
+  .next-shell[data-mobile-panel="document"] .markdown-pane {
+    display: none;
+  }
+
+  .next-shell[data-preview="off"][data-mobile-panel="preview"] .preview-pane {
+    display: none;
+  }
+
+  .next-shell[data-preview="off"][data-mobile-panel="preview"] .markdown-pane {
+    display: block;
   }
 }

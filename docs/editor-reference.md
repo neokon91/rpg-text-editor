@@ -55,6 +55,7 @@ Il server apre `editor-next/` su `http://127.0.0.1:5173/editor-next/` e combina 
 - Shortcut palette: `Ctrl/Cmd+K` porta il focus sulla ricerca componenti, `Escape` svuota il filtro attivo.
 - Filtri rapidi per gruppo nella palette componenti.
 - Breakpoint desktop compatti per mantenere palette, editor, preview e documento entro la viewport senza overflow orizzontale.
+- Switch pannelli mobile per passare tra Editor, Componenti, Preview e Documento sotto 920px.
 - Workspace locale persistente per preview visibile, zoom, viewport, spread, sync e filtro gruppo componenti.
 - Workspace locale persistente per collasso frontmatter/outline e riga outline selezionata.
 - Navigatore documento da heading Markdown con salto alla riga.
@@ -69,7 +70,6 @@ Il server apre `editor-next/` su `http://127.0.0.1:5173/editor-next/` e combina 
 
 ## Mancanze Verso Homebrewery
 
-- Rifiniture responsive mobile dei pannelli laterali.
 - Rename/delete documento, se confermati come parte del flusso editor.
 - Test UI piu ampi per save/open e component insertion.
 

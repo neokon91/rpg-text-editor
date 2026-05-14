@@ -44,6 +44,7 @@ public: false
 - Shortcut palette: `Ctrl/Cmd+K` focus ricerca, `Escape` pulisce filtro attivo.
 - Filtri rapidi per gruppo nella palette componenti.
 - Breakpoint desktop compatti per evitare overflow orizzontale dei pannelli.
+- Switch pannelli mobile per Editor, Componenti, Preview e Documento.
 - Workspace locale persistente per preview, zoom, viewport, spread, sync e filtro gruppo componenti.
 - Workspace locale persistente per collasso frontmatter/outline e riga outline selezionata.
 - Navigatore documento da heading Markdown con salto alla riga.
@@ -61,10 +62,9 @@ public: false
 ## Gap Prioritari
 
 1. Paginazione automatica piu evoluta oltre agli split manuali `::pagebreak`.
-2. Rifiniture responsive mobile dei pannelli laterali.
-3. Palette componenti piu ricca: categorie preset dedicate.
-4. Comandi editor da tastiera e toolbar Markdown piu completa.
-5. Test UI per open/save, component insertion, sync preview e export PDF.
+2. Palette componenti piu ricca: categorie preset dedicate.
+3. Comandi editor da tastiera e toolbar Markdown piu completa.
+4. Test UI per open/save, component insertion, sync preview e export PDF.
 
 ## Non Obiettivi
 

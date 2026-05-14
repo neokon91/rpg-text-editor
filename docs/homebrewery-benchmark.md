@@ -56,4 +56,4 @@ Limite noto: la paginazione e ancora manuale tramite `::pagebreak`; la preview o
 
 - Sync editor-preview completato per toggle, click preview verso editor e range sorgente sui blocchi multi-linea.
 - Palette componenti con categorie preset dedicate.
-- Rifiniture responsive mobile dei pannelli laterali.
+- Switch pannelli mobile per Editor, Componenti, Preview e Documento.

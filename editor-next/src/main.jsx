@@ -57,6 +57,7 @@ function App() {
   const [viewport, setViewport] = useState(() => localStorage.getItem(`${workspaceStoragePrefix}:viewport`) || "desktop");
   const [previewSpread, setPreviewSpread] = useState(() => localStorage.getItem(`${workspaceStoragePrefix}:preview-spread`) || "single");
   const [syncPreview, setSyncPreview] = useState(() => loadBooleanWorkspaceSetting("sync-preview", false));
+  const [mobilePanel, setMobilePanel] = useState(() => localStorage.getItem(`${workspaceStoragePrefix}:mobile-panel`) || "editor");
   const [activeComponentGroup, setActiveComponentGroup] = useState(() => localStorage.getItem(`${workspaceStoragePrefix}:component-group`) || "all");
   const [cursorLine, setCursorLine] = useState(null);
   const [selectedLine, setSelectedLine] = useState(() => loadNumberWorkspaceSetting("selected-line"));
@@ -141,6 +142,10 @@ function App() {
   useEffect(() => {
     localStorage.setItem(`${workspaceStoragePrefix}:sync-preview`, syncPreview ? "true" : "false");
   }, [syncPreview]);
+
+  useEffect(() => {
+    localStorage.setItem(`${workspaceStoragePrefix}:mobile-panel`, mobilePanel);
+  }, [mobilePanel]);
 
   useEffect(() => {
     localStorage.setItem(`${workspaceStoragePrefix}:component-group`, activeComponentGroup);
@@ -416,7 +421,7 @@ function App() {
   }
 
   return (
-    <main className="next-shell" data-preview={previewVisible ? "on" : "off"}>
+    <main className="next-shell" data-preview={previewVisible ? "on" : "off"} data-mobile-panel={mobilePanel}>
       <TopMenu
         title={title}
         words={words}
@@ -430,6 +435,7 @@ function App() {
         exportOutputs={exportOutputs}
         previewVisible={previewVisible}
         syncPreview={syncPreview}
+        mobilePanel={mobilePanel}
         viewport={viewport}
         zoom={zoom}
         onOpenDocument={openDocument}
@@ -441,6 +447,7 @@ function App() {
         onRefreshDocuments={refreshDocuments}
         onTogglePreview={() => setPreviewVisible((value) => !value)}
         onToggleSyncPreview={() => setSyncPreview((value) => !value)}
+        onMobilePanelChange={setMobilePanel}
         onViewportChange={setViewport}
         onZoomChange={setZoom}
         onResetDraft={resetDraft}

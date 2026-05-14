@@ -96,6 +96,14 @@ try {
   await setViewport(1180, 820);
   await waitFor(() => evalInPage("document.querySelector('.next-workspace') && document.documentElement.scrollWidth <= window.innerWidth"));
   await setViewport(800, 600);
+  await clickButton("Componenti");
+  await waitFor(() => evalInPage("getComputedStyle(document.querySelector('.component-palette')).display !== 'none' && getComputedStyle(document.querySelector('.markdown-pane')).display === 'none'"));
+  await clickButton("Documento");
+  await waitFor(() => evalInPage("getComputedStyle(document.querySelector('.document-side')).display !== 'none'"));
+  await clickButton("Preview");
+  await waitFor(() => evalInPage("getComputedStyle(document.querySelector('.preview-pane')).display !== 'none'"));
+  await clickButton("Editor");
+  await waitFor(() => evalInPage("getComputedStyle(document.querySelector('.markdown-pane')).display !== 'none'"));
   await clickTopbarButton("Nascondi preview");
   await waitFor(() => evalInPage("window.localStorage.getItem('rpg-text-editor-next:preview-visible') === 'false' && !document.querySelector('iframe')"));
   await reloadPage();
@@ -186,6 +194,9 @@ try {
   });
   await assertEqual(exportResult.outputs?.[0]?.path, "dist/nuova-avventura.html", "export api output path");
   await assertEqual(await exportedFileExists("nuova-avventura.html"), true, "exported html exists");
+  await setViewport(1180, 820);
+  await waitFor(() => evalInPage("Boolean(document.querySelector('.component-palette input[type=\"search\"]'))"));
+  await setComponentSearch("");
   await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 15"));
   await clickButton("Combattimento");
   await waitFor(() => evalInPage("window.localStorage.getItem('rpg-text-editor-next:draft')?.includes('Scheggia Astrale')"));
@@ -219,10 +230,14 @@ try {
   await waitFor(() => evalInPage("document.querySelector('.outline-item.is-active button[aria-current=\"location\"]')?.textContent.includes('Nuova Avventura')"));
   await evalInPage(`
     {
-      const body = Array.from({ length: 120 }, (_, index) => "Paragrafo overflow " + (index + 1) + " con testo di prova per saturare la pagina.").join("\\n\\n");
+      const longToken = "OverflowOrizzontale" + "X".repeat(900);
+      const body = [longToken, ...Array.from({ length: 80 }, (_, index) => "Paragrafo overflow " + (index + 1) + " con testo di prova per saturare la pagina.")].join("\\n\\n");
       window.localStorage.setItem('rpg-text-editor-next:draft', "---\\ntitle: Overflow Test\\nslug: overflow-test\\nsummary: Test overflow\\ntheme: classic-parchment\\npaper: A4\\n---\\n\\n# Overflow Test\\n\\n" + body);
+      window.localStorage.setItem('rpg-text-editor-next:preview-spread', 'single');
+      window.localStorage.setItem('rpg-text-editor-next:zoom', '1');
     }
   `);
+  await setViewport(1180, 820);
   await reloadPage();
   await waitFor(() => evalInPage("document.readyState === 'complete'"));
   await waitFor(() => evalInPage("document.querySelector('.preview-overflow')?.textContent.includes('riga')"));
