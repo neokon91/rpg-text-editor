@@ -318,6 +318,7 @@ test("browser-only document api can backup and import document archives", async 
 
   assert.equal(getDocumentRuntimeMode(), "browser");
   assert.equal(imported.count, 2);
+  assert.deepEqual(imported.imported, ["backup-one.md", "backup-two.md"]);
   assert.deepEqual(listed.documents, [
     { filename: "backup-one.md", title: "Backup One" },
     { filename: "backup-two.md", title: "Backup Two" }
@@ -361,6 +362,7 @@ test("browser-only archive import keeps existing documents on filename conflicts
 
   assert.equal(imported.count, 2);
   assert.equal(imported.renamed, 1);
+  assert.deepEqual(imported.imported, ["conflict-2.md", "unsafe-name.md"]);
   assert.deepEqual(listed.documents, [
     { filename: "conflict-2.md", title: "Imported" },
     { filename: "conflict.md", title: "Original" },

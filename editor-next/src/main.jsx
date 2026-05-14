@@ -564,8 +564,18 @@ function App() {
       const result = isMarkdown
         ? await importBrowserMarkdownDocuments(markdownFiles)
         : await importBrowserDocumentsArchive(files[0]);
-      setDocuments(result.documents.map((filename) => ({ filename })));
-      setCurrentDocument("");
+      await refreshDocuments();
+      const importedFilename = result.imported?.[0];
+      if (importedFilename) {
+        const importedDocument = await getDocument(importedFilename);
+        setMarkdown(importedDocument.content);
+        setCurrentDocument(importedDocument.filename);
+        setLastSavedContent(importedDocument.content);
+        setAuthorDiagnostics([]);
+        setCheckedMarkdown("");
+      } else {
+        setCurrentDocument("");
+      }
       setExportOutputs([]);
       setBrowserStorageStats(await getBrowserDocumentStorageStats());
       const kind = isMarkdown ? "Markdown" : "browser";

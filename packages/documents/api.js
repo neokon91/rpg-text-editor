@@ -128,6 +128,7 @@ export async function importBrowserDocumentsArchive(file) {
 
   const current = await browserDocuments();
   const merged = new Map(current.map((document) => [document.filename, document]));
+  const imported = [];
   let renamed = 0;
 
   for (const sourceDocument of archive.documents) {
@@ -144,11 +145,12 @@ export async function importBrowserDocumentsArchive(file) {
       content,
       updatedAt: sourceDocument.updatedAt || new Date().toISOString()
     });
+    imported.push(filename);
   }
 
   await saveBrowserDocuments([...merged.values()]);
   setBrowserOnlyMode(true);
-  return { count: archive.documents.length, renamed, documents: [...merged.values()].map(({ filename }) => filename) };
+  return { count: archive.documents.length, renamed, imported, documents: [...merged.values()].map(({ filename }) => filename) };
 }
 
 export async function importBrowserMarkdownDocument(file) {
