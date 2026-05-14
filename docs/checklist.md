@@ -52,6 +52,7 @@ public: false
 - [x] Import diretto di file Markdown in storage browser-only, con rinomina conflitti.
 - [x] Import multiplo di file Markdown in storage browser-only.
 - [x] Dopo import browser-only, apertura automatica del primo documento importato e refresh lista titoli.
+- [x] Smoke UI reale per import multiplo Markdown browser-only e apertura immediata.
 - [x] Export HTML/PDF guidato dal workflow autore locale.
 - [x] Overwrite esplicito.
 - [x] Salva nuovo con nome unico.

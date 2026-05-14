@@ -50,6 +50,7 @@ npm start
 - Lista documenti browser-only usa lo stesso formato del server: filename stabile e titolo da frontmatter/H1.
 - `Importa` accetta archivi JSON e uno o piu file `.md`, salvandoli nello storage browser con rinomina conflitti.
 - Dopo import browser-only, il primo documento importato viene aperto subito e la lista file viene ricaricata con i titoli.
+- Smoke UI copre import multiplo `.md`, apertura immediata del primo documento e titoli nel menu File.
 - La topbar espone il toggle `Browser-only`; la status bar indica il runtime documenti: `Server locale` oppure `Browser-only`.
 - Palette componenti schema-driven con ricerca, gruppi, preset, pack manifest e pack JSON esterni.
 - Form componenti generati dallo schema, con liste, preset e validazione inline.

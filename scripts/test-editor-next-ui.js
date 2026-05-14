@@ -132,6 +132,11 @@ try {
     })
   `));
   await waitFor(() => evalInPage("document.body.textContent.includes('Browser 1 doc')"));
+  await importBrowserMarkdownDocuments();
+  await waitFor(() => evalInPage("document.body.textContent.includes('Import Markdown completato: 2 documenti')"));
+  await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.querySelector('.page-shell h1')?.textContent.includes('Browser Import One')"));
+  await waitFor(() => evalInPage("Array.from(document.querySelector('.next-actions select')?.options || []).some((item) => item.textContent.includes('Browser Import Two'))"));
+  await waitFor(() => evalInPage("document.body.textContent.includes('Browser 3 doc')"));
   await clickTopbarButton("Backup");
   await waitFor(() => evalInPage("document.body.textContent.includes('Backup browser pronto')"));
   await waitFor(() => evalInPage("Array.from(document.querySelectorAll('.next-status a')).some((link) => link.textContent.includes('browser-documents'))"));
@@ -748,6 +753,22 @@ async function importExternalPack(options = {}) {
       const file = new File([JSON.stringify(pack)], 'external-test-pack.json', { type: 'application/json' });
       const transfer = new DataTransfer();
       transfer.items.add(file);
+      input.files = transfer.files;
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+  `);
+}
+
+async function importBrowserMarkdownDocuments() {
+  await evalInPage(`
+    {
+      const input = document.querySelector('input[accept*="text/markdown"]');
+      if (!input) throw new Error('Browser document import input not found');
+      const one = new File(['---\\ntitle: Browser Import One\\nslug: browser-import-one\\nsummary: Import uno\\ncompatibility: 5e/5.5e\\nlicense_mode: srd-5.2-cc\\nauthor: Codex\\n---\\n\\n# Browser Import One\\n\\nPrimo import.'], 'browser-import-one.md', { type: 'text/markdown' });
+      const two = new File(['---\\ntitle: Browser Import Two\\nslug: browser-import-two\\nsummary: Import due\\ncompatibility: 5e/5.5e\\nlicense_mode: srd-5.2-cc\\nauthor: Codex\\n---\\n\\n# Browser Import Two\\n\\nSecondo import.'], 'browser-import-two.md', { type: 'text/markdown' });
+      const transfer = new DataTransfer();
+      transfer.items.add(one);
+      transfer.items.add(two);
       input.files = transfer.files;
       input.dispatchEvent(new Event('change', { bubbles: true }));
     }
