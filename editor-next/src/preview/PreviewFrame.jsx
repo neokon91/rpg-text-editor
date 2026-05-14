@@ -165,6 +165,9 @@ export function PreviewFrame({
   const canGoBack = pageState.current > 1;
   const canGoForward = pageState.current < pageState.total;
   const firstOverflow = overflowPages[0];
+  const autoPageSummary = autoPageReport
+    ? `Auto ${autoPageReport.totalPages}p (+${autoPageReport.generatedPages})`
+    : "";
 
   return (
     <section className="preview-pane" aria-label="Anteprima" data-spread={spread}>
@@ -193,11 +196,11 @@ export function PreviewFrame({
               title={`Prima pagina auto overflow: ${autoPageReport.firstOverflowPage}, riga ${autoPageReport.firstOverflowLine}`}
               onClick={selectAutoPageOverflow}
             >
-              Auto {autoPageReport.totalPages}p · {autoPageReport.overflowPages} overflow
+              {autoPageSummary} · {autoPageReport.overflowPages} overflow
             </button>
           ) : (
             <span className="preview-auto-pages" data-state="ok" title="Pagine generate dalla preview automatica">
-              Auto {autoPageReport.totalPages}p · ok
+              {autoPageSummary} · ok
             </span>
           )
         ) : null}

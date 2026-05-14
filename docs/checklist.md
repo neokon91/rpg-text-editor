@@ -77,6 +77,7 @@ public: false
 - [x] Feedback `Auto pages` in toolbar con conteggio pagine generato dalla preview misurata.
 - [x] Feedback residui `Auto pages`: segnala se restano pagine in overflow dopo la ripaginazione.
 - [x] Navigazione residui `Auto pages`: click sul badge overflow auto porta alla prima pagina/riga problematica.
+- [x] Feedback pagine create `Auto pages`: mostra quante pagine sono state aggiunte dalla ripaginazione misurata.
 - [x] Tema originale `modern-5-5` per resa 5.5-compatible piu moderna e pulita.
 
 ## Componenti e schema

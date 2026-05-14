@@ -275,8 +275,7 @@ try {
   await setComponentSearch("");
   await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 15"));
   const draftBeforeComponentForm = await evalInPage("window.localStorage.getItem('rpg-text-editor-next:draft')");
-  await clickComponentCard("Incantesimo");
-  await waitFor(() => evalInPage("document.querySelector('.component-form')?.textContent.includes('spell')"), 12000, "component form spell open");
+  await openComponentForm("Incantesimo", "spell");
   await waitFor(() => componentFormHasField("Nome"), 12000, "component form Nome field");
   await setComponentFormField("Nome", "Dardo Codex");
   await clickComponentFormSubmit();
@@ -342,7 +341,7 @@ try {
   await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.body?.dataset.autoPaginate === 'true'"));
   await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.querySelectorAll('.page-shell').length > 1"));
   await waitFor(() => evalInPage("document.querySelector('.preview-auto-pages')?.textContent.includes('Auto')"));
-  await waitFor(() => evalInPage("/Auto \\d+p · (ok|\\d+ overflow)/.test(document.querySelector('.preview-auto-pages')?.textContent || '')"));
+  await waitFor(() => evalInPage("/Auto \\d+p \\(\\+\\d+\\) · (ok|\\d+ overflow)/.test(document.querySelector('.preview-auto-pages')?.textContent || '')"));
   await evalInPage(`
     {
       const autoPages = document.querySelector('.preview-auto-pages[data-state="warning"]');
@@ -506,6 +505,20 @@ async function clickComponentCard(label) {
       button.click();
     }
   `);
+}
+
+async function openComponentForm(label, expectedText) {
+  const started = Date.now();
+  while (Date.now() - started < 12000) {
+    await clickComponentCard(label);
+    const opened = await evalInPage(`
+      document.querySelector('.component-form')?.textContent.includes(${JSON.stringify(expectedText)}) || false
+    `);
+    if (opened) return;
+    await new Promise((resolve) => setTimeout(resolve, 150));
+  }
+  const diagnostics = await readUiDiagnostics();
+  throw new Error(`Component form not opened: ${label} / ${expectedText}\n${diagnostics}`);
 }
 
 async function setComponentFormField(label, value) {
