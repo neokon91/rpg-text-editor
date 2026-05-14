@@ -41,7 +41,7 @@ export function PreviewFrame({
 
   const updatePageState = useCallback(() => {
     const doc = frame.current?.contentDocument;
-    if (!doc) return;
+    if (!doc?.documentElement || !doc.body) return;
     const markers = readPageMarkers();
     const scrollTop = doc.documentElement.scrollTop || doc.body.scrollTop || 0;
     const current = markers.reduce((active, marker) => scrollTop + 40 >= marker.top ? marker.index : active, 1);

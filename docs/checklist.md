@@ -109,6 +109,7 @@ public: false
 - [x] `npm run check` aggregato.
 - [x] Fixture diagnostiche per casi limite della validazione.
 - [x] Test UI automatizzati affidabili.
+- [x] Test UI per open con modifiche non salvate: annulla e conferma.
 
 ## Output editoriale
 
@@ -123,5 +124,5 @@ public: false
 
 ## Prossimi passi consigliati
 
-1. Test UI piu ampi per open/save e casi errore.
+1. Test UI piu ampi per casi errore save/export.
 2. Palette/componenti e preview come workspace persistenti.

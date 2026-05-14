@@ -84,7 +84,7 @@ Vite + React + CodeMirror 6 + iframe preview
 
 Proseguire con page break piu intelligenti o palette avanzata:
 
-1. Test UI piu ampi per open/save e casi errore.
+1. Test UI piu ampi per casi errore save/export.
 2. Oppure workspace persistente per palette/componenti e preview.
 3. Mantenere `npm run test:editor-next-ui` come smoke minimo per ogni tranche.
 

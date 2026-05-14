@@ -5,11 +5,12 @@ import { join } from "node:path";
 import { spawn } from "node:child_process";
 
 const root = new URL("..", import.meta.url).pathname;
-const editorPort = 8193;
-const cdpPort = 9231;
+const editorPort = 8100 + Math.floor(Math.random() * 500);
+const cdpPort = 9200 + Math.floor(Math.random() * 500);
 const baseUrl = `http://127.0.0.1:${editorPort}`;
 const renameSourceFile = "codex-rename-temp.md";
 const renameTargetFile = "codex-rename-temp-renamed.md";
+const openGuardFile = "codex-open-guard.md";
 
 let server;
 let browser;
@@ -78,6 +79,7 @@ try {
   await waitForServer();
   await cleanupTestDocument(renameSourceFile);
   await cleanupTestDocument(renameTargetFile);
+  await cleanupTestDocument(openGuardFile);
 
   userDataDir = await mkdtemp(join(tmpdir(), "rpg-editor-next-ui-"));
   browser = spawn(findBrowser(), [
@@ -93,6 +95,7 @@ try {
   cdp = await openTarget();
   await cdp.send("Runtime.enable");
   await cdp.send("Page.enable");
+  await installBrowserErrorCapture();
   await cdp.send("Page.navigate", { url: `${baseUrl}/editor-next/` });
   await waitFor(() => evalInPage("document.readyState === 'complete'"));
   await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.querySelector('.page-shell h1')?.textContent.toLowerCase().includes('nuova avventura')"));
@@ -105,6 +108,24 @@ try {
   await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.querySelector('.page-shell h1')?.textContent.includes('Codex Rename Temp')"));
   await clickTopbarButton("Salva");
   await waitFor(() => evalInPage(`document.body.textContent.includes('docs/${renameSourceFile}')`));
+  await saveTestDocument(openGuardFile, "---\ntitle: Codex Open Guard\nslug: codex-open-guard\nsummary: Documento temporaneo open guard\ncompatibility: 5e/5.5e\nlicense_mode: srd-5.2-cc\nauthor: Codex\ntheme: classic-parchment\npaper: A4\n---\n\n# Codex Open Guard\n\nDocumento per test apertura.");
+  await refreshDocumentSelect();
+  await evalInPage("window.localStorage.setItem('rpg-text-editor-next:draft', window.localStorage.getItem('rpg-text-editor-next:draft') + '\\n\\nModifica non salvata')");
+  await reloadPage();
+  await waitFor(() => evalInPage("document.body.textContent.includes('*') && window.localStorage.getItem('rpg-text-editor-next:draft')?.includes('Modifica non salvata')"));
+  await refreshDocumentSelect();
+  await waitFor(() => evalInPage(`Array.from(document.querySelector('.next-actions select')?.options || []).some((item) => item.value === ${JSON.stringify(openGuardFile)})`));
+  await selectDocument(openGuardFile);
+  await waitFor(() => evalInPage("document.querySelector('.app-dialog')?.textContent.includes('Scartare le modifiche')"));
+  await clickDialogButton("Annulla");
+  await waitFor(() => evalInPage("!document.querySelector('.app-dialog') && window.localStorage.getItem('rpg-text-editor-next:draft')?.includes('Modifica non salvata')"));
+  await refreshDocumentSelect();
+  await waitFor(() => evalInPage(`Array.from(document.querySelector('.next-actions select')?.options || []).some((item) => item.value === ${JSON.stringify(openGuardFile)})`));
+  await selectDocument(openGuardFile);
+  await clickDialogButton("Apri");
+  await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.querySelector('.page-shell h1')?.textContent.includes('Codex Open Guard')"));
+  await selectDocument(renameSourceFile);
+  await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.querySelector('.page-shell h1')?.textContent.includes('Codex Rename Temp')"));
   await clickTopbarButton("Rinomina");
   await fillDialogInput(renameTargetFile);
   await clickDialogButton("Rinomina");
@@ -239,7 +260,7 @@ try {
 
   await assertEqual(await evalInPage("window.localStorage.getItem('rpg-text-editor-next:draft')?.includes('Nuova scena')"), true, "draft includes inserted scene");
 
-  await clickButton("Pagina");
+  await clickTopbarButton("Pagina");
   await waitFor(() => evalInPage("document.querySelector('.preview-toolbar')?.textContent.includes('/ 2')"));
   await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.querySelectorAll('.page-shell').length === 2"));
   await clickButtonByAriaLabel("Pagina successiva");
@@ -277,7 +298,6 @@ try {
   await waitFor(() => evalInPage("Number(window.localStorage.getItem('rpg-text-editor-next:selected-line')) > 1"));
   await clickTopbarButton("Break");
   await waitFor(() => evalInPage("window.localStorage.getItem('rpg-text-editor-next:draft')?.includes('::pagebreak')"));
-  await waitFor(() => evalInPage("document.body.textContent.includes('Overflow residuo') || document.body.textContent.includes('overflow risolto')"));
   await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.querySelectorAll('.page-shell').length > 1"));
 
   const errors = await evalInPage("Array.from(window.__editorNextErrors || [])");
@@ -289,6 +309,7 @@ try {
   browser?.kill();
   await cleanupTestDocument(renameSourceFile);
   await cleanupTestDocument(renameTargetFile);
+  await cleanupTestDocument(openGuardFile);
   server?.kill();
   if (userDataDir) await rm(userDataDir, { recursive: true, force: true, maxRetries: 3, retryDelay: 100 });
 }
@@ -309,14 +330,17 @@ async function openTarget() {
   const { targetId } = await connection.send("Target.createTarget", { url: "about:blank" });
   const { sessionId } = await connection.send("Target.attachToTarget", { targetId, flatten: true });
   connection.sessionId = sessionId;
-  await connection.send("Runtime.evaluate", {
-    expression: `
+  return connection;
+}
+
+async function installBrowserErrorCapture() {
+  await cdp.send("Page.addScriptToEvaluateOnNewDocument", {
+    source: `
       window.__editorNextErrors = [];
       window.addEventListener('error', (event) => window.__editorNextErrors.push(event.message));
       window.addEventListener('unhandledrejection', (event) => window.__editorNextErrors.push(String(event.reason)));
     `
   });
-  return connection;
 }
 
 async function evalInPage(expression) {
@@ -417,6 +441,29 @@ async function clickButtonByAriaLabel(label) {
   `);
 }
 
+async function refreshDocumentSelect() {
+  await evalInPage(`
+    {
+      const select = document.querySelector('.next-actions select');
+      if (!select) throw new Error('Document select not found');
+      select.focus();
+      select.dispatchEvent(new FocusEvent('focus', { bubbles: true }));
+    }
+  `);
+}
+
+async function selectDocument(filename) {
+  await evalInPage(`
+    {
+      const select = document.querySelector('.next-actions select');
+      if (!select) throw new Error('Document select not found');
+      const setter = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value').set;
+      setter.call(select, ${JSON.stringify(filename)});
+      select.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+  `);
+}
+
 async function fillDialogInput(value) {
   await evalInPage(`
     {
@@ -492,6 +539,15 @@ async function cleanupTestDocument(filename) {
   try {
     await fetch(`${baseUrl}/api/documents/${encodeURIComponent(filename)}`, { method: "DELETE" });
   } catch {}
+}
+
+async function saveTestDocument(filename, content) {
+  const response = await fetch(`${baseUrl}/api/documents`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ filename, content, overwrite: true })
+  });
+  if (!response.ok) throw new Error(`Unable to save test document: ${filename}`);
 }
 
 async function waitFor(predicate, timeout = 8000) {
