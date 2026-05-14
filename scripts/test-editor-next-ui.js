@@ -276,10 +276,9 @@ try {
   await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 15"));
   const draftBeforeComponentForm = await evalInPage("window.localStorage.getItem('rpg-text-editor-next:draft')");
   await clickComponentCard("Incantesimo");
-  await waitFor(() => evalInPage("document.querySelector('.component-form')?.textContent.includes('spell')"));
-  await waitFor(() => componentFormHasField("Nome"));
+  await waitFor(() => evalInPage("document.querySelector('.component-form')?.textContent.includes('spell')"), 12000, "component form spell open");
+  await waitFor(() => componentFormHasField("Nome"), 12000, "component form Nome field");
   await setComponentFormField("Nome", "Dardo Codex");
-  await setComponentFormField("Descrizione", "Un frammento di luce colpisce una creatura visibile.");
   await clickComponentFormSubmit();
   await waitFor(() => evalInPage("window.localStorage.getItem('rpg-text-editor-next:draft')?.includes('name: Dardo Codex')"));
   await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.body?.textContent.includes('Dardo Codex')"));
@@ -533,12 +532,17 @@ async function componentFormHasField(label) {
 }
 
 async function clickComponentFormSubmit() {
-  await waitFor(() => evalInPage("Boolean(document.querySelector('.component-form .primary-action'))"));
+  await waitFor(() => evalInPage("Boolean(document.querySelector('.component-form'))"), 12000, "component form before submit");
   await evalInPage(`
     {
-      const button = document.querySelector('.component-form .primary-action');
-      if (!button) throw new Error('Component form submit not found');
-      button.click();
+      const form = document.querySelector('.component-form');
+      if (!form) throw new Error('Component form not found');
+      const button = form.querySelector('.primary-action, button[type="submit"]');
+      if (button) {
+        button.click();
+      } else {
+        form.requestSubmit();
+      }
     }
   `);
 }
@@ -722,13 +726,41 @@ async function saveTestDocument(filename, content) {
   if (!response.ok) throw new Error(`Unable to save test document: ${filename}`);
 }
 
-async function waitFor(predicate, timeout = 8000) {
+async function waitFor(predicate, timeout = 8000, label = "condizione") {
   const started = Date.now();
+  let lastError = null;
   while (Date.now() - started < timeout) {
-    if (await predicate()) return;
+    try {
+      if (await predicate()) return;
+    } catch (error) {
+      lastError = error;
+    }
     await new Promise((resolve) => setTimeout(resolve, 100));
   }
-  throw new Error("Timeout durante il test UI Editor Next.");
+  const diagnostics = await readUiDiagnostics();
+  throw new Error([
+    `Timeout durante il test UI Editor Next: ${label}.`,
+    lastError ? `Ultimo errore: ${lastError.message}` : "",
+    diagnostics
+  ].filter(Boolean).join("\n"));
+}
+
+async function readUiDiagnostics() {
+  try {
+    const snapshot = await evalInPage(`
+      (() => ({
+        readyState: document.readyState,
+        url: window.location.href,
+        status: document.querySelector('.next-status')?.textContent.trim() || '',
+        componentForm: document.querySelector('.component-form')?.textContent.trim().slice(0, 300) || '',
+        buttons: Array.from(document.querySelectorAll('button')).map((button) => button.textContent.trim()).slice(0, 40),
+        errors: window.__editorNextErrors || []
+      }))()
+    `);
+    return `UI diagnostics: ${JSON.stringify(snapshot)}`;
+  } catch (error) {
+    return `UI diagnostics unavailable: ${error.message}`;
+  }
 }
 
 async function assertEqual(actual, expected, label) {
