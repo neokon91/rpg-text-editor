@@ -129,7 +129,9 @@ Da chiudere prima di un rilascio per utenti finali non tecnici:
 
 Il progetto e rilasciato sotto `GPL-3.0-or-later`. Vedi [LICENSE](LICENSE) e [NOTICE.md](NOTICE.md).
 
-I font inclusi restano sotto `OFL-1.1`; le dipendenze npm mantengono le proprie licenze. I documenti creati dagli utenti restano di proprieta dei rispettivi autori.
+Per lasciare gli output degli utenti il piu liberi possibile, template, stili di output, schemi, esempi Markdown e asset grafici del progetto sono offerti anche sotto `CC0-1.0` quando usati in Markdown, HTML e PDF generati. I documenti creati dagli utenti restano di proprieta dei rispettivi autori.
+
+I font inclusi restano sotto `OFL-1.1`; le dipendenze npm mantengono le proprie licenze. L'utente resta responsabile di testi, immagini, regole, marchi o ambientazioni di terze parti inseriti nei propri documenti.
 
 ## Documentazione
 
