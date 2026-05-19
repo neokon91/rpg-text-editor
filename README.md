@@ -125,6 +125,12 @@ Da chiudere prima di un rilascio per utenti finali non tecnici:
 - pacchetto/installazione senza terminale;
 - esempi pronti e template piu visibili.
 
+## Licenza
+
+Il progetto e rilasciato sotto `GPL-3.0-or-later`. Vedi [LICENSE](LICENSE) e [NOTICE.md](NOTICE.md).
+
+I font inclusi restano sotto `OFL-1.1`; le dipendenze npm mantengono le proprie licenze. I documenti creati dagli utenti restano di proprieta dei rispettivi autori.
+
 ## Documentazione
 
 - [docs/user-guide.md](docs/user-guide.md): guida per utenti non tecnici.
