@@ -11,7 +11,7 @@
       "compatibility: 5e/5.5e",
       "license_mode: srd-5.2-cc",
       "author: ${6:Andrea}",
-      "theme: ${7|fifth-edition-compatible,classic-parchment,dark-arcane,clean-guild,modern-5-5,printer-friendly|}",
+      "theme: ${7|fifth-edition-compatible,classic-parchment,old-school,dark-arcane,mythos,modern-5-5,clean-guild,printer-friendly|}",
       "paper: ${8|A4,Letter|}",
       "public: ${9|true,false|}",
       "---"
@@ -36,9 +36,11 @@
       "cha: ${13:6}",
       "senses: ${14:scurovisione 18 m, Percezione passiva 11}",
       "languages: ${15:comprende una lingua scelta dal creatore}",
-      "${16:}",
-      "trait: ${17:Corpo di Pietra} | ${18:Ha vantaggio ai tiri salvezza contro veleno e malattia.}",
-      "action: ${19:Pugno Inciso} | ${20:+4 a colpire, portata 1,5 m, un bersaglio. Colpisce per 1d8 + 2 danni contundenti.}",
+      "initiative: ${16:}",
+      "prof_saves: ${17:}",
+      "${18:}",
+      "trait: ${19:Corpo di Pietra} | ${20:Ha vantaggio ai tiri salvezza contro veleno e malattia.}",
+      "action: ${21:Pugno Inciso} | ${22:+4 a colpire, portata 1,5 m, un bersaglio. Colpisce per 1d8 + 2 danni contundenti.}",
       ":::"
     ],
     "description": "Creatura da schema (Core)"
@@ -163,6 +165,15 @@
       ":::"
     ],
     "description": "Nota da schema (Core)"
+  },
+  "Schema Citazione": {
+    "prefix": "qquote",
+    "body": [
+      "::: quote ${1:Fonte}",
+      "${2:\"Il re dorme ancora sotto la montagna. E sogna fame.\"}",
+      ":::"
+    ],
+    "description": "Citazione da schema (Core)"
   },
   "Schema Mappa": {
     "prefix": "qmap",

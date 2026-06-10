@@ -20,7 +20,7 @@ export function renderPreviewDocument(metadata, content, options = {}) {
     <link rel="stylesheet" href="${assetBase}styles/main.css">
     <style>
       html, body { min-height: 100%; }
-      body { background: #1c1510; padding: 24px; }
+      body { background: #1c1510; padding: 12px 24px 24px; }
       body { zoom: var(--rpg-preview-zoom, 1); }
       .preview-pages {
         display: flex;
@@ -33,6 +33,15 @@ export function renderPreviewDocument(metadata, content, options = {}) {
         margin: 0;
         scroll-margin-top: 1.5rem;
       }
+      /* L'anteprima desktop mostra sempre l'impaginato A4 a due colonne, come la
+         stampa: l'iframe stretto non deve far scattare il layout mobile. */
+      body:not(.preview-mobile) .page-shell {
+        column-count: 2;
+        padding: var(--page-padding);
+        min-height: 260mm;
+      }
+      body:not(.preview-mobile) .columns-2 { column-count: 2; }
+      body:not(.preview-mobile) .columns-3 { column-count: 3; }
       body[data-spread="facing"] .preview-pages,
       body[data-spread="flow"] .preview-pages {
         flex-flow: row wrap;
@@ -57,6 +66,23 @@ export function renderPreviewDocument(metadata, content, options = {}) {
         font: 700 0.68rem/1.2 system-ui, sans-serif;
         text-transform: uppercase;
       }
+      .column-break {
+        height: auto;
+        margin: 0.4rem 0;
+        border-top: 2px dotted rgba(31, 111, 120, 0.42);
+        break-after: column;
+        scroll-margin-top: 1.5rem;
+      }
+      .column-break::after {
+        content: "Colonna";
+        display: inline-block;
+        transform: translateY(-50%);
+        padding: 0.05rem 0.4rem;
+        background: var(--color-paper-light, #fff8e2);
+        color: #1f6f78;
+        font: 700 0.6rem/1.2 system-ui, sans-serif;
+        text-transform: uppercase;
+      }
       body.preview-mobile { padding: 0; }
       body.preview-mobile .page-shell { width: 390px; max-width: 100%; }
       body.preview-mobile .preview-pages { gap: 0; }
@@ -71,6 +97,7 @@ export function renderPreviewDocument(metadata, content, options = {}) {
     <main class="preview-pages" aria-label="Pagine anteprima">
 ${pages.map((page, index) => `      <section class="page-shell" data-preview-page="${index + 1}">
 ${page}
+        <div class="page-folio" aria-hidden="true"></div>
       </section>`).join("\n")}
     </main>
     <script>
@@ -101,7 +128,7 @@ ${page}
             var page = pages[index];
             if (!pageOverflows(page)) continue;
             var children = Array.from(page.children).filter(function(child) {
-              return !child.classList.contains("page-break");
+              return !child.classList.contains("page-break") && !child.classList.contains("page-folio");
             });
             if (children.length <= 1) continue;
 
@@ -109,6 +136,10 @@ ${page}
             if (!nextPage || !nextPage.classList.contains("page-shell")) {
               nextPage = document.createElement("section");
               nextPage.className = "page-shell";
+              var folio = document.createElement("div");
+              folio.className = "page-folio";
+              folio.setAttribute("aria-hidden", "true");
+              nextPage.appendChild(folio);
               container.insertBefore(nextPage, page.nextSibling);
             }
 

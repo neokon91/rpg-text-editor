@@ -46,6 +46,38 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: "IM Fell English";
+  src: url("../fonts/IMFellEnglish-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "IM Fell English";
+  src: url("../fonts/IMFellEnglish-Italic.woff2") format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "EB Garamond";
+  src: url("../fonts/EBGaramond-Regular.woff2") format("woff2");
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "EB Garamond";
+  src: url("../fonts/EBGaramond-Italic.woff2") format("woff2");
+  font-weight: 400 700;
+  font-style: italic;
+  font-display: swap;
+}
+
 h1,
 h2,
 h3,
@@ -166,6 +198,10 @@ pre code {
   font-size: 1.08rem;
   font-style: italic;
   color: var(--color-muted);
+}
+
+.dropcap {
+  display: flow-root;
 }
 
 .dropcap::first-letter {

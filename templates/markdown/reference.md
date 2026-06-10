@@ -14,9 +14,10 @@ public: false
 
 # %%TITLE%%
 
-<p class="subtitle">Appunti, componenti e note di lavoro.</p>
+::: subtitle
+Appunti, componenti e note di lavoro.
+:::
 
-<aside class="note no-break">
-  <div class="note__label">Nota</div>
-  <p>Scrivi qui un appunto riusabile.</p>
-</aside>
+::: note Nota
+Scrivi qui un appunto riusabile.
+:::

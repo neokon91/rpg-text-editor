@@ -14,14 +14,17 @@ public: false
 
 # %%TITLE%%
 
-<p class="subtitle">Avventura per personaggi di livello X-Y</p>
+::: subtitle
+Avventura per personaggi di livello X-Y
+:::
 
-<p class="dropcap">Scrivi qui l'incipit dell'avventura: il problema, il luogo, la tensione iniziale e la promessa al tavolo.</p>
+::: dropcap
+Scrivi qui l'incipit dell'avventura: il problema, il luogo, la tensione iniziale e la promessa al tavolo.
+:::
 
-<aside class="readaloud no-break">
-  <div class="readaloud__label">Da leggere al tavolo</div>
-  <p>Testo narrativo da leggere ai giocatori.</p>
-</aside>
+::: readaloud Da leggere al tavolo
+Testo narrativo da leggere ai giocatori quando entrano nella scena.
+:::
 
 ## Panoramica
 
@@ -32,8 +35,6 @@ public: false
 
 ## Scene
 
-<div class="columns-2">
-
 ### Scena 1
 
 Descrizione, ostacoli e scelte.
@@ -42,23 +43,17 @@ Descrizione, ostacoli e scelte.
 
 Descrizione, ostacoli e scelte.
 
-</div>
+::: encounter Incontro
+Dettagli tattici, avversari e conseguenze.
+:::
 
-<aside class="encounter no-break">
-  <div class="encounter__label">Incontro</div>
-  <p>Dettagli tattici o conseguenze.</p>
-</aside>
-
-<aside class="treasure no-break">
-  <div class="treasure__label">Tesoro</div>
-  <ul>
-    <li>Ricompensa o indizio</li>
-  </ul>
-</aside>
+::: treasure Tesoro
+- Ricompensa o indizio
+- Oggetto utile alla prossima scena
+:::
 
 ## Appendice
 
-<aside class="note no-break">
-  <div class="note__label">Nota autore</div>
-  <p>Promemoria di design, varianti o note di playtest.</p>
-</aside>
+::: note Nota autore
+Promemoria di design, varianti o note di playtest.
+:::

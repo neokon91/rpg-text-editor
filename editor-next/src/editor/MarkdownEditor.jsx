@@ -3,7 +3,7 @@ import { defaultKeymap, history, historyKeymap, indentWithTab } from "@codemirro
 import { markdown as markdownLanguage } from "@codemirror/lang-markdown";
 import { defaultHighlightStyle, syntaxHighlighting } from "@codemirror/language";
 import { EditorState } from "@codemirror/state";
-import { drawSelection, dropCursor, EditorView, highlightActiveLine, keymap, lineNumbers } from "@codemirror/view";
+import { drawSelection, dropCursor, EditorView, highlightActiveLine, keymap } from "@codemirror/view";
 
 export const MarkdownEditor = forwardRef(function MarkdownEditor({ markdown, selectedLine, onChange, onCursorLineChange }, ref) {
   const host = useRef(null);
@@ -55,7 +55,6 @@ export const MarkdownEditor = forwardRef(function MarkdownEditor({ markdown, sel
       state: EditorState.create({
         doc: markdown,
         extensions: [
-          lineNumbers(),
           history(),
           drawSelection(),
           dropCursor(),
@@ -67,7 +66,9 @@ export const MarkdownEditor = forwardRef(function MarkdownEditor({ markdown, sel
           EditorView.lineWrapping,
           EditorView.theme({
             "&": { height: "100%" },
-            ".cm-scroller": { fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace" }
+            ".cm-scroller": { fontFamily: "inherit" },
+            ".cm-content": { padding: "14px 18px", maxWidth: "70ch" },
+            ".cm-line": { padding: "0 2px" }
           })
         ]
       })

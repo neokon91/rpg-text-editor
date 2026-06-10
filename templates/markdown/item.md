@@ -14,13 +14,13 @@ public: false
 
 # %%TITLE%%
 
-<aside class="magicitem rules-card no-break">
-  <div class="magicitem__label rules-card__label">Oggetto magico</div>
-  <h3>Nome Oggetto</h3>
-  <p><em>Oggetto meraviglioso, non comune</em></p>
-  <p class="rules-line"><strong>Sintonia.</strong> richiesta</p>
-  <p>Descrizione dell'oggetto e del suo effetto.</p>
-</aside>
+::: magicitem Oggetto magico
+name: Nome Oggetto
+type: Oggetto meraviglioso
+rarity: non comune
+attunement: richiesta
+Descrizione dell'oggetto e del suo effetto.
+:::
 
 ## Ganci narrativi
 

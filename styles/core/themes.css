@@ -84,6 +84,51 @@
   --shadow-box: 0 5px 14px rgba(35, 39, 44, 0.12);
 }
 
+.theme-mythos {
+  --page-padding: 15.5mm;
+  --column-gap: 9mm;
+  --font-heading: "IM Fell English", "Cinzel", Georgia, serif;
+  --font-body: "EB Garamond", "Alegreya", Georgia, "Times New Roman", serif;
+  --color-ink: #221d17;
+  --color-muted: #5a5345;
+  --color-paper: #e7e0ca;
+  --color-paper-light: #f6f1e0;
+  --color-rule: #8c8160;
+  --color-accent: #2f5341;
+  --color-accent-dark: #1d3527;
+  --color-gold: #7e6c3c;
+  --color-border: #5d5338;
+  --color-green: #2f5341;
+  --color-blue: #3a4f63;
+  --color-verdigris: #356b5a;
+  --color-plum: #4a3f31;
+  --shadow-page: 0 16px 40px rgba(20, 17, 10, 0.32);
+  --shadow-box: 0 3px 9px rgba(45, 40, 25, 0.12);
+  --line-body: 1.4;
+}
+
+.theme-old-school {
+  --page-padding: 14mm;
+  --column-gap: 8mm;
+  --font-body: "EB Garamond", "Alegreya", Georgia, "Times New Roman", serif;
+  --color-ink: #1b1714;
+  --color-muted: #4c463f;
+  --color-paper: #ece5d3;
+  --color-paper-light: #f6f1e3;
+  --color-rule: #8a8068;
+  --color-accent: #7c241a;
+  --color-accent-dark: #4c130d;
+  --color-gold: #6c5b37;
+  --color-border: #463c2c;
+  --color-green: #355239;
+  --color-blue: #2f4a63;
+  --color-verdigris: #3a6357;
+  --color-plum: #4c130d;
+  --shadow-page: 0 10px 26px rgba(0, 0, 0, 0.26);
+  --shadow-box: none;
+  --line-body: 1.34;
+}
+
 .theme-printer-friendly {
   --color-ink: #111111;
   --color-muted: #4d4d4d;
@@ -111,9 +156,22 @@
 
 .theme-fifth-edition-compatible .page-shell {
   background:
-    linear-gradient(rgba(255, 248, 221, 0.76), rgba(255, 244, 209, 0.66)),
-    linear-gradient(117deg, var(--color-paper-light), var(--color-paper) 72%, #d8b977);
+    var(--svg-parchment-noise) top left / 150px 150px repeat,
+    radial-gradient(120% 82% at 16% 6%, rgba(255, 252, 235, 0.55), transparent 58%),
+    radial-gradient(150% 96% at 88% 98%, rgba(150, 108, 44, 0.16), transparent 54%),
+    radial-gradient(90% 60% at 64% 40%, rgba(120, 82, 35, 0.06), transparent 60%),
+    linear-gradient(rgba(255, 248, 221, 0.68), rgba(255, 243, 206, 0.58)),
+    linear-gradient(117deg, var(--color-paper-light), var(--color-paper) 70%, #d8b977);
   column-rule-color: rgba(104, 69, 30, 0.34);
+}
+
+.theme-fifth-edition-compatible hr,
+.theme-classic-parchment hr {
+  height: 1.55rem;
+  margin: 1.5rem auto 1.6rem;
+  border: 0;
+  background: var(--svg-scene-divider) center / contain no-repeat;
+  opacity: 0.92;
 }
 
 .theme-fifth-edition-compatible .page-shell::before {
@@ -320,4 +378,217 @@
 .theme-printer-friendly .page-shell::before,
 .theme-printer-friendly .page-shell::after {
   display: none;
+}
+
+/* ── Mythos (Chaosium / Call of Cthulhu): avorio invecchiato, verde pino, vintage restrained ── */
+.theme-mythos .page-shell {
+  background:
+    var(--svg-parchment-noise) top left / 150px 150px repeat,
+    radial-gradient(80% 50% at 12% 6%, rgba(255, 253, 244, 0.5), transparent 60%),
+    radial-gradient(150% 95% at 90% 98%, rgba(92, 82, 50, 0.13), transparent 55%),
+    linear-gradient(162deg, var(--color-paper-light), var(--color-paper) 76%, #d7ceb0);
+}
+
+.theme-mythos .page-shell::before {
+  background: linear-gradient(rgba(255, 255, 255, 0.12), transparent 16mm);
+}
+
+.theme-mythos .page-shell::after {
+  inset: 7mm;
+  background: none;
+  border-color: rgba(93, 83, 56, 0.34);
+}
+
+.theme-mythos h1 {
+  color: var(--color-accent-dark);
+  font-size: 2.16rem;
+}
+
+.theme-mythos .page-shell > h1::after {
+  width: min(100%, 22rem);
+  height: 2px;
+  background: linear-gradient(90deg, var(--color-accent), rgba(47, 83, 65, 0.2) 70%, transparent);
+}
+
+.theme-mythos h2 {
+  color: var(--color-accent);
+  font-size: 1.2rem;
+  border-bottom: 1px solid rgba(47, 83, 65, 0.42);
+}
+
+.theme-mythos h3 {
+  color: var(--color-accent-dark);
+}
+
+/* IM Fell English ha un solo peso: niente faux-bold sui titoli. */
+.theme-mythos h1,
+.theme-mythos h2,
+.theme-mythos h3,
+.theme-mythos h4,
+.theme-mythos .statblock h2,
+.theme-mythos .feature-heading {
+  font-weight: 400;
+}
+
+/* EB Garamond corre piccolo: corpo leggermente piu generoso. */
+.theme-mythos {
+  font-size: 16.4px;
+}
+
+.theme-mythos .readaloud,
+.theme-mythos .note,
+.theme-mythos .treasure,
+.theme-mythos .encounter,
+.theme-mythos .rules-card,
+.theme-mythos .random-table {
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.24)),
+    linear-gradient(135deg, #f3eeda, #e2d9bd);
+  border-color: rgba(93, 83, 56, 0.5);
+  border-radius: 1px;
+}
+
+.theme-mythos .readaloud {
+  border-left-color: var(--color-green);
+}
+
+.theme-mythos .readaloud::before {
+  background: linear-gradient(to right, transparent, rgba(47, 83, 65, 0.82), transparent);
+}
+
+.theme-mythos .note {
+  border-left-color: var(--color-blue);
+}
+
+.theme-mythos .treasure {
+  border-left-color: var(--color-gold);
+}
+
+.theme-mythos .encounter {
+  border-left-color: var(--color-accent);
+}
+
+.theme-mythos .readaloud__label,
+.theme-mythos .note__label,
+.theme-mythos .treasure__label,
+.theme-mythos .encounter__label,
+.theme-mythos .statblock__label {
+  color: var(--color-accent-dark);
+}
+
+.theme-mythos .statblock {
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.3)),
+    linear-gradient(135deg, #ece5cc, #f6f1e0 50%, #ddd3b4);
+  border-color: rgba(47, 83, 65, 0.5);
+  border-radius: 1px;
+}
+
+.theme-mythos .statblock::before {
+  background: linear-gradient(to right, transparent, var(--color-green), transparent);
+}
+
+.theme-mythos .statblock::after {
+  background: linear-gradient(to right, var(--color-accent), var(--color-gold), var(--color-accent));
+}
+
+.theme-mythos .statblock h2 {
+  color: var(--color-accent);
+  border-bottom-color: rgba(47, 83, 65, 0.42);
+}
+
+.theme-mythos thead {
+  background: rgba(47, 83, 65, 0.12);
+  color: var(--color-accent-dark);
+}
+
+.theme-mythos tbody tr:nth-child(even) {
+  background: rgba(47, 83, 65, 0.05);
+}
+
+/* ── Old-school (OSR / modulo TSR classico): crema piatta, alto contrasto, squadrato ── */
+.theme-old-school .page-shell {
+  background: linear-gradient(168deg, var(--color-paper-light), var(--color-paper));
+}
+
+.theme-old-school .page-shell::before {
+  display: none;
+}
+
+.theme-old-school .page-shell::after {
+  inset: 6mm;
+  background: none;
+  border: 1.5px solid var(--color-border);
+  box-shadow: none;
+}
+
+.theme-old-school h1 {
+  color: var(--color-accent-dark);
+}
+
+.theme-old-school .page-shell > h1::after {
+  width: 100%;
+  height: 4px;
+  background: var(--color-accent);
+}
+
+.theme-old-school h2 {
+  color: var(--color-accent);
+  border-bottom: 2px solid var(--color-accent);
+}
+
+.theme-old-school h3 {
+  color: var(--color-accent-dark);
+}
+
+.theme-old-school .readaloud,
+.theme-old-school .note,
+.theme-old-school .treasure,
+.theme-old-school .encounter,
+.theme-old-school .rules-card,
+.theme-old-school .random-table,
+.theme-old-school .statblock {
+  background: var(--color-paper-light);
+  border: 1px solid var(--color-border);
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.theme-old-school .readaloud {
+  border-left: 4px solid var(--color-ink);
+}
+
+.theme-old-school .readaloud::before {
+  display: none;
+}
+
+.theme-old-school .statblock {
+  border: 1.5px solid var(--color-border);
+}
+
+.theme-old-school .statblock::before,
+.theme-old-school .statblock::after {
+  background: var(--color-accent);
+}
+
+.theme-old-school .statblock h2 {
+  color: var(--color-accent-dark);
+  border-bottom-color: var(--color-accent);
+}
+
+.theme-old-school .readaloud__label,
+.theme-old-school .note__label,
+.theme-old-school .treasure__label,
+.theme-old-school .encounter__label,
+.theme-old-school .statblock__label {
+  color: var(--color-accent-dark);
+}
+
+.theme-old-school thead {
+  background: rgba(124, 36, 26, 0.1);
+  color: var(--color-accent-dark);
+}
+
+.theme-old-school .stats-grid div {
+  background: rgba(40, 30, 20, 0.03);
 }

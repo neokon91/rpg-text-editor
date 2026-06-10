@@ -13,14 +13,14 @@ export function DocumentOutline({
 
   return (
     <aside className="document-side" aria-label="Documento">
-      <section className="metadata-panel" aria-label="Frontmatter" data-collapsed={panels.frontmatter ? "false" : "true"}>
+      <section className="metadata-panel" aria-label="Dettagli documento" data-collapsed={panels.frontmatter ? "false" : "true"}>
         <header className="side-panel-header">
           <div>
             <strong>Documento</strong>
-            <span>Frontmatter</span>
+            <span>Dettagli</span>
           </div>
           <button type="button" aria-expanded={panels.frontmatter} onClick={() => onTogglePanel?.("frontmatter")}>
-            {panels.frontmatter ? "Nascondi frontmatter" : "Mostra frontmatter"}
+            {panels.frontmatter ? "Nascondi dettagli" : "Mostra dettagli"}
           </button>
         </header>
         {panels.frontmatter ? (
@@ -34,12 +34,18 @@ export function DocumentOutline({
             <label>
               <span>Tema</span>
               <select value={metadata.theme || "fifth-edition-compatible"} onChange={(event) => onMetadataChange?.("theme", event.target.value)}>
-                <option value="fifth-edition-compatible">fifth-edition-compatible</option>
-                <option value="classic-parchment">classic-parchment</option>
-                <option value="dark-arcane">dark-arcane</option>
-                <option value="clean-guild">clean-guild</option>
-                <option value="modern-5-5">modern-5-5</option>
-                <option value="printer-friendly">printer-friendly</option>
+                <optgroup label="Compatibili fantasy">
+                  <option value="fifth-edition-compatible">D&amp;D 5e — pergamena</option>
+                  <option value="classic-parchment">Classic parchment</option>
+                  <option value="old-school">Old-school — OSR / TSR</option>
+                  <option value="dark-arcane">Dark arcane</option>
+                </optgroup>
+                <optgroup label="Altri editori / generi">
+                  <option value="mythos">Mythos — Chaosium / Cthulhu</option>
+                  <option value="modern-5-5">Modern 5.5</option>
+                  <option value="clean-guild">Clean guild</option>
+                  <option value="printer-friendly">Printer friendly</option>
+                </optgroup>
               </select>
             </label>
             <label>

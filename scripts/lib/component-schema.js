@@ -21,11 +21,15 @@ export function mergeComponentSources(sources) {
   return { components };
 }
 
+export const proseDirectives = new Set(["subtitle", "dropcap", "lead", "wide", "frame", "fullpage", "cover"]);
+
 export function validateMarkdownBlocks(markdown, schema) {
   const componentsByContainer = new Map(schema.components.map((component) => [component.container, component]));
   const diagnostics = [];
 
   for (const block of parseMarkdownBlocks(markdown)) {
+    if (proseDirectives.has(block.name)) continue;
+
     const component = componentsByContainer.get(block.name);
     if (!component) {
       diagnostics.push({

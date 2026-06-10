@@ -47,3 +47,15 @@ stakes: Evitare che tornino a rendering generico.
 reward: Fiducia nella build.
 hook: Prova | Il markup deve contenere il dettaglio strutturato.
 :::
+
+::: subtitle
+Sottotitolo di regressione
+:::
+
+::: dropcap
+Il capolettera apre il paragrafo di prova.
+:::
+
+::: readaloud Da leggere al tavolo
+Testo da leggere senza titolo duplicato.
+:::

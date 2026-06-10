@@ -123,6 +123,75 @@
     3px;
 }
 
+.creature-meta {
+  margin: -0.08rem 0 0.5rem;
+}
+
+/* Tabella caratteristiche stile 5.5e (2024): Punteggio / Mod / Tiro salvezza. */
+.ability-block {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.4rem 0.7rem;
+  margin: 0.5rem 0 0.6rem;
+}
+
+.ability-table {
+  width: 100%;
+  margin: 0;
+  border: 0;
+  border-collapse: collapse;
+  font-size: 0.72rem;
+  box-shadow: none;
+}
+
+.ability-table thead,
+.ability-table tbody tr:nth-child(even) {
+  background: transparent;
+}
+
+.ability-table th,
+.ability-table td {
+  border: 0;
+  background: transparent;
+  padding: 0.13rem 0.25rem;
+}
+
+.ability-table thead th {
+  padding-bottom: 0.05rem;
+  color: var(--color-muted);
+  font-family: var(--font-ui);
+  font-size: 0.56rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.ability-table tbody th {
+  width: 2.6em;
+  color: var(--color-accent-dark);
+  font-family: var(--font-heading);
+  font-weight: 700;
+  text-align: left;
+}
+
+.ability-table tbody td {
+  text-align: center;
+}
+
+.ability-table tbody td:last-child {
+  color: var(--color-muted);
+}
+
+.ability-table tbody tr + tr th,
+.ability-table tbody tr + tr td {
+  border-top: 1px solid rgba(122, 87, 35, 0.16);
+}
+
+.cr-line {
+  margin-top: 0.3rem;
+}
+
 .stats-grid {
   display: grid;
 

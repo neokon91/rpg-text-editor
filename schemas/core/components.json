@@ -26,6 +26,8 @@
         { "key": "cha", "label": "CAR", "type": "number", "default": 6 },
         { "key": "senses", "label": "Sensi", "type": "text", "default": "scurovisione 18 m, Percezione passiva 11" },
         { "key": "languages", "label": "Linguaggi", "type": "text", "default": "comprende una lingua scelta dal creatore" },
+        { "key": "initiative", "label": "Iniziativa", "type": "text", "default": "" },
+        { "key": "prof_saves", "label": "TS competenti (es. for, cos)", "type": "text", "default": "" },
         { "key": "body", "label": "Note", "type": "textarea", "default": "" }
       ],
       "lists": [
@@ -275,6 +277,17 @@
       "default_label": "Nota autore",
       "fields": [
         { "key": "body", "label": "Testo", "type": "textarea", "default": "Promemoria di design, appunto per playtest o variante opzionale." }
+      ]
+    },
+    {
+      "id": "quote",
+      "label": "Citazione",
+      "group": "Tavolo",
+      "description": "Citazione o frammento di lore con fonte.",
+      "container": "quote",
+      "default_label": "Fonte",
+      "fields": [
+        { "key": "body", "label": "Testo", "type": "textarea", "default": "\"Il re dorme ancora sotto la montagna. E sogna fame.\"" }
       ]
     },
     {

@@ -14,23 +14,24 @@ public: true
 
 # Il Santuario Sepolto
 
-<p class="subtitle">Un'avventura introduttiva per personaggi di livello 1-3</p>
+::: subtitle
+Un'avventura introduttiva per personaggi di livello 1-3
+:::
 
-<p class="dropcap">Quando la porta di pietra si apre, l'aria cambia. Un odore di cera spenta, muffa e ferro antico riempie il corridoio. Il rumore del vento sparisce dietro di voi mentre la montagna richiude lentamente il suo respiro.</p>
+::: dropcap
+Quando la porta di pietra si apre, l'aria cambia. Un odore di cera spenta, muffa e ferro antico riempie il corridoio. Il rumore del vento sparisce dietro di voi mentre la montagna richiude lentamente il suo respiro.
+:::
 
-<aside class="readaloud no-break">
-  <div class="readaloud__label">Da leggere al tavolo</div>
-  <p>Le torce proiettano ombre innaturali sulle colonne spezzate. In fondo alla sala, una figura immobile osserva il gruppo senza muoversi.</p>
-</aside>
+::: readaloud Da leggere al tavolo
+Le torce proiettano ombre innaturali sulle colonne spezzate. In fondo alla sala, una figura immobile osserva il gruppo senza muoversi.
+:::
 
 ## Entrata del Tempio
 
-<figure class="rpg-map no-break">
-  <img src="../assets/images/maps/santuario-sepolto-map.svg" alt="Mappa del Santuario Sepolto con ingresso, sala delle candele, altare e camera del custode">
-  <figcaption>Mappa del Santuario Sepolto</figcaption>
-</figure>
-
-<div class="columns-2">
+::: map Mappa del Santuario Sepolto
+src: ../assets/images/maps/santuario-sepolto-map.svg
+alt: Mappa del Santuario Sepolto con ingresso, sala delle candele, altare e camera del custode
+:::
 
 ### Corridoi Frantumati
 
@@ -48,37 +49,25 @@ Le pareti sono ricoperte da iscrizioni erose dal tempo. Alcune mostrano guerrier
 
 Un passaggio cede se più di una creatura si ferma sulla piattaforma centrale. Le creature nell'area devono superare un tiro salvezza su Destrezza CD 13 o cadere in una cripta inferiore.
 
-</div>
+::: encounter Incontro opzionale
+Se i personaggi fanno rumore per più di un minuto, 1d4 scheletri emergono dalle nicchie laterali e bloccano la via di fuga.
+:::
 
-<aside class="encounter no-break">
-  <div class="encounter__label">Incontro opzionale</div>
-  <p>Se i personaggi fanno rumore per più di un minuto, 1d4 scheletri emergono dalle nicchie laterali e bloccano la via di fuga.</p>
-</aside>
+::: random-table d6
+name: Eventi nel santuario
+row: 1 | Una torcia si spegne senza vento.
+row: 2 | Un frammento d'osso rotola fuori da una fessura.
+row: 3 | Il nome di un personaggio compare inciso nella polvere.
+row: 4 | Un canto lontano svanisce appena qualcuno parla.
+row: 5 | Una porta sigillata pulsa di luce rossastra.
+row: 6 | Il Custode d'Ossa si muove di una stanza verso il gruppo.
+:::
 
-<aside class="random-table no-break">
-  <div class="random-table__label">d6</div>
-  <h3>Eventi nel santuario</h3>
-  <table class="table-compact">
-    <thead><tr><th>d6</th><th>Risultato</th></tr></thead>
-    <tbody>
-      <tr><td>1</td><td>Una torcia si spegne senza vento.</td></tr>
-      <tr><td>2</td><td>Un frammento d'osso rotola fuori da una fessura.</td></tr>
-      <tr><td>3</td><td>Il nome di un personaggio compare inciso nella polvere.</td></tr>
-      <tr><td>4</td><td>Un canto lontano svanisce appena qualcuno parla.</td></tr>
-      <tr><td>5</td><td>Una porta sigillata pulsa di luce rossastra.</td></tr>
-      <tr><td>6</td><td>Il Custode d'Ossa si muove di una stanza verso il gruppo.</td></tr>
-    </tbody>
-  </table>
-</aside>
-
-<aside class="treasure no-break">
-  <div class="treasure__label">Tesori</div>
-  <ul>
-    <li>14 monete d'argento</li>
-    <li>Un anello spezzato con sigillo nobiliare</li>
-    <li>Una pergamena consumata con tre parole ancora leggibili: <strong>sangue</strong>, <strong>cenere</strong>, <strong>ritorno</strong></li>
-  </ul>
-</aside>
+::: treasure Tesori
+- 14 monete d'argento
+- Un anello spezzato con sigillo nobiliare
+- Una pergamena consumata con tre parole ancora leggibili: **sangue**, **cenere**, **ritorno**
+:::
 
 ## Custode d'Ossa
 
@@ -94,10 +83,9 @@ Un passaggio cede se più di una creatura si ferma sulla piattaforma centrale. L
 
 <rpg-include src="content/hazards/pavimento-cedevole.html"></rpg-include>
 
-<aside class="quote no-break">
-  <div class="quote__label">Cronache Perdute di Karadun</div>
-  <p>"Il re dorme ancora sotto la montagna. E sogna fame."</p>
-</aside>
+::: quote Cronache Perdute di Karadun
+"Il re dorme ancora sotto la montagna. E sogna fame."
+:::
 
 ## Ricompense
 
@@ -107,9 +95,6 @@ Un passaggio cede se più di una creatura si ferma sulla piattaforma centrale. L
 | Distruggere il Custode | 300 PE |
 | Recuperare il Sigillo Antico | 1 gemma da 75 mo |
 
-<aside class="note no-break">
-  <div class="note__label">Nota editoriale</div>
-  <p>Per scrivere rapidamente usa gli snippet HTML nella Markdown Preview o gli snippet rapidi <code>q...</code> con <code>npm run preview:watch</code>.</p>
-</aside>
-
-<div class="center smallcaps muted mt-3">Fine del Capitolo I</div>
+::: note Nota editoriale
+Usa la palette dei componenti per inserire box, statblock e tabelle: ogni elemento diventa un blocco `:::` validato, senza scrivere HTML a mano.
+:::

@@ -49,6 +49,38 @@
       "usage": "Headings"
     },
     {
+      "path": "fonts/IMFellEnglish-Regular.woff2",
+      "title": "IM Fell English Regular",
+      "author": "Igino Marini",
+      "license": "OFL-1.1",
+      "source": "Bundled local font file",
+      "usage": "Headings (tema mythos)"
+    },
+    {
+      "path": "fonts/IMFellEnglish-Italic.woff2",
+      "title": "IM Fell English Italic",
+      "author": "Igino Marini",
+      "license": "OFL-1.1",
+      "source": "Bundled local font file",
+      "usage": "Headings (tema mythos)"
+    },
+    {
+      "path": "fonts/EBGaramond-Regular.woff2",
+      "title": "EB Garamond",
+      "author": "Georg Duffner, Octavio Pardo",
+      "license": "OFL-1.1",
+      "source": "Bundled local font file",
+      "usage": "Body typography (temi mythos, old-school)"
+    },
+    {
+      "path": "fonts/EBGaramond-Italic.woff2",
+      "title": "EB Garamond Italic",
+      "author": "Georg Duffner, Octavio Pardo",
+      "license": "OFL-1.1",
+      "source": "Bundled local font file",
+      "usage": "Body typography (temi mythos, old-school)"
+    },
+    {
       "path": "assets/svg/dividers/rule-diamond.svg",
       "title": "Rule Diamond Divider",
       "author": "Andrea",

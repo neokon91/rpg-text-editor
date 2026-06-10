@@ -8,6 +8,7 @@ import { useComponentCatalog } from "./app/componentCatalog.js";
 import { collectDiagnostics } from "./app/diagnostics.js";
 import { useDialogState } from "./app/dialogState.js";
 import { starterDocument } from "./app/constants.js";
+import { galleryTemplates } from "./app/galleryTemplates.js";
 import { useEditorChecks } from "./app/useEditorChecks.js";
 import { useEditorDocuments } from "./app/useEditorDocuments.js";
 import { useEditorPreferences } from "./app/useEditorPreferences.js";
@@ -209,11 +210,24 @@ function App() {
     clearExportOutputs();
   }
 
-  function openStarterGuide() {
+  async function loadTemplate(template) {
+    if (isDirty) {
+      const confirmed = await requestConfirm({
+        title: template.title,
+        message: "Sostituire il documento attuale con questo modello? Le modifiche non salvate andranno perse.",
+        confirmLabel: "Carica modello"
+      });
+      if (!confirmed) return;
+    }
+    clearDraft();
+    setMarkdown(template.markdown);
+    resetDocumentState(template.markdown);
+    clearDocumentDiagnostics();
+    clearExportOutputs();
+    setSelectedLine(null);
     setPreviewVisible(true);
     setMobilePanel("editor");
-    setSelectedLine(1);
-    setStatus("Guida: modifica a sinistra, controlla la preview, poi esporta PDF");
+    setStatus(`Modello caricato: ${template.title}`);
   }
 
   return (
@@ -279,8 +293,9 @@ function App() {
       />
       {onboardingVisible ? (
         <OnboardingPanel
+          templates={galleryTemplates}
           isChecking={isChecking}
-          onShowExample={openStarterGuide}
+          onLoadTemplate={loadTemplate}
           onImport={selectBrowserArchive}
           onExportPdf={() => exportChecked("pdf")}
           onHide={() => setOnboardingVisible(false)}

@@ -4,6 +4,7 @@ import { dirname, extname, join, resolve, relative } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { spawn } from "node:child_process";
 import { mergeComponentSources } from "./lib/component-schema.js";
+import { challengeText, hasAbilities, initiativeText, renderAbilityTables } from "../packages/components/statblock.js";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const sourceDir = join(root, "docs");
@@ -384,6 +385,11 @@ function renderMarkdown(markdown, options = {}) {
       continue;
     }
 
+    if (trimmed === "\\column" || trimmed === "::column") {
+      out.push('<div class="column-break"></div>');
+      continue;
+    }
+
     const container = trimmed.match(/^:::\s*([a-z0-9_-]+)(?:\s+(.*))?$/i);
     if (container) {
       const [, name, label] = container;
@@ -465,6 +471,23 @@ function renderContainer(name, label, markdown) {
 }
 
 function renderStructuredContainer(name, label, markdown) {
+  if (name === "subtitle" || name === "dropcap" || name === "lead") {
+    const text = [label, markdown].filter(Boolean).join(" ").replace(/\s*\n\s*/g, " ").trim();
+    return `<p class="${name}">${renderInline(text)}</p>`;
+  }
+
+  if (name === "wide" || name === "frame") {
+    const mods = new Set([name, ...(label || "").toLowerCase().split(/\s+/).filter(Boolean)]);
+    const className = ["wide", "frame"].filter((mod) => mods.has(mod)).join(" ");
+    return `<div class="${className}">${renderMarkdown(markdown)}</div>`;
+  }
+
+  if (name === "fullpage" || name === "cover") {
+    const data = parseBlockData(markdown);
+    const fit = data.fit === "contain" ? "contain" : "cover";
+    return `<div class="page-image" data-fit="${fit}"><img src="${escapeHtml(data.src || "")}" alt="${escapeHtml(data.alt || label || "")}"></div>`;
+  }
+
   const data = parseBlockData(markdown);
 
   if (name === "monster") return renderMonster(data, label);
@@ -479,7 +502,9 @@ function renderStructuredContainer(name, label, markdown) {
   if (name === "image") return renderMediaFigure("rpg-image", data, label || data.caption || "");
 
   const component = componentSchema.components.find((item) => item.container === name || item.id === name);
-  if (component) return renderSchemaComponent(component, data, label);
+  if (component && (component.fields || []).some((field) => field.key === "name")) {
+    return renderSchemaComponent(component, data, label);
+  }
 
   return "";
 }
@@ -556,22 +581,27 @@ function splitPair(value) {
 
 function renderMonster(data, label) {
   const body = componentBody(data);
-  const abilities = ["str", "dex", "con", "int", "wis", "cha"];
-  const hasAbilities = abilities.some((ability) => data[ability]);
+  const showInitiative = hasAbilities(data) || data.initiative;
+  const headLines = [
+    ["CA", data.ac],
+    ["Iniziativa", showInitiative ? initiativeText(data) : ""],
+    ["PF", data.hp],
+    ["Velocità", data.speed]
+  ]
+    .filter(([, value]) => value)
+    .map(([key, value]) => `<span><strong>${key}</strong> ${renderInline(String(value))}</span>`)
+    .join("");
+  const cr = challengeText(data);
 
   return [
     '<aside class="statblock monster no-break">',
     label ? `<div class="statblock__label">${renderInline(label)}</div>` : "",
     `<h2>${renderInline(data.name || "Creatura")}</h2>`,
-    data.meta ? `<p><em>${renderInline(data.meta)}</em></p>` : "",
-    '<div class="statline">',
-    data.ac ? `<span><strong>CA</strong> ${renderInline(data.ac)}</span>` : "",
-    data.hp ? `<span><strong>PF</strong> ${renderInline(data.hp)}</span>` : "",
-    data.speed ? `<span><strong>Vel</strong> ${renderInline(data.speed)}</span>` : "",
-    data.cr ? `<span><strong>GS</strong> ${renderInline(data.cr)}</span>` : "",
-    "</div>",
-    hasAbilities ? renderAbilities(data, abilities) : "",
-    renderKeyValueList(data, ["saves", "skills", "resistances", "immunities", "senses", "languages"]),
+    data.meta ? `<p class="creature-meta"><em>${renderInline(data.meta)}</em></p>` : "",
+    `<div class="statline">${headLines}</div>`,
+    hasAbilities(data) ? renderAbilityTables(data) : "",
+    renderKeyValueList(data, ["skills", "resistances", "immunities", "senses", "languages"]),
+    cr ? `<p class="rules-line cr-line"><strong>GS</strong> ${renderInline(cr.replace(/^GS\s*/, ""))}</p>` : "",
     renderFeatureList(data.traits, "Tratti"),
     renderFeatureList(data.actions, "Azioni"),
     renderFeatureList(data.reactions, "Reazioni"),
@@ -579,20 +609,6 @@ function renderMonster(data, label) {
     body.length ? renderMarkdown(body.join("\n")) : "",
     "</aside>"
   ].join("\n");
-}
-
-function renderAbilities(data, abilities) {
-  const labels = { str: "FOR", dex: "DES", con: "COS", int: "INT", wis: "SAG", cha: "CAR" };
-  return [
-    '<div class="stats-grid">',
-    ...abilities.map((ability) => {
-      const value = Number(data[ability] || 10);
-      const mod = Math.floor((value - 10) / 2);
-      const label = labels[ability] || ability.toUpperCase();
-      return `<div><strong>${label}</strong>${value}<small>${mod >= 0 ? "+" : ""}${mod}</small></div>`;
-    }),
-    "</div>"
-  ].join("");
 }
 
 function renderKeyValueList(data, keys) {
@@ -714,6 +730,9 @@ function labelFor(key) {
     immunities: "Immunità",
     senses: "Sensi",
     languages: "Linguaggi",
+    attunement: "Sintonia",
+    rarity: "Rarità",
+    type: "Tipo",
     motive: "Motivazione",
     secret: "Segreto",
     voice: "Voce",
@@ -869,6 +888,8 @@ function isParagraphContinuation(line) {
 
 function renderInline(value) {
   return escapeHtml(value)
+    .replace(/!\[([^\]]*)\]\(([^)\s]+)\)/g, '<img class="inline-image" src="$2" alt="$1">')
+    .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, '<a href="$2">$1</a>')
     .replace(/`([^`]+)`/g, "<code>$1</code>")
     .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
     .replace(/\*([^*]+)\*/g, "<em>$1</em>");

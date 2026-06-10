@@ -162,9 +162,9 @@ async function waitForEditorReady() {
   await waitFor(() => evalInPage("document.readyState === 'complete'"));
   await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.querySelector('.page-shell h1')?.textContent.toLowerCase().includes('nuova avventura')"));
   await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.body.textContent.includes('Santuario sotto la pioggia')"));
-  await waitFor(() => evalInPage("!document.querySelector('.next-brand span')?.textContent.includes('*')"));
+  await waitFor(() => evalInPage("!document.querySelector('.next-brand strong')?.textContent.includes('•')"));
   await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.querySelector('p[data-source-end-line]')?.dataset.sourceEndLine"));
-  await waitFor(() => evalInPage("document.body.textContent.includes('Server locale')"));
+  await waitFor(() => evalInPage("document.querySelector('.next-status')?.textContent.includes('parole')"));
 }
 
 async function runNamedSuite(suite) {
@@ -179,8 +179,8 @@ async function testBrowserStorage() {
   console.log("browser-storage: enable browser-only");
   await clickTopbarButton("Browser-only");
   await waitFor(() => evalInPage("window.localStorage.getItem('rpg-text-editor-next:browser-only') === 'true'"));
-  await waitFor(() => evalInPage("document.body.textContent.includes('Browser-only')"));
-  await waitFor(() => evalInPage("/Browser \\d+ doc \\/ \\d+ (B|KB|MB)/.test(document.body.textContent)"));
+  await waitFor(() => evalInPage("document.body.textContent.includes('In questo browser')"));
+  await waitFor(() => evalInPage("/\\d+ doc, \\d+ (B|KB|MB)/.test(document.querySelector('.next-status span[title*=\"questo browser\"]')?.title || '')"));
   await waitFor(() => evalInPage("document.querySelector('.next-actions button[aria-pressed=\"true\"]')?.textContent.trim() === 'Browser-only'"));
   console.log("browser-storage: backup archive");
   await clickTopbarButton("Backup");
@@ -189,7 +189,7 @@ async function testBrowserStorage() {
   console.log("browser-storage: disable browser-only");
   await clickTopbarButton("Browser-only");
   await waitFor(() => evalInPage("!window.localStorage.getItem('rpg-text-editor-next:browser-only')"));
-  await waitFor(() => evalInPage("document.body.textContent.includes('Server locale')"));
+  await waitFor(() => evalInPage("!document.body.textContent.includes('In questo browser')"));
 }
 
 async function testDocumentsAndLayout() {
@@ -221,7 +221,7 @@ async function testDocumentsAndLayout() {
   await saveTestDocument(openGuardFile, "---\ntitle: Codex Open Guard\nslug: codex-open-guard\nsummary: Documento temporaneo open guard\ncompatibility: 5e/5.5e\nlicense_mode: srd-5.2-cc\nauthor: Codex\ntheme: classic-parchment\npaper: A4\n---\n\n# Codex Open Guard\n\nDocumento per test apertura.");
   await refreshDocumentSelect();
   await clickTopbarButton("Scena");
-  await waitFor(() => evalInPage("document.body.textContent.includes('*') && window.localStorage.getItem('rpg-text-editor-next:draft')?.includes('Nuova scena')"));
+  await waitFor(() => evalInPage("document.body.textContent.includes('•') && window.localStorage.getItem('rpg-text-editor-next:draft')?.includes('Nuova scena')"));
   await refreshDocumentSelect();
   await waitFor(() => evalInPage(`Array.from(document.querySelector('.next-actions select')?.options || []).some((item) => item.value === ${JSON.stringify(openGuardFile)})`));
   await selectDocument(openGuardFile);
@@ -263,7 +263,7 @@ async function testDocumentsAndLayout() {
   await waitFor(() => evalInPage("Boolean(document.querySelector('.next-actions'))"));
   await clickTopbarButton("Mostra preview");
   await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.querySelector('.page-shell h1')?.textContent.toLowerCase().includes('nuova avventura')"));
-  await clickButton("Nascondi frontmatter");
+  await clickButton("Nascondi dettagli");
   await waitFor(() => evalInPage("window.localStorage.getItem('rpg-text-editor-next:frontmatter-panel') === 'false' && !document.querySelector('.metadata-fields')"));
   await clickButton("Nascondi outline");
   await waitFor(() => evalInPage("window.localStorage.getItem('rpg-text-editor-next:outline-panel') === 'false' && !document.querySelector('.outline-list')"));
@@ -271,7 +271,7 @@ async function testDocumentsAndLayout() {
   await waitFor(() => evalInPage("document.readyState === 'complete'"));
   await waitFor(() => evalInPage("!document.querySelector('.metadata-fields') && !document.querySelector('.outline-list')"));
   await waitFor(() => evalInPage("Boolean(document.querySelector('.document-side'))"));
-  await clickButton("Mostra frontmatter");
+  await clickButton("Mostra dettagli");
   await waitFor(() => evalInPage("Boolean(document.querySelector('.metadata-fields'))"));
   await clickButton("Mostra outline");
   await waitFor(() => evalInPage("Boolean(document.querySelector('.outline-list'))"));
@@ -280,7 +280,7 @@ async function testDocumentsAndLayout() {
 async function testComponents() {
   await setViewport(1180, 820);
   await waitFor(() => evalInPage("document.querySelector('select')?.options.length > 1"));
-  await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 15"));
+  await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 16"));
   await waitFor(() => evalInPage("Array.from(document.querySelectorAll('.component-preset-group-label')).some((node) => node.textContent.trim() === 'Ruolo')"));
   await clickButton("Media");
   await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 2"));
@@ -289,7 +289,7 @@ async function testComponents() {
   await waitFor(() => evalInPage("document.readyState === 'complete'"));
   await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 2"));
   await clickButton("Tutti");
-  await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 15"));
+  await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 16"));
   await assertEqual(await evalInPage("document.body.textContent.includes('Fazione')"), true, "plugin pack component visible");
   await clickButton("Tono");
   await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 1 && document.body.textContent.includes('Fazione') && !document.body.textContent.includes('Missione')"));
@@ -298,7 +298,7 @@ async function testComponents() {
   await reloadPage();
   await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 1 && Array.from(document.querySelectorAll('.component-preset-group-label')).every((node) => node.textContent.trim() === 'Tono')"));
   await clickButton("Tutti preset");
-  await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 15"));
+  await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 16"));
   await dispatchDocumentKey("k", { ctrlKey: true });
   await waitFor(() => evalInPage("document.activeElement === document.querySelector('.component-palette input[type=\"search\"]')"));
   await setComponentSearch("Congrega");
@@ -310,7 +310,7 @@ async function testComponents() {
   await waitFor(() => evalInPage("document.querySelector('.component-form optgroup[label=\"Tono\"]') || Array.from(document.querySelectorAll('.component-preset-group-label')).some((node) => node.textContent.trim() === 'Tono')"));
   await dispatchDocumentKey("k", { ctrlKey: true });
   await dispatchDocumentKey("Escape");
-  await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 15"));
+  await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 16"));
   await waitFor(() => evalInPage("!window.localStorage.getItem('rpg-text-editor-next:component-palette:query')"));
   await waitFor(() => evalInPage("Array.from(document.querySelectorAll('.component-preset-group-label')).some((node) => node.textContent.trim() === 'Tono')"));
   const draftBeforePluginPreset = await evalInPage("window.localStorage.getItem('rpg-text-editor-next:draft')");
@@ -319,7 +319,7 @@ async function testComponents() {
   await evalInPage(`window.localStorage.setItem('rpg-text-editor-next:draft', ${JSON.stringify(draftBeforePluginPreset)})`);
   await reloadPage();
   await waitFor(() => evalInPage("document.readyState === 'complete'"));
-  await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 15"));
+  await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 16"));
   await evalInPage(`
     {
       const pack = document.querySelector('.pack-toggles input[type="checkbox"]');
@@ -327,10 +327,10 @@ async function testComponents() {
       pack.click();
     }
   `);
-  await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 13"));
+  await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 14"));
   await assertEqual(await evalInPage("document.body.textContent.includes('Fazione')"), false, "plugin pack component hidden");
   await evalInPage("document.querySelector('.pack-toggles input[type=\"checkbox\"]').click()");
-  await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 15"));
+  await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 16"));
   await importExternalPack({
     id: "bad-pack",
     name: "Bad Pack",
@@ -339,16 +339,16 @@ async function testComponents() {
     container: "external-collision"
   });
   await waitFor(() => evalInPage("document.querySelector('.external-pack-controls .inline-error')?.textContent.includes('Component id duplicato: spell')"));
-  await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 15"));
-  await importExternalPack();
   await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 16"));
+  await importExternalPack();
+  await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 17"));
   await assertEqual(await evalInPage("document.body.textContent.includes('Reliquia esterna')"), true, "external pack component visible");
   await assertEqual(await evalInPage("document.querySelector('.external-pack-components')?.textContent.includes('external-relic')"), true, "external pack component preview");
   await clickButtonByAriaLabel("Rimuovi pack External Test Pack");
-  await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 15"));
+  await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 16"));
   await setViewport(800, 600);
 
-  await clickButton("Check");
+  await clickButton("Controlla");
   await waitFor(() => evalInPage("document.body.textContent.includes('Check completo ok')"));
 
   const exportResult = await fetchJson(`${baseUrl}/api/export-document`, {
@@ -365,7 +365,7 @@ async function testComponents() {
   await setViewport(1180, 820);
   await waitFor(() => evalInPage("Boolean(document.querySelector('.component-palette input[type=\"search\"]'))"));
   await setComponentSearch("");
-  await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 15"));
+  await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 16"));
   const draftBeforeComponentForm = await evalInPage("window.localStorage.getItem('rpg-text-editor-next:draft')");
   await openComponentForm("Incantesimo", "spell");
   await waitFor(() => componentFormHasField("Nome"), 12000, "component form Nome field");
@@ -378,7 +378,7 @@ async function testComponents() {
   await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.body?.textContent.includes('Dardo Codex')"));
   await evalInPage(`window.localStorage.setItem('rpg-text-editor-next:draft', ${JSON.stringify(draftBeforeComponentForm)})`);
   await reloadPage();
-  await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 15"));
+  await waitFor(() => evalInPage("document.querySelectorAll('.component-card').length === 16"));
   await clickButton("Combattimento");
   await waitFor(() => evalInPage("window.localStorage.getItem('rpg-text-editor-next:draft')?.includes('Scheggia Astrale')"));
   await waitFor(() => evalInPage("document.readyState === 'complete' && Boolean(document.querySelector('.next-actions'))"));
@@ -392,11 +392,11 @@ async function testPreviewAndExport() {
   await clickTopbarButton("Include");
   await waitFor(() => evalInPage("window.localStorage.getItem('rpg-text-editor-next:draft')?.includes('<rpg-include src=\"content/monsters/custode-ossa.html\"></rpg-include>')"));
   await clickTopbarButton("Immagine");
-  await waitFor(() => evalInPage("window.localStorage.getItem('rpg-text-editor-next:draft')?.includes('![Mappa santuario sepolto]')"));
+  await waitFor(() => evalInPage("window.localStorage.getItem('rpg-text-editor-next:draft')?.includes('::: image Immagine')"));
 
   await assertEqual(await evalInPage("window.localStorage.getItem('rpg-text-editor-next:draft')?.includes('Nuova scena')"), true, "draft includes inserted scene");
 
-  await clickTopbarButton("Pagina");
+  await clickTopbarButton("Interruzione pagina");
   await waitFor(() => evalInPage("document.querySelector('.preview-toolbar')?.textContent.includes('/ 2')"));
   await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.querySelectorAll('.page-shell').length === 2"));
   await clickButtonByAriaLabel("Pagina successiva");
@@ -406,7 +406,7 @@ async function testPreviewAndExport() {
   await clickButton("Sync");
   await waitFor(() => evalInPage("Array.from(document.querySelectorAll('button[aria-pressed=\"true\"]')).some((button) => button.textContent.trim() === 'Sync')"));
   await evalInPage("document.querySelector('iframe')?.contentWindow?.scrollTo(0, 0)");
-  await clickEditorLineContaining("![Mappa santuario sepolto]");
+  await clickEditorLineContaining("::: image Immagine");
   await waitFor(() => evalInPage("document.querySelector('iframe')?.contentWindow?.scrollY > 0"));
   await evalInPage(`
     {
@@ -451,7 +451,7 @@ async function testPreviewAndExport() {
   await waitFor(() => evalInPage("document.querySelector('.preview-overflow')?.textContent.includes('riga')"));
   await evalInPage("document.querySelector('.preview-overflow').click()");
   await waitFor(() => evalInPage("Number(window.localStorage.getItem('rpg-text-editor-next:selected-line')) > 1"));
-  await clickTopbarButton("Auto break");
+  await clickTopbarButton("Impagina auto");
   await waitFor(() => evalInPage("document.body.textContent.includes('Auto break:')"));
   await waitFor(() => evalInPage("window.localStorage.getItem('rpg-text-editor-next:draft')?.includes('::pagebreak')"));
   await waitFor(() => evalInPage("document.querySelector('iframe')?.contentDocument?.querySelectorAll('.page-shell').length > 1"));
@@ -556,6 +556,8 @@ async function clickButton(label) {
             errors: window.__editorNextErrors || []
           };
         }
+        const details = button.closest('details');
+        if (details) details.open = true;
         button.click();
         return { clicked: true };
       })()
@@ -676,7 +678,7 @@ async function clickTopbarButton(label) {
   while (Date.now() - started < 8000) {
     result = await evalInPage(`
       (() => {
-        const buttons = Array.from(document.querySelectorAll('.next-actions > button'));
+        const buttons = Array.from(document.querySelectorAll('.next-actions button'));
         const button = buttons
           .find((item) => item.textContent.trim() === ${JSON.stringify(label)});
         if (!button) {
@@ -691,6 +693,8 @@ async function clickTopbarButton(label) {
             errors: window.__editorNextErrors || []
           };
         }
+        const details = button.closest('details');
+        if (details) details.open = true;
         button.click();
         return { clicked: true, labels: buttons.map((item) => item.textContent.trim()) };
       })()

@@ -22,14 +22,20 @@ const expectations = [
   '<aside class="quest rules-card no-break">',
   '<h3>Missione di Regressione</h3>',
   '<strong>Obiettivo.</strong> Coprire i componenti generici da schema.',
-  '<strong>Prova.</strong> Il markup deve contenere il dettaglio strutturato.'
+  '<strong>Prova.</strong> Il markup deve contenere il dettaglio strutturato.',
+  '<p class="subtitle">Sottotitolo di regressione</p>',
+  '<p class="dropcap">Il capolettera apre il paragrafo di prova.</p>',
+  '<aside class="readaloud no-break"><div class="readaloud__label">Da leggere al tavolo</div>'
 ];
 
 const forbidden = [
   '<aside class="faction no-break">',
   '<aside class="quest no-break">',
   '<p>name: Compagnia del Test',
-  '<p>name: Missione di Regressione'
+  '<p>name: Missione di Regressione',
+  '<aside class="subtitle',
+  '<aside class="dropcap',
+  '<h3>Da leggere al tavolo</h3>'
 ];
 
 await execFileAsync(process.execPath, ["scripts/build.js", "--html", fixture], { cwd: root });

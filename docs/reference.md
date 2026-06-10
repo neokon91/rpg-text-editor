@@ -38,6 +38,8 @@ wis: 12
 cha: 6
 senses: scurovisione 18 m, Percezione passiva 11
 languages: comprende una lingua scelta dal creatore
+initiative: 
+prof_saves: 
 
 trait: Corpo di Pietra | Ha vantaggio ai tiri salvezza contro veleno e malattia.
 action: Pugno Inciso | +4 a colpire, portata 1,5 m, un bersaglio. Colpisce per 1d8 + 2 danni contundenti.
@@ -155,6 +157,13 @@ Tre avversari deboli entrano da lati opposti.
 
 ::: note Nota autore
 Promemoria di design, appunto per playtest o variante opzionale.
+:::
+### Citazione
+
+<p class="muted"><strong>Core.</strong> Citazione o frammento di lore con fonte.</p>
+
+::: quote Fonte
+"Il re dorme ancora sotto la montagna. E sogna fame."
 :::
 ### Missione
 

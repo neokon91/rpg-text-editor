@@ -14,48 +14,25 @@ public: false
 
 # Guida Authoring
 
-<p class="subtitle">Scrivere, controllare e pubblicare contenuti senza uscire dal flusso Markdown.</p>
+::: subtitle
+Scrivere, controllare e pubblicare contenuti senza uscire dal flusso Markdown.
+:::
 
 ## Flusso consigliato
 
-1. Crea un documento da template.
-2. Apri la Markdown Preview di VS Code per il controllo rapido del testo.
-3. Avvia la preview espansa in watch quando usi include o sintassi breve.
-4. Scrivi in `docs/` usando snippet HTML per VS Code o sintassi breve per schema/build.
-5. Salva il file e aggiorna il browser.
-6. Prima dell'export esegui `npm run check`.
-7. Prima di considerare chiuso il layout genera il PDF.
+1. Crea un documento da modello (palette o `npm run new`).
+2. Scrivi il testo in Markdown e inserisci i componenti dalla palette.
+3. Controlla la preview impaginata a destra.
+4. Premi `Check` prima dell'export.
+5. Esporta in PDF o HTML.
 
 ```sh
 npm run new -- adventure "La Torre Sommersa"
-npm run preview:watch
 ```
 
-La preview sarà disponibile su `http://127.0.0.1:8081/`.
+## Sintassi unica: i blocchi `:::`
 
-## Regola PDF-first
-
-La preview serve a scrivere piu velocemente, ma il formato primario della suite e il PDF A4. Dopo modifiche a componenti, immagini, tabelle, colonne o statblock controlla sempre:
-
-```sh
-npm run build:book:pdf
-npm run qa:pdf
-```
-
-Nel PDF nessun box dovrebbe sovrapporsi a testo, cornici, immagini o tabelle. Se un contenuto e lungo, preferisci dividerlo in sottosezioni o togliere `no-break` dal blocco interessato invece di forzarlo dentro una singola pagina.
-
-## Due modi di scrivere
-
-Usa gli snippet HTML quando vuoi che anche la Markdown Preview nativa di VS Code mostri il componente gia stilizzato. Questa e la modalita migliore per scrittura lunga in VS Code:
-
-```html
-<aside class="readaloud no-break">
-  <div class="readaloud__label">Da leggere al tavolo</div>
-  <p>Le torce proiettano ombre innaturali sulle colonne spezzate.</p>
-</aside>
-```
-
-Usa la sintassi breve quando vuoi scrivere piu rapidamente e controllare tutto nella preview espansa, nell'editor locale e nella build:
+Tutti i componenti — box, statblock, tabelle, mappe, sottotitoli — si scrivono con un solo schema: apri con `::: tipo`, scrivi il contenuto, chiudi con `:::`. La palette inserisce automaticamente la forma giusta, quindi di norma non serve ricordarla a memoria.
 
 ```md
 ::: readaloud Da leggere al tavolo
@@ -63,64 +40,38 @@ Le torce proiettano ombre innaturali sulle colonne spezzate.
 :::
 ```
 
-## Snippet utili
+Box con solo testo (`readaloud`, `note`, `encounter`, `treasure`, `quote`) usano l'etichetta sulla riga di apertura e il corpo all'interno. I componenti con dati (`monster`, `spell`, `magicitem`, `npc`, `location`, `hazard`, `random-table`, `map`) usano righe `chiave: valore` e liste `chiave: Nome | Testo`.
 
-Snippet HTML per Markdown Preview nativa:
-
-- `frontttrpg`
-- `readaloud`
-- `encounter`
-- `treasure`
-- `note`
-- `quote`
-- `monster`
-- `spell`
-- `magicitem`
-- `npc`
-- `location`
-- `hazard`
-- `randomtable`
-- `map`
-- `image`
-- `include`
-
-Snippet rapidi per preview espansa:
-
-- `qreadaloud`
-- `qencounter`
-- `qtreasure`
-- `qnote`
-- `qmap`
-- `qimage`
-
-## Include riusabili
-
-Metti componenti ricorrenti in `content/` e includili nei documenti:
-
-```html
-<rpg-include src="content/monsters/custode-ossa.html"></rpg-include>
+```md
+::: monster Creatura
+name: Custode d'Ossa
+meta: Costrutto medio, senza allineamento
+ac: 15
+hp: 38
+cr: 1
+str: 14
+dex: 10
+con: 16
+trait: Corpo di Pietra | Vantaggio ai tiri salvezza contro veleno.
+action: Pugno Inciso | +4 a colpire, 1d8 + 2 danni contundenti.
+:::
 ```
 
-La Markdown Preview nativa mostra un placeholder leggibile per il tag. `npm run preview:watch` mostra invece il contenuto espanso.
+### Prosa impaginata
 
-## Guardrail visuali e licenza
+```md
+::: subtitle
+Un'avventura per personaggi di livello 1-3
+:::
 
-Il progetto punta a output `5E compatible` con identita originale. Non usare loghi, marchi, impaginati o asset proprietari del publisher ufficiale. I criteri operativi sono raccolti in `docs/design-guardrails.md`.
-
-## Mappe e immagini
-
-Ogni immagine locale deve essere dichiarata in `assets/manifest.json`.
-
-Sintassi HTML, utile nella Markdown Preview:
-
-```html
-<figure class="rpg-map no-break">
-  <img src="../assets/images/maps/santuario-sepolto-map.svg" alt="Mappa del Santuario Sepolto">
-  <figcaption>Mappa del Santuario Sepolto</figcaption>
-</figure>
+::: dropcap
+Quando la porta di pietra si apre, l'aria cambia.
+:::
 ```
 
-Sintassi breve, utile in preview espansa:
+La pagina è già su due colonne: non serve avvolgere il testo in contenitori di colonna. Scrivi headings e paragrafi normali e il flusso si dispone da solo.
+
+### Mappe e immagini
 
 ```md
 ::: map Mappa del Santuario Sepolto
@@ -129,7 +80,34 @@ alt: Mappa del Santuario Sepolto
 :::
 ```
 
-`npm run check:assets` segnala immagini locali non dichiarate nel manifest.
+Ogni immagine locale deve essere dichiarata in `assets/manifest.json`. `npm run check:assets` segnala quelle mancanti.
+
+## Include riusabili
+
+Metti componenti ricorrenti in `content/` e includili nei documenti (utile per statblock condivisi tra più avventure):
+
+```md
+<rpg-include src="content/monsters/custode-ossa.html"></rpg-include>
+```
+
+## HTML grezzo (solo casi avanzati)
+
+Il renderer lascia passare l'HTML inline, quindi per impaginazioni particolari puoi ancora scrivere tag a mano. Non è la via consigliata: l'HTML non viene validato dai check e non compare nella palette. Preferisci sempre i blocchi `:::`.
+
+## Regola PDF-first
+
+La preview serve a scrivere più velocemente, ma il formato primario della suite è il PDF A4. Dopo modifiche a componenti, immagini, tabelle o statblock controlla il PDF:
+
+```sh
+npm run build:book:pdf
+npm run qa:pdf
+```
+
+Nel PDF nessun box dovrebbe sovrapporsi a testo, cornici, immagini o tabelle. Se un contenuto è lungo, dividilo in sottosezioni invece di forzarlo in una sola pagina.
+
+## Guardrail visuali e licenza
+
+Il progetto punta a output `5E compatible` con identità originale. Non usare loghi, marchi, impaginati o asset proprietari del publisher ufficiale. I criteri operativi sono in `docs/design-guardrails.md`.
 
 ## Prima di pubblicare
 

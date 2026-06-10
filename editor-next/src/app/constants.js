@@ -18,7 +18,9 @@ public: true
 
 # Nuova Avventura
 
-<p class="subtitle">Il Santuario sotto la pioggia.</p>
+::: subtitle
+Il Santuario sotto la pioggia.
+:::
 
 ## Scena iniziale
 
@@ -35,6 +37,6 @@ Il primo indizio e inciso sul bordo dell'arco: tre lune, una chiave e un nome ca
 ## Incontro
 
 ::: encounter Guardiani della soglia
-body: Due custodi scheletrici proteggono la scala. Non attaccano chi pronuncia il nome cancellato.
+Due custodi scheletrici proteggono la scala. Non attaccano chi pronuncia il nome cancellato.
 :::
 `;

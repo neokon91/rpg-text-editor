@@ -14,30 +14,25 @@ public: false
 
 # %%TITLE%%
 
-<p class="subtitle">Creature originali per avventure fantasy.</p>
+::: subtitle
+Creature originali per avventure fantasy.
+:::
 
-<aside class="statblock monster no-break">
-  <div class="statblock__label">Creatura</div>
-  <h2>Nome Creatura</h2>
-  <p><em>Creatura media, neutrale</em></p>
-  <div class="statline">
-    <span><strong>CA</strong> 13</span>
-    <span><strong>PF</strong> 22</span>
-    <span><strong>Vel</strong> 9 m</span>
-    <span><strong>GS</strong> 1</span>
-  </div>
-  <div class="stats-grid">
-    <div><strong>FOR</strong>10<small>+0</small></div>
-    <div><strong>DES</strong>10<small>+0</small></div>
-    <div><strong>COS</strong>10<small>+0</small></div>
-    <div><strong>INT</strong>10<small>+0</small></div>
-    <div><strong>SAG</strong>10<small>+0</small></div>
-    <div><strong>CAR</strong>10<small>+0</small></div>
-  </div>
-  <p class="rules-line"><strong>Sensi.</strong> Percezione passiva 10</p>
-  <p class="rules-line"><strong>Linguaggi.</strong> -</p>
-  <h3 class="feature-heading">Tratti</h3>
-  <p><strong>Tratto.</strong> Descrizione.</p>
-  <h3 class="feature-heading">Azioni</h3>
-  <p><strong>Azione.</strong> Descrizione.</p>
-</aside>
+::: monster Creatura
+name: Nome Creatura
+meta: Creatura media, neutrale
+ac: 13
+hp: 22
+speed: 9 m
+cr: 1
+str: 10
+dex: 10
+con: 10
+int: 10
+wis: 10
+cha: 10
+senses: Percezione passiva 10
+languages: -
+trait: Tratto | Descrizione di un tratto speciale della creatura.
+action: Azione | +4 a colpire, portata 1,5 m, un bersaglio. Colpisce per 1d6 + 2 danni.
+:::

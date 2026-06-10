@@ -1,3 +1,5 @@
+import { challengeText, hasAbilities, initiativeText, renderAbilityTables } from "./statblock.js";
+
 export function renderMarkdown(markdown, schema, options = {}) {
   const lines = markdown.replace(/\r\n/g, "\n").split("\n");
   const out = [];
@@ -25,6 +27,16 @@ export function renderMarkdown(markdown, schema, options = {}) {
 
     if (trimmed === "\\page" || trimmed === "::pagebreak") {
       out.push(`<div class="page-break" data-source-line="${sourceLine}" aria-label="Interruzione pagina"></div>`);
+      continue;
+    }
+
+    if (trimmed === "\\column" || trimmed === "::column") {
+      out.push(`<div class="column-break" data-source-line="${sourceLine}" aria-label="Interruzione colonna"></div>`);
+      continue;
+    }
+
+    if (trimmed === "---" || trimmed === "***" || trimmed === "___") {
+      out.push(`<hr data-source-line="${sourceLine}">`);
       continue;
     }
 
@@ -86,19 +98,39 @@ function isTableStart(lines, index) {
   return lines[index]?.includes("|") && /^\s*\|?\s*:?-{3,}:?\s*(\|\s*:?-{3,}:?\s*)+\|?\s*$/.test(lines[index + 1] || "");
 }
 
+const proseDirectives = new Set(["subtitle", "dropcap", "lead"]);
+
 function renderContainer(name, label, markdown, schema, sourceLine, sourceEndLine = sourceLine) {
+  if (proseDirectives.has(name.toLowerCase())) {
+    return renderProse(name.toLowerCase(), label, markdown, sourceLine, sourceEndLine);
+  }
+
+  if (name.toLowerCase() === "wide" || name.toLowerCase() === "frame") {
+    const mods = new Set([name.toLowerCase(), ...(label || "").toLowerCase().split(/\s+/).filter(Boolean)]);
+    const className = ["wide", "frame"].filter((mod) => mods.has(mod)).join(" ");
+    return `<div class="${className}" ${sourceAttrs(sourceLine, sourceEndLine)}>${renderMarkdown(markdown, schema, { startLine: sourceLine })}</div>`;
+  }
+
+  if (name.toLowerCase() === "fullpage" || name.toLowerCase() === "cover") {
+    const pageData = parseBlockData(markdown);
+    const fit = pageData.fit === "contain" ? "contain" : "cover";
+    return `<div class="page-image" data-fit="${fit}" ${sourceAttrs(sourceLine, sourceEndLine)}><img src="${escapeHtml(pageData.src || "")}" alt="${escapeHtml(pageData.alt || label || "")}"></div>`;
+  }
+
   const data = parseBlockData(markdown);
   const component = schema.components.find((item) => item.container === name || item.id === name);
   const className = component?.container || name;
   const title = label || component?.default_label || component?.label || name;
 
-  if (["monster", "spell", "magicitem", "npc", "location", "hazard"].includes(className)) {
+  if (className === "monster") return renderStatblock(title, data, schema, sourceLine, sourceEndLine);
+
+  if (["spell", "magicitem", "npc", "location", "hazard"].includes(className)) {
     return renderRulesComponent(className, title, data, schema, sourceLine, sourceEndLine);
   }
 
   if (className === "random-table") return renderRandomTable(title, data, sourceLine, sourceEndLine);
   if (className === "map" || className === "image") return renderMedia(className, title, data, sourceLine, sourceEndLine);
-  if (component) return renderSchemaComponent(component, title, data, schema, sourceLine, sourceEndLine);
+  if (component && hasNamedHeading(component)) return renderSchemaComponent(component, title, data, schema, sourceLine, sourceEndLine);
 
   const body = Array.isArray(data.body) ? data.body : [data.body].filter(Boolean);
   return `<aside class="${escapeHtml(className)} no-break" ${sourceAttrs(sourceLine, sourceEndLine)}><div class="${escapeHtml(className)}__label">${renderInline(title)}</div>${renderMarkdown(body.join("\n"), schema, { startLine: sourceLine })}</aside>`;
@@ -147,6 +179,45 @@ function renderRulesComponent(className, label, data, schema, sourceLine, source
   `;
 }
 
+function renderStatblock(label, data, schema, sourceLine, sourceEndLine = sourceLine) {
+  const body = componentBody(data);
+  const showInitiative = hasAbilities(data) || data.initiative;
+  const headLines = [
+    ["CA", data.ac],
+    ["Iniziativa", showInitiative ? initiativeText(data) : ""],
+    ["PF", data.hp],
+    ["Velocità", data.speed]
+  ]
+    .filter(([, value]) => value)
+    .map(([key, value]) => `<span><strong>${key}</strong> ${renderInline(String(value))}</span>`)
+    .join("");
+  const abilityTables = hasAbilities(data) ? renderAbilityTables(data) : "";
+  const keyValues = ["skills", "resistances", "immunities", "senses", "languages"]
+    .filter((key) => data[key])
+    .map((key) => `<p class="rules-line"><strong>${labelFor(key)}.</strong> ${renderInline(String(data[key]))}</p>`)
+    .join("");
+  const cr = challengeText(data);
+  const crLine = cr ? `<p class="rules-line cr-line"><strong>GS</strong> ${renderInline(cr.replace(/^GS\s*/, ""))}</p>` : "";
+  const featureList = (items, title) => (items && items.length)
+    ? `<h3 class="feature-heading">${title}</h3>${items.map((item) => `<p><strong>${renderInline(item.name)}.</strong> ${renderInline(item.text)}</p>`).join("")}`
+    : "";
+
+  return `
+    <aside class="statblock monster no-break" ${sourceAttrs(sourceLine, sourceEndLine)}>
+      <div class="statblock__label">${renderInline(label)}</div>
+      <h2>${renderInline(data.name || label)}</h2>
+      ${data.meta ? `<p class="creature-meta"><em>${renderInline(data.meta)}</em></p>` : ""}
+      <div class="statline">${headLines}</div>
+      ${abilityTables}
+      ${keyValues}
+      ${crLine}
+      ${featureList(data.traits, "Tratti")}
+      ${featureList(data.actions, "Azioni")}
+      ${body.length ? renderMarkdown(body.join("\n"), schema, { startLine: sourceLine }) : ""}
+    </aside>
+  `;
+}
+
 function componentBody(data) {
   return Array.isArray(data.body) ? data.body : [data.body].filter(Boolean);
 }
@@ -166,6 +237,15 @@ function renderRandomTable(label, data, sourceLine, sourceEndLine = sourceLine) 
 
 function renderMedia(className, label, data, sourceLine, sourceEndLine = sourceLine) {
   return `<figure class="rpg-${className} no-break" ${sourceAttrs(sourceLine, sourceEndLine)}><img src="${escapeHtml(data.src || "")}" alt="${escapeHtml(data.alt || label)}"><figcaption>${renderInline(data.caption || label)}</figcaption></figure>`;
+}
+
+function hasNamedHeading(component) {
+  return (component.fields || []).some((field) => field.key === "name");
+}
+
+function renderProse(className, label, markdown, sourceLine, sourceEndLine = sourceLine) {
+  const text = [label, markdown].filter(Boolean).join(" ").replace(/\s*\n\s*/g, " ").trim();
+  return `<p class="${className}" ${sourceAttrs(sourceLine, sourceEndLine)}>${renderInline(text)}</p>`;
 }
 
 function sourceAttrs(sourceLine, sourceEndLine = sourceLine) {
@@ -206,6 +286,8 @@ function splitPair(value) {
 
 function renderInline(text) {
   return escapeHtml(String(text))
+    .replace(/!\[([^\]]*)\]\(([^)\s]+)\)/g, '<img class="inline-image" src="$2" alt="$1">')
+    .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, '<a href="$2">$1</a>')
     .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
     .replace(/\*([^*]+)\*/g, "<em>$1</em>")
     .replace(/`([^`]+)`/g, "<code>$1</code>");
@@ -223,6 +305,9 @@ function labelFor(key) {
     immunities: "Immunita",
     senses: "Sensi",
     languages: "Linguaggi",
+    attunement: "Sintonia",
+    rarity: "Rarita",
+    type: "Tipo",
     motive: "Motivazione",
     secret: "Segreto",
     voice: "Voce",
