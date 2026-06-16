@@ -11,7 +11,7 @@
       "compatibility: 5e/5.5e",
       "license_mode: srd-5.2-cc",
       "author: ${6:Andrea}",
-      "theme: ${7|fifth-edition-compatible,classic-parchment,old-school,dark-arcane,mythos,modern-5-5,clean-guild,printer-friendly|}",
+      "theme: ${7|fifth-edition-compatible,mm-2024,dmg-2024,strahd,classic-parchment,old-school,dark-arcane,mythos,modern-5-5,clean-guild,printer-friendly|}",
       "paper: ${8|A4,Letter|}",
       "public: ${9|true,false|}",
       "---"

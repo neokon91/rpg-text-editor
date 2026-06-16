@@ -78,6 +78,87 @@
   font-display: swap;
 }
 
+/* Solbera DnD fonts (CC-BY-SA-4.0): look manuale 5e (Homebrewery). */
+@font-face {
+  font-family: "Nodesto Caps Condensed";
+  src: url("../fonts/NodestoCapsCondensed-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Nodesto Caps Condensed";
+  src: url("../fonts/NodestoCapsCondensed-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Bookinsanity";
+  src: url("../fonts/Bookinsanity-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Bookinsanity";
+  src: url("../fonts/Bookinsanity-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Bookinsanity";
+  src: url("../fonts/Bookinsanity-Italic.woff2") format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Bookinsanity";
+  src: url("../fonts/Bookinsanity-BoldItalic.woff2") format("woff2");
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Scaly Sans";
+  src: url("../fonts/ScalySans-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Scaly Sans";
+  src: url("../fonts/ScalySans-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Scaly Sans";
+  src: url("../fonts/ScalySans-Italic.woff2") format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Solbera Imitation";
+  src: url("../fonts/SolberaImitation-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 h1,
 h2,
 h3,

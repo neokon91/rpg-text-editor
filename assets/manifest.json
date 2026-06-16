@@ -81,6 +81,86 @@
       "usage": "Body typography (temi mythos, old-school)"
     },
     {
+      "path": "fonts/NodestoCapsCondensed-Regular.woff2",
+      "title": "Nodesto Caps Condensed",
+      "author": "Solbera (jonathonf)",
+      "license": "CC-BY-SA-4.0",
+      "source": "https://github.com/jonathonf/solbera-dnd-fonts",
+      "usage": "Titoli (tema D&D 5e)"
+    },
+    {
+      "path": "fonts/NodestoCapsCondensed-Bold.woff2",
+      "title": "Nodesto Caps Condensed Bold",
+      "author": "Solbera (jonathonf)",
+      "license": "CC-BY-SA-4.0",
+      "source": "https://github.com/jonathonf/solbera-dnd-fonts",
+      "usage": "Titoli (tema D&D 5e)"
+    },
+    {
+      "path": "fonts/Bookinsanity-Regular.woff2",
+      "title": "Bookinsanity",
+      "author": "Solbera (jonathonf)",
+      "license": "CC-BY-SA-4.0",
+      "source": "https://github.com/jonathonf/solbera-dnd-fonts",
+      "usage": "Corpo del testo (tema D&D 5e)"
+    },
+    {
+      "path": "fonts/Bookinsanity-Bold.woff2",
+      "title": "Bookinsanity Bold",
+      "author": "Solbera (jonathonf)",
+      "license": "CC-BY-SA-4.0",
+      "source": "https://github.com/jonathonf/solbera-dnd-fonts",
+      "usage": "Corpo del testo (tema D&D 5e)"
+    },
+    {
+      "path": "fonts/Bookinsanity-Italic.woff2",
+      "title": "Bookinsanity Italic",
+      "author": "Solbera (jonathonf)",
+      "license": "CC-BY-SA-4.0",
+      "source": "https://github.com/jonathonf/solbera-dnd-fonts",
+      "usage": "Corpo del testo (tema D&D 5e)"
+    },
+    {
+      "path": "fonts/Bookinsanity-BoldItalic.woff2",
+      "title": "Bookinsanity Bold Italic",
+      "author": "Solbera (jonathonf)",
+      "license": "CC-BY-SA-4.0",
+      "source": "https://github.com/jonathonf/solbera-dnd-fonts",
+      "usage": "Corpo del testo (tema D&D 5e)"
+    },
+    {
+      "path": "fonts/ScalySans-Regular.woff2",
+      "title": "Scaly Sans",
+      "author": "Solbera (jonathonf)",
+      "license": "CC-BY-SA-4.0",
+      "source": "https://github.com/jonathonf/solbera-dnd-fonts",
+      "usage": "Statblock e testo sans (tema D&D 5e)"
+    },
+    {
+      "path": "fonts/ScalySans-Bold.woff2",
+      "title": "Scaly Sans Bold",
+      "author": "Solbera (jonathonf)",
+      "license": "CC-BY-SA-4.0",
+      "source": "https://github.com/jonathonf/solbera-dnd-fonts",
+      "usage": "Statblock e testo sans (tema D&D 5e)"
+    },
+    {
+      "path": "fonts/ScalySans-Italic.woff2",
+      "title": "Scaly Sans Italic",
+      "author": "Solbera (jonathonf)",
+      "license": "CC-BY-SA-4.0",
+      "source": "https://github.com/jonathonf/solbera-dnd-fonts",
+      "usage": "Statblock e testo sans (tema D&D 5e)"
+    },
+    {
+      "path": "fonts/SolberaImitation-Regular.woff2",
+      "title": "Solbera Imitation",
+      "author": "Solbera (jonathonf)",
+      "license": "CC-BY-SA-4.0",
+      "source": "https://github.com/jonathonf/solbera-dnd-fonts",
+      "usage": "Capolettera decorativo (tema D&D 5e)"
+    },
+    {
       "path": "assets/svg/dividers/rule-diamond.svg",
       "title": "Rule Diamond Divider",
       "author": "Andrea",

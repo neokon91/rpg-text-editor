@@ -34,8 +34,11 @@ export function DocumentOutline({
             <label>
               <span>Tema</span>
               <select value={metadata.theme || "fifth-edition-compatible"} onChange={(event) => onMetadataChange?.("theme", event.target.value)}>
-                <optgroup label="Compatibili fantasy">
-                  <option value="fifth-edition-compatible">D&amp;D 5e — pergamena</option>
+                <optgroup label="Compatibili fantasy (D&amp;D)">
+                  <option value="fifth-edition-compatible">D&amp;D 5e — PHB (pergamena)</option>
+                  <option value="mm-2024">D&amp;D — Manuale dei Mostri</option>
+                  <option value="dmg-2024">D&amp;D — Guida del DM</option>
+                  <option value="strahd">Strahd — gotico</option>
                   <option value="classic-parchment">Classic parchment</option>
                   <option value="old-school">Old-school — OSR / TSR</option>
                   <option value="dark-arcane">Dark arcane</option>
